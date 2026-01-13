@@ -3,20 +3,23 @@ import { supabase } from '../lib/supabase'
 import { ArrowLeft, Save, CheckCircle2 } from 'lucide-react'
 import { useState } from 'react'
 
-// 1. Validation Logic (Updated with Safety Check)
 type WorkoutSearch = {
   programName: string
 }
 
 export const Route = createFileRoute('/workout')({
-  // THE FIX: We allow search to be undefined, and use ?. to access it safely
+  // 1. Validation (Safe check)
   validateSearch: (search: Record<string, unknown> | undefined): WorkoutSearch => {
     return {
       programName: (search?.programName as string) || 'Freestyle',
     }
   },
-  loader: async ({ search }) => {
-    // Fetch the specific exercises for this program
+  
+  // 2. THE FIX: Explicitly tell the router we depend on these params
+  loaderDeps: ({ search: { programName } }) => ({ programName }),
+
+  // 3. THE FIX: Access 'deps' instead of 'search'
+  loader: async ({ deps }) => {
     const { data: program } = await supabase
       .from('programs')
       .select(`
@@ -31,10 +34,9 @@ export const Route = createFileRoute('/workout')({
           )
         )
       `)
-      .eq('name', search.programName)
+      .eq('name', deps.programName) // Use deps here
       .single()
 
-    // Sort them
     if (program?.program_exercises) {
         program.program_exercises.sort((a: any, b: any) => a.sort_order - b.sort_order)
     }
@@ -44,7 +46,6 @@ export const Route = createFileRoute('/workout')({
   component: WorkoutSession,
 })
 
-// 2. The Input Component
 function ExerciseLogger({ item }: { item: any }) {
   const [weight, setWeight] = useState('')
   const [reps, setReps] = useState(item.reps.toString())
@@ -125,7 +126,6 @@ function ExerciseLogger({ item }: { item: any }) {
   )
 }
 
-// 3. The Main Page
 function WorkoutSession() {
   const { program } = Route.useLoaderData()
   const navigate = useNavigate()
