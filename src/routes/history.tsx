@@ -39,16 +39,15 @@ function HistoryPage() {
     exercises.find(e => e.includes('Leg Press')) || exercises[0] || ''
   )
 
-  // Magic Logic: Process the raw data for the chart
-  const chartData = useMemo(() => {
+  // 1. Filter the logs first (Available to the whole component now)
+  const filteredLogs = useMemo(() => {
     if (!logs) return []
+    return logs.filter(l => l.exercise_name === selectedExercise)
+  }, [logs, selectedExercise])
 
-    // Filter for the selected exercise
-    const filtered = logs.filter(l => l.exercise_name === selectedExercise)
-
-    // Group by Date (Find the HEAVIEST lift of the day)
-    // If you did 3 sets, we only care about the best one for the graph
-    const dailyMax = filtered.reduce((acc: any, curr) => {
+  // 2. Process data for the chart (Find max weight per day)
+  const chartData = useMemo(() => {
+    const dailyMax = filteredLogs.reduce((acc: any, curr) => {
       const existing = acc.find((item: any) => item.date === curr.date)
       if (existing) {
         if (curr.weight > existing.weight) {
@@ -62,7 +61,7 @@ function HistoryPage() {
     }, [])
 
     return dailyMax
-  }, [logs, selectedExercise])
+  }, [filteredLogs])
 
   return (
     <div className="min-h-screen bg-gray-50 pb-10 font-sans">
@@ -148,7 +147,7 @@ function HistoryPage() {
             <div className="bg-purple-50 p-4 rounded-2xl border border-purple-100">
               <div className="text-purple-600 text-xs font-bold uppercase mb-1">Total Sets</div>
               <div className="text-2xl font-black text-purple-900">
-                {filtered.length}
+                {filteredLogs.length}
               </div>
             </div>
           </div>
