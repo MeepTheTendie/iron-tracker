@@ -1,4 +1,5 @@
 import { Dumbbell, Clock, Info } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
 
 // These types match what Supabase returns from our complicated join query
 type ExerciseNode = {
@@ -20,6 +21,7 @@ type ProgramData = {
 }
 
 export function WorkoutCard({ program }: { program: ProgramData | null }) {
+    const navigate = useNavigate() // <--- PASTE THIS HERE
   if (!program) {
     return (
       <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 text-center">
@@ -71,9 +73,15 @@ export function WorkoutCard({ program }: { program: ProgramData | null }) {
 
       {/* Footer Action */}
       <div className="p-4 bg-gray-50 border-t border-gray-100">
-        <button className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 active:scale-[0.98] transition-all">
-          Start Workout
-        </button>
+        <button 
+  onClick={() => navigate({ 
+    to: '/workout', 
+    search: { programName: program.name } 
+  })}
+  className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 active:scale-[0.98] transition-all"
+>
+  Start Workout
+</button>
       </div>
     </div>
   )
