@@ -38,7 +38,7 @@ export const Route = createFileRoute('/')({
 
     // Sort the exercises by the 'sort_order' column so they appear in the right sequence
     if (program && program.program_exercises) {
-      program.program_exercises.sort((a, b) => a.sort_order - b.sort_order)
+      program.program_exercises.sort((a: any, b: any) => a.sort_order - b.sort_order)
     }
 
     if (error && error.code !== 'PGRST116') { // PGRST116 just means "no rows found", which is fine for rest days
