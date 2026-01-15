@@ -65,7 +65,7 @@ function ExercisesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-10 font-sans">
+    <div className="min-h-screen bg-gray-50 pb-24 font-sans">
       {/* Header */}
       <div className="bg-white p-4 shadow-sm border-b sticky top-0 z-10 flex items-center gap-4">
         <button

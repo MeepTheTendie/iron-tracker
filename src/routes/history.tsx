@@ -24,7 +24,7 @@ export const Route = createFileRoute('/history')({
 
     // 2. Get unique list of exercises for the dropdown
     const exercises = Array.from(new Set(logs?.map((l) => l.exercise_name)))
-    
+
     return { logs, exercises }
   },
   component: HistoryPage,
@@ -33,16 +33,16 @@ export const Route = createFileRoute('/history')({
 function HistoryPage() {
   const { logs, exercises } = Route.useLoaderData()
   const navigate = useNavigate()
-  
+
   // Default to Leg Press if it exists, otherwise the first one
   const [selectedExercise, setSelectedExercise] = useState(
-    exercises.find(e => e.includes('Leg Press')) || exercises[0] || ''
+    exercises.find((e) => e.includes('Leg Press')) || exercises[0] || '',
   )
 
   // 1. Filter the logs first (Available to the whole component now)
   const filteredLogs = useMemo(() => {
     if (!logs) return []
-    return logs.filter(l => l.exercise_name === selectedExercise)
+    return logs.filter((l) => l.exercise_name === selectedExercise)
   }, [logs, selectedExercise])
 
   // 2. Process data for the chart (Find max weight per day)
@@ -64,29 +64,33 @@ function HistoryPage() {
   }, [filteredLogs])
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-10 font-sans">
+    <div className="min-h-screen bg-gray-50 pb-24 font-sans">
       {/* Header */}
       <div className="bg-white p-4 shadow-sm border-b sticky top-0 z-10 flex items-center gap-4">
-        <button onClick={() => navigate({ to: '/' })} className="p-2 -ml-2 hover:bg-gray-100 rounded-full">
+        <button
+          onClick={() => navigate({ to: '/' })}
+          className="p-2 -ml-2 hover:bg-gray-100 rounded-full"
+        >
           <ArrowLeft className="w-6 h-6 text-gray-700" />
         </button>
         <h1 className="font-bold text-xl text-gray-900">Progress Tracker</h1>
       </div>
 
       <div className="p-4 max-w-lg mx-auto space-y-6">
-        
         {/* Selector */}
         <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
           <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">
             Select Exercise
           </label>
-          <select 
+          <select
             value={selectedExercise}
             onChange={(e) => setSelectedExercise(e.target.value)}
             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 outline-none focus:ring-2 focus:ring-emerald-500"
           >
-            {exercises.map(ex => (
-              <option key={ex} value={ex}>{ex}</option>
+            {exercises.map((ex) => (
+              <option key={ex} value={ex}>
+                {ex}
+              </option>
             ))}
           </select>
         </div>
@@ -101,30 +105,43 @@ function HistoryPage() {
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height="80%">
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="date" 
-                  tick={{fontSize: 12}} 
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#f0f0f0"
+                />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 12 }}
                   tickFormatter={(str) => str.slice(5)} // Show "01-12" instead of "2026-01-12"
                   stroke="#9ca3af"
                 />
-                <YAxis 
-                  domain={['auto', 'auto']} 
-                  tick={{fontSize: 12}} 
+                <YAxis
+                  domain={['auto', 'auto']}
+                  tick={{ fontSize: 12 }}
                   stroke="#9ca3af"
                   width={30}
                 />
-                <Tooltip 
-                  contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}}
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: '12px',
+                    border: 'none',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  }}
                   formatter={(value: any) => [`${value} lbs`, 'Weight']}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="weight" 
-                  stroke="#10b981" 
-                  strokeWidth={3} 
-                  dot={{r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#fff'}}
-                  activeDot={{r: 6}} 
+                <Line
+                  type="monotone"
+                  dataKey="weight"
+                  stroke="#10b981"
+                  strokeWidth={3}
+                  dot={{
+                    r: 4,
+                    fill: '#10b981',
+                    strokeWidth: 2,
+                    stroke: '#fff',
+                  }}
+                  activeDot={{ r: 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -139,13 +156,18 @@ function HistoryPage() {
         {chartData.length > 0 && (
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-              <div className="text-blue-600 text-xs font-bold uppercase mb-1">Max Weight</div>
+              <div className="text-blue-600 text-xs font-bold uppercase mb-1">
+                Max Weight
+              </div>
               <div className="text-2xl font-black text-blue-900">
-                {Math.max(...chartData.map((d: any) => d.weight))} <span className="text-sm font-medium">lbs</span>
+                {Math.max(...chartData.map((d: any) => d.weight))}{' '}
+                <span className="text-sm font-medium">lbs</span>
               </div>
             </div>
             <div className="bg-purple-50 p-4 rounded-2xl border border-purple-100">
-              <div className="text-purple-600 text-xs font-bold uppercase mb-1">Total Sets</div>
+              <div className="text-purple-600 text-xs font-bold uppercase mb-1">
+                Total Sets
+              </div>
               <div className="text-2xl font-black text-purple-900">
                 {filteredLogs.length}
               </div>
