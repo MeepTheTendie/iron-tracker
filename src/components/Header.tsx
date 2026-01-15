@@ -21,7 +21,7 @@ export default function Header() {
   return (
     <>
       {/* Top Header */}
-      <header className="p-4 flex items-center justify-between bg-gray-900 text-white shadow-lg sticky top-0 z-40">
+      <header className="w-full p-4 flex items-center justify-between bg-gray-900 text-white shadow-lg sticky top-0 z-40">
         <button
           onClick={() => setIsOpen(true)}
           className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
