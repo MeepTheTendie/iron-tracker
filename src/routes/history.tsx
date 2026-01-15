@@ -76,7 +76,7 @@ function HistoryPage() {
         <h1 className="font-bold text-xl text-gray-900">Progress Tracker</h1>
       </div>
 
-      <div className="p-4 max-w-2xl mx-auto space-y-6">
+      <div className="p-4 max-w-2xl w-full mx-auto space-y-6">
         {/* Selector */}
         <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
           <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">

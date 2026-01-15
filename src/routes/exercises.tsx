@@ -84,7 +84,7 @@ function ExercisesPage() {
         </button>
       </div>
 
-      <div className="p-4 max-w-2xl mx-auto space-y-4">
+      <div className="p-4 max-w-2xl w-full mx-auto space-y-4">
         {/* Add Exercise Form */}
         {showForm && (
           <form
