@@ -72,12 +72,12 @@ INSERT INTO public.exercises (name, muscle_group, notes) VALUES
 ('Seated Calf Raise', 'Calves', 'Full stretch'),
 ('Sit-Up', 'Abs', 'Full range of motion');
 
--- Insert workouts (Mon/Wed/Fri/Sun schedule)
+-- Insert workouts (Mon/Wed/Fri/Sat schedule - Saturday instead of Sunday)
 INSERT INTO public.workouts (name, day_of_week, workout_type, description) VALUES
 ('Upper Body A', 'Monday', 'upper_a', 'Dumbbell-focused upper body'),
 ('Lower Body A', 'Wednesday', 'lower_a', 'Squat and hinge focused'),
 ('Upper Body B', 'Friday', 'upper_b', 'Row and fly focused'),
-('Lower Body B', 'Sunday', 'lower_b', 'Explosive and isolation');
+('Lower Body B', 'Saturday', 'lower_b', 'Explosive and isolation');
 
 -- Link exercises to Upper Body A
 INSERT INTO public.workout_exercises (workout_id, exercise_id, sets, reps, rest_seconds, sort_order) VALUES
