@@ -58,8 +58,8 @@ function Dashboard() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 font-sans pb-24">
-      <div className="max-w-md mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 font-sans pb-24">
+      <div className="max-w-2xl mx-auto space-y-6">
         {/* Date - Title is in the header */}
         <p className="text-gray-500 font-medium text-lg">
           {dayName}, {dateStr}
