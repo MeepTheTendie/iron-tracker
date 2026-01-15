@@ -1,301 +1,457 @@
-Welcome to your new TanStack app! 
+# Iron Tracker
 
-# Getting Started
+A modern web application for tracking daily habits and strength training progress. Built with React, Vite, and Supabase.
 
-To run this application:
+## Features
+
+- **Daily Habit Tracking**: Track morning/evening squats, daily steps, and bike workouts
+- **Workout Programming**: Follow structured workout programs with sets, reps, and exercise notes
+- **Progress Visualization**: Interactive charts showing strength gains over time
+- **Day-of-Week Programs**: Automatically loads the correct workout based on today's schedule
+- **Responsive Design**: Optimized for mobile and desktop use
+
+## Tech Stack
+
+Iron Tracker is built on the modern **TanStack ecosystem** for a best-in-class developer experience and performant user experience:
+
+### TanStack Ecosystem
+
+- **[TanStack Router](https://tanstack.com/router)** (v1.132.0)
+  - File-based routing with type-safe route generation
+  - Auto-generated route tree (`routeTree.gen.ts`)
+  - Loader functions for server-side data fetching
+  - Built-in routing devtools panel
+
+- **[TanStack React DevTools](https://tanstack.com/devtools)** (v0.7.0)
+  - In-app development panel for debugging
+  - Router visualization and state inspection
+
+- **[TanStack React Router DevTools](https://tanstack.com/router)** (v1.132.0)
+  - Route tree visualization
+  - Route matching and params inspection
+
+### Additional Technologies
+
+- **Frontend**: React 19.2.0 with TypeScript
+- **Build Tool**: Vite 7.1.7
+- **Styling**: Tailwind CSS 4.0.6
+- **Backend**: Supabase (PostgreSQL + auto-generated API)
+- **Charts**: Recharts 3.6.0
+- **Icons**: Lucide React 0.545.0
+- **Testing**: Vitest 3.0.5
+- **Code Quality**: ESLint + Prettier
+
+## Prerequisites
+
+- Node.js 18+ and npm
+- Supabase account (free tier works)
+- Git
+
+## Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/iron-tracker.git
+cd iron-tracker
+```
+
+### 2. Install Dependencies
 
 ```bash
 npm install
-npm run start
 ```
 
-# Building For Production
+### 3. Configure Environment Variables
 
-To build this application for production:
+Copy the environment template and add your Supabase credentials:
 
 ```bash
-npm run build
+cp .env.example .env
 ```
 
-## Testing
+Edit `.env` and add your Supabase URL and anon key:
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+```
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+**Where to find your Supabase credentials:**
+
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
+2. Select your project
+3. Go to Settings → API
+4. Copy the "Project URL" and "anon" public key
+
+### 4. Set Up Supabase Database
+
+Run the SQL commands from `SUPABASE_RLS_FIX.md` in your Supabase SQL Editor to enable Row Level Security.
+
+### 5. Start Development Server
 
 ```bash
-npm run test
+npm run dev
 ```
 
-## Styling
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+## Database Schema
 
+Iron Tracker uses the following Supabase tables:
 
-## Linting & Formatting
+### `programs`
 
+Workout programs organized by day of week.
 
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
+| Column      | Type    | Description                         |
+| ----------- | ------- | ----------------------------------- |
+| id          | integer | Primary key                         |
+| name        | text    | Program name (e.g., "Upper Body A") |
+| day_of_week | text    | Day name (e.g., "Monday")           |
 
-```bash
-npm run lint
-npm run format
-npm run check
+### `exercises`
+
+Exercise library.
+
+| Column | Type    | Description                  |
+| ------ | ------- | ---------------------------- |
+| id     | integer | Primary key                  |
+| name   | text    | Exercise name                |
+| notes  | text    | Optional exercise notes/tips |
+
+### `program_exercises`
+
+Junction table linking programs to exercises.
+
+| Column       | Type    | Description              |
+| ------------ | ------- | ------------------------ |
+| id           | integer | Primary key              |
+| program_id   | integer | Foreign key to programs  |
+| exercise_id  | integer | Foreign key to exercises |
+| sets         | integer | Number of sets           |
+| reps         | integer | Reps per set             |
+| rest_seconds | integer | Rest time between sets   |
+| sort_order   | integer | Display order            |
+
+### `daily_habits`
+
+Daily habit tracking data.
+
+| Column    | Type    | Description                     |
+| --------- | ------- | ------------------------------- |
+| date      | date    | Primary key (YYYY-MM-DD format) |
+| am_squats | boolean | Morning squats completed        |
+| steps_10k | boolean | 10,000 steps reached            |
+| bike_1hr  | boolean | 1 hour bike completed           |
+| pm_squats | boolean | Evening squats completed        |
+
+### `workout_logs`
+
+Workout log entries for progress tracking.
+
+| Column        | Type    | Description         |
+| ------------- | ------- | ------------------- |
+| id            | integer | Primary key         |
+| date          | date    | Workout date        |
+| exercise_name | text    | Name of exercise    |
+| weight        | integer | Weight lifted (lbs) |
+| reps          | integer | Reps performed      |
+
+## Available Scripts
+
+| Command           | Description                               |
+| ----------------- | ----------------------------------------- |
+| `npm run dev`     | Start development server on port 3000     |
+| `npm run build`   | Build for production (outputs to `dist/`) |
+| `npm run preview` | Preview production build locally          |
+| `npm run test`    | Run tests with Vitest                     |
+| `npm run lint`    | Check code with ESLint                    |
+| `npm run format`  | Format code with Prettier                 |
+| `npm run check`   | Format + lint + type check                |
+
+## Project Structure
+
+```
+iron-tracker/
+├── src/
+│   ├── components/         # Reusable React components
+│   │   ├── Header.tsx     # App header with navigation
+│   │   ├── HabitTracker.tsx # Daily habit checklist
+│   │   └── WorkoutCard.tsx  # Workout display and start button
+│   ├── lib/
+│   │   └── supabase.ts    # Supabase client configuration
+│   ├── routes/            # TanStack Router file-based routes
+│   │   ├── __root.tsx     # Root route with layout
+│   │   ├── index.tsx      # Dashboard (home page)
+│   │   ├── history.tsx    # Progress charts and history
+│   │   └── workout.tsx    # Active workout tracking
+│   ├── main.tsx           # App entry point
+│   ├── routeTree.gen.ts   # Auto-generated router tree
+│   └── styles.css         # Tailwind CSS imports
+├── public/                # Static assets
+│   ├── manifest.json      # PWA manifest
+│   ├── robots.txt         # SEO rules
+│   └── favicon.ico        # App icon
+├── index.html             # HTML template
+├── package.json           # Dependencies and scripts
+├── vite.config.ts         # Vite configuration
+├── tsconfig.json          # TypeScript configuration
+├── .env.example           # Environment template
+├── SUPABASE_RLS_FIX.md    # Database security instructions
+└── README.md              # This file
 ```
 
+## Deployment
 
+### Vercel (Recommended)
 
-## Routing
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
+1. **Connect Repository**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Click "Add New Project"
+   - Import your GitHub repository
 
-### Adding A Route
+2. **Configure Build Settings**
+   - Framework Preset: `Vite` (auto-detected)
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
 
-To add a new route to your application just add another a new file in the `./src/routes` directory.
+3. **Add Environment Variables**
+   - Go to Settings → Environment Variables
+   - Add `VITE_SUPABASE_URL` with your Supabase URL
+   - Add `VITE_SUPABASE_ANON_KEY` with your anon key
 
-TanStack will automatically generate the content of the route file for you.
+4. **Add Custom Domain**
+   - Go to Settings → Domains
+   - Add `myworkouttracker.xyz`
+   - Vercel will automatically provision SSL
 
-Now that you have two routes you can use a `Link` component to navigate between them.
+5. **Configure Supabase**
+   - Go to Supabase Dashboard → Authentication → URL Configuration
+   - Add `https://myworkouttracker.xyz` to Redirect URLs
 
-### Adding Links
+### Alternative Deployments
 
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
+**Netlify:**
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+- Add same environment variables
+
+**Cloudflare Pages:**
+
+- Build command: `npm run build`
+- Build output: `/dist`
+- Add same environment variables
+
+## Security Setup
+
+**IMPORTANT**: Before deploying, you must enable Row Level Security (RLS) on your Supabase tables to prevent unauthorized access.
+
+See `SUPABASE_RLS_FIX.md` for detailed SQL commands to run in your Supabase SQL Editor.
+
+## TanStack Router Guide
+
+Iron Tracker uses **TanStack Router** for type-safe, file-based routing. This section explains how routing works in the app.
+
+### Route File Structure
+
+Routes are defined as files in `src/routes/`. The file path determines the URL:
+
+| File                     | Route      | Description                           |
+| ------------------------ | ---------- | ------------------------------------- |
+| `src/routes/__root.tsx`  | `/` (root) | Layout wrapper with Header and Outlet |
+| `src/routes/index.tsx`   | `/`        | Dashboard with habits and workout     |
+| `src/routes/history.tsx` | `/history` | Progress charts and history           |
+| `src/routes/workout.tsx` | `/workout` | Active workout tracking               |
+
+### File-Based Routing
+
+TanStack Router automatically generates routes from files:
 
 ```tsx
-import { Link } from "@tanstack/react-router";
+// src/routes/index.tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/')({
+  loader: async () => {
+    // Fetch data before rendering
+    return { message: 'Hello World' }
+  },
+  component: IndexPage,
+})
+
+function IndexPage() {
+  const data = Route.useLoaderData()
+  return <div>{data.message}</div>
+}
 ```
 
-Then anywhere in your JSX you can use it like so:
+### Layout Routes
+
+The root route (`__root.tsx`) wraps all pages with shared UI:
 
 ```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
+// src/routes/__root.tsx
 import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from "@tanstack/react-router";
+import Header from '../components/Header'
 
 export const Route = createRootRoute({
   component: () => (
     <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
+      <Header />
       <Outlet />
-      <TanStackRouterDevtools />
     </>
   ),
 })
 ```
 
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
+The `<Outlet />` component renders child routes.
 
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
+### Data Loading with Loaders
 
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
+Each route can define a `loader` function to fetch data before rendering:
 
 ```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
+export const Route = createFileRoute('/history')({
   loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
+    const { data } = await supabase
+      .from('workout_logs')
+      .select('date, exercise_name, weight, reps')
+      .order('date', { ascending: true })
+    return { logs: data }
   },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
-});
+  component: HistoryPage,
+})
 ```
 
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
-
-```bash
-npm install @tanstack/react-query @tanstack/react-query-devtools
-```
-
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
+Access loaded data with the `useLoaderData()` hook:
 
 ```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// ...
-
-const queryClient = new QueryClient();
-
-// ...
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
+function HistoryPage() {
+  const { logs } = Route.useLoaderData()
+  return <Chart data={logs} />
 }
 ```
 
-You can also add TanStack Query Devtools to the root route (optional).
+### Programmatic Navigation
+
+Use the `useNavigate` hook for programmatic navigation:
 
 ```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useNavigate } from '@tanstack/react-router'
 
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-
-import "./App.css";
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  });
+function MyComponent() {
+  const navigate = useNavigate()
 
   return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
+    <button onClick={() => navigate({ to: '/history' })}>View History</button>
+  )
 }
-
-export default App;
 ```
 
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
+### Route Search Params
 
-## State Management
-
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
-
-First you need to add TanStack Store as a dependency:
-
-```bash
-npm install @tanstack/store
-```
-
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
+Access URL search parameters:
 
 ```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
+// Route definition with search params
+export const Route = createFileRoute('/workout')({
+  component: WorkoutPage,
+})
 
-const countStore = new Store(0);
-
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
-
-export default App;
+// Access params
+const search = Route.useSearch() // { programName: "Upper Body A" }
 ```
 
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
+### DevTools
 
-Let's check this out by doubling the count using derived state.
+TanStack Router DevTools are included in development mode, showing:
+
+- Route tree visualization
+- Active route highlighting
+- Route params and search params
+- Navigation history
+
+---
+
+## Development
+
+### Adding New Routes
+
+Create a new file in `src/routes/`:
 
 ```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
+// src/routes/about.tsx
+import { createFileRoute } from '@tanstack/react-router'
 
-const countStore = new Store(0);
+export const Route = createFileRoute('/about')({
+  component: AboutPage,
+})
 
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-});
-doubledStore.mount();
-
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
-
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
+function AboutPage() {
+  return <div className="p-4">About Iron Tracker</div>
 }
-
-export default App;
 ```
 
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
+The route `/about` is automatically created.
 
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
+### Adding Components
 
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
+Components go in `src/components/`. Use the existing components as templates:
 
-# Demo files
+```tsx
+import { LucideIcon } from 'lucide-react'
 
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
+interface Props {
+  title: string
+  icon?: LucideIcon
+}
 
-# Learn More
+export function MyComponent({ title, icon: Icon }: Props) {
+  return (
+    <div className="p-4 bg-white rounded-xl shadow-sm">
+      {Icon && <Icon className="w-5 h-5" />}
+      <h2>{title}</h2>
+    </div>
+  )
+}
+```
 
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+### Database Changes
+
+When modifying the database schema:
+
+1. Make changes in Supabase Dashboard
+2. Update TypeScript interfaces in component files to match
+3. Test locally with `npm run dev`
+4. Deploy with `npm run build && vercel deploy`
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+MIT License - feel free to use this project for your own purposes.
+
+## Acknowledgments
+
+- **[TanStack](https://tanstack.com)** for the exceptional open-source ecosystem:
+  - [TanStack Router](https://tanstack.com/router) for type-safe file-based routing
+  - [TanStack DevTools](https://tanstack.com/devtools) for React debugging
+  - [TanStack Query](https://tanstack.com/query) for data fetching (recommended for future enhancement)
+- [Tailwind CSS](https://tailwindcss.com) for utility-first styling
+- [Supabase](https://supabase.com) for backend-as-a-service
+- [Recharts](https://recharts.org) for beautiful charts
+- [Lucide](https://lucide.dev) for consistent icons
+
+---
+
+**Live Domain**: [https://myworkouttracker.xyz](https://myworkouttracker.xyz)
+
+**Repository**: [https://github.com/yourusername/iron-tracker](https://github.com/yourusername/iron-tracker)
