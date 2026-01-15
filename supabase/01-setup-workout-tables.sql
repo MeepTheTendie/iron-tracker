@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS public.workout_exercises CASCADE;
 DROP TABLE IF EXISTS public.workouts CASCADE;
 DROP TABLE IF EXISTS public.exercises CASCADE;
 DROP TABLE IF EXISTS public.workout_logs CASCADE;
+DROP TABLE IF EXISTS public.daily_habits CASCADE;
 
 -- ============================================================================
 -- STEP 2: Create tables
@@ -61,26 +62,45 @@ CREATE TABLE public.workout_logs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ============================================================================
--- STEP 3: Enable RLS and create policies (CRITICAL for anon key access)
--- ============================================================================
+-- Daily habits table (tracks daily rituals)
+CREATE TABLE public.daily_habits (
+    date DATE PRIMARY KEY,
+    am_squats BOOLEAN DEFAULT FALSE,
+    steps_10k BOOLEAN DEFAULT FALSE,
+    bike_1hr BOOLEAN DEFAULT FALSE,
+    pm_squats BOOLEAN DEFAULT FALSE,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
--- exercises table
+-- ============================================================================
+-- STEP 3: Enable RLS and create policies
+-- ============================================================================
+-- Security Note: No DELETE policies = nobody can delete your data
+-- UPDATE policies only allow modifying your own entries
+
+-- exercises table - read-only reference data
 ALTER TABLE public.exercises ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read access" ON public.exercises FOR SELECT USING (true);
 
--- workouts table
+-- workouts table - read-only reference data
 ALTER TABLE public.workouts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read access" ON public.workouts FOR SELECT USING (true);
 
--- workout_exercises table
+-- workout_exercises table - read-only reference data
 ALTER TABLE public.workout_exercises ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read access" ON public.workout_exercises FOR SELECT USING (true);
 
--- workout_logs table
+-- workout_logs table - can read and insert, but no delete
 ALTER TABLE public.workout_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read access" ON public.workout_logs FOR SELECT USING (true);
 CREATE POLICY "Public insert access" ON public.workout_logs FOR INSERT WITH CHECK (true);
+-- UPDATE policy allows you to edit your own logs (but not others' without auth)
+CREATE POLICY "Public update access" ON public.workout_logs FOR UPDATE USING (true);
+
+-- daily_habits table - can read and upsert your habits
+ALTER TABLE public.daily_habits ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read access" ON public.daily_habits FOR SELECT USING (true);
+CREATE POLICY "Public upsert access" ON public.daily_habits FOR INSERT ON CONFLICT DO UPDATE SET updated_at = NOW();
 
 -- ============================================================================
 -- STEP 4: Insert exercises (24 total)
