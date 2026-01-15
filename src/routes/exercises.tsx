@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { supabase } from '../lib/supabase'
 import { ArrowLeft, Plus, Dumbbell, Trash2 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export const Route = createFileRoute('/exercises')({
   loader: async () => {

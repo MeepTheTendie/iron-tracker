@@ -2,6 +2,12 @@ import { Dumbbell, Clock, Info } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 
 // These types match what Supabase returns from our complicated join query
+type ExerciseNode = {
+  name: string
+  muscle_group: string | null
+  notes: string | null
+}
+
 type WorkoutExercise = {
   id: number
   sets: number

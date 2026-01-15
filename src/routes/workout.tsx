@@ -4,44 +4,59 @@ import { ArrowLeft, Save, CheckCircle2 } from 'lucide-react'
 import { useState } from 'react'
 
 type WorkoutSearch = {
-  programName: string
+  workoutId?: number
+  workoutName?: string
 }
 
 export const Route = createFileRoute('/workout')({
-  // 1. Validation (Safe check)
-  validateSearch: (search: Record<string, unknown> | undefined): WorkoutSearch => {
+  validateSearch: (
+    search: Record<string, unknown> | undefined,
+  ): WorkoutSearch => {
     return {
-      programName: (search?.programName as string) || 'Freestyle',
+      workoutId: (search?.workoutId as number) || undefined,
+      workoutName: (search?.workoutName as string) || 'Freestyle',
     }
   },
-  
-  // 2. THE FIX: Explicitly tell the router we depend on these params
-  loaderDeps: ({ search: { programName } }) => ({ programName }),
 
-  // 3. THE FIX: Access 'deps' instead of 'search'
+  loaderDeps: ({ search: { workoutId, workoutName } }) => ({
+    workoutId,
+    workoutName,
+  }),
+
   loader: async ({ deps }) => {
-    const { data: program } = await supabase
-      .from('programs')
-      .select(`
-        *,
-        program_exercises (
-          sets,
-          reps,
-          sort_order,
-          exercises (
-            name,
-            notes
+    if (deps.workoutId) {
+      const { data: workout } = await supabase
+        .from('workouts')
+        .select(
+          `
+          *,
+          workout_exercises (
+            id,
+            sets,
+            reps,
+            rest_seconds,
+            sort_order,
+            exercises (
+              name,
+              notes,
+              muscle_group
+            )
           )
+        `,
         )
-      `)
-      .eq('name', deps.programName) // Use deps here
-      .single()
+        .eq('id', deps.workoutId)
+        .single()
 
-    if (program?.program_exercises) {
-        program.program_exercises.sort((a: any, b: any) => a.sort_order - b.sort_order)
+      if (workout?.workout_exercises) {
+        workout.workout_exercises.sort(
+          (a: any, b: any) => a.sort_order - b.sort_order,
+        )
+      }
+
+      return { workout }
     }
 
-    return { program }
+    return { workout: null }
   },
   component: WorkoutSession,
 })
@@ -54,16 +69,17 @@ function ExerciseLogger({ item }: { item: any }) {
   const logSet = async () => {
     if (!weight || !reps) return
 
+    const today = new Date().toISOString().split('T')[0]
     const { error } = await supabase.from('workout_logs').insert({
+      date: today,
       exercise_name: item.exercises.name,
       weight: parseFloat(weight),
       reps: parseInt(reps),
-      set_number: setsDone + 1
     })
 
     if (!error) {
-      setSetsDone(prev => prev + 1)
-      if (navigator.vibrate) navigator.vibrate(50) 
+      setSetsDone((prev) => prev + 1)
+      if (navigator.vibrate) navigator.vibrate(50)
     }
   }
 
@@ -71,40 +87,46 @@ function ExerciseLogger({ item }: { item: any }) {
     <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-4">
       <div className="flex justify-between items-start mb-3">
         <div>
-          <h3 className="font-bold text-gray-800 text-lg">{item.exercises.name}</h3>
+          <h3 className="font-bold text-gray-800 text-lg">
+            {item.exercises.name}
+          </h3>
           {item.exercises.notes && (
             <p className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded inline-block mt-1">
-              ⚠️ {item.exercises.notes}
+              {item.exercises.notes}
             </p>
           )}
         </div>
         <div className="text-right">
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Target</span>
-          <div className="font-mono text-sm font-bold text-gray-600">{item.sets} x {item.reps}</div>
+          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+            Target
+          </span>
+          <div className="font-mono text-sm font-bold text-gray-600">
+            {item.sets} x {item.reps}
+          </div>
         </div>
       </div>
 
       <div className="flex gap-2 items-end">
         <div className="flex-1">
           <label className="text-xs text-gray-500 font-bold ml-1">LBS</label>
-          <input 
-            type="number" 
+          <input
+            type="number"
             value={weight}
-            onChange={e => setWeight(e.target.value)}
+            onChange={(e) => setWeight(e.target.value)}
             placeholder="0"
             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-lg font-bold text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
           />
         </div>
         <div className="flex-1">
           <label className="text-xs text-gray-500 font-bold ml-1">REPS</label>
-          <input 
-            type="number" 
+          <input
+            type="number"
             value={reps}
-            onChange={e => setReps(e.target.value)}
+            onChange={(e) => setReps(e.target.value)}
             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-lg font-bold text-gray-900 focus:ring-2 focus:ring-emerald-500 outline-none"
           />
         </div>
-        <button 
+        <button
           onClick={logSet}
           className="h-[54px] w-[54px] flex items-center justify-center bg-emerald-600 active:bg-emerald-700 text-white rounded-lg shadow-sm transition-all"
         >
@@ -114,12 +136,12 @@ function ExerciseLogger({ item }: { item: any }) {
 
       {setsDone > 0 && (
         <div className="mt-3 flex gap-1">
-           {Array.from({ length: setsDone }).map((_, i) => (
-             <div key={i} className="h-2 flex-1 bg-emerald-500 rounded-full" />
-           ))}
-           <div className="flex items-center gap-1 text-xs text-emerald-700 font-medium ml-2">
-             <CheckCircle2 className="w-3 h-3" /> {setsDone} Sets
-           </div>
+          {Array.from({ length: setsDone }).map((_, i) => (
+            <div key={i} className="h-2 flex-1 bg-emerald-500 rounded-full" />
+          ))}
+          <div className="flex items-center gap-1 text-xs text-emerald-700 font-medium ml-2">
+            <CheckCircle2 className="w-3 h-3" /> {setsDone} Sets
+          </div>
         </div>
       )}
     </div>
@@ -127,35 +149,40 @@ function ExerciseLogger({ item }: { item: any }) {
 }
 
 function WorkoutSession() {
-  const { program } = Route.useLoaderData()
+  const { workout } = Route.useLoaderData()
   const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-gray-100 pb-20">
       <div className="bg-gray-900 text-white p-4 sticky top-0 z-10 shadow-md flex items-center gap-4">
-        <button onClick={() => navigate({ to: '/' })} className="p-2 -ml-2 hover:bg-gray-800 rounded-full">
+        <button
+          onClick={() => navigate({ to: '/' })}
+          className="p-2 -ml-2 hover:bg-gray-800 rounded-full"
+        >
           <ArrowLeft className="w-6 h-6" />
         </button>
         <div>
-           <h1 className="font-bold text-lg leading-tight">{program?.name || 'Freestyle Session'}</h1>
-           <p className="text-xs text-gray-400">Focus Mode</p>
+          <h1 className="font-bold text-lg leading-tight">
+            {workout?.name || 'Freestyle Session'}
+          </h1>
+          <p className="text-xs text-gray-400">Focus Mode</p>
         </div>
       </div>
 
       <div className="p-4">
-        {program?.program_exercises?.map((item: any) => (
+        {workout?.workout_exercises?.map((item: any) => (
           <ExerciseLogger key={item.id} item={item} />
         ))}
 
-        {!program && (
-            <div className="text-center p-8 text-gray-500">
-                <p>No program loaded. You are in freestyle mode.</p>
-            </div>
+        {!workout && (
+          <div className="text-center p-8 text-gray-500">
+            <p>No program loaded. You are in freestyle mode.</p>
+          </div>
         )}
       </div>
-      
+
       <div className="p-4">
-        <button 
+        <button
           onClick={() => navigate({ to: '/' })}
           className="w-full py-4 bg-gray-800 text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform"
         >
