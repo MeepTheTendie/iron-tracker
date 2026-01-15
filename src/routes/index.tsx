@@ -60,15 +60,10 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 font-sans pb-20">
       <div className="max-w-md mx-auto space-y-6">
-        {/* Header */}
-        <header>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-            Iron Tracker
-          </h1>
-          <p className="text-gray-500 font-medium">
-            {dayName}, {dateStr}
-          </p>
-        </header>
+        {/* Date - Title is in the header */}
+        <p className="text-gray-500 font-medium text-lg">
+          {dayName}, {dateStr}
+        </p>
 
         {/* Habit Tracker */}
         <HabitTracker habits={habits} date={dateStr} />
