@@ -1,6 +1,6 @@
 import { useRouter } from '@tanstack/react-router'
 import { supabase } from '../lib/supabase'
-import { Check, Flame } from 'lucide-react'
+import { Check, Flame, Trophy } from 'lucide-react'
 
 // This defines what a Habit row looks like
 type HabitProps = {
@@ -14,10 +14,6 @@ function HabitRow({ label, field, checked, date }: HabitProps) {
   const router = useRouter()
 
   const toggleHabit = async () => {
-    // 1. Optimistic Update (Make it feel instant)
-    // In a real app we'd use TanStack Mutation, but let's keep it simple for now:
-    // We just fire the database request and reload the page data.
-
     const { error } = await supabase
       .from('daily_habits')
       .upsert({ date: date, [field]: !checked }, { onConflict: 'date' })
@@ -26,7 +22,6 @@ function HabitRow({ label, field, checked, date }: HabitProps) {
       alert('Failed to save habit!')
       console.error(error)
     } else {
-      // Refresh the data on screen
       router.invalidate()
     }
   }
@@ -62,8 +57,39 @@ function HabitRow({ label, field, checked, date }: HabitProps) {
   )
 }
 
+type Habits = {
+  am_squats: boolean | null
+  steps_10k: boolean | null
+  bike_1hr: boolean | null
+  pm_squats: boolean | null
+} | null
+
+function areAllHabitsCompleted(habits: Habits): boolean {
+  if (!habits) return false
+  return (
+    habits.am_squats === true &&
+    habits.steps_10k === true &&
+    habits.bike_1hr === true &&
+    habits.pm_squats === true
+  )
+}
+
 export function HabitTracker({ habits, date }: { habits: any; date: string }) {
-  // If no habits exist yet for today, habits will be null. We treat null as false.
+  const allCompleted = areAllHabitsCompleted(habits)
+
+  if (allCompleted) {
+    return (
+      <div className="bg-gradient-to-br from-emerald-400 to-emerald-600 p-6 rounded-2xl shadow-lg mb-6 text-white">
+        <div className="flex items-center gap-3 mb-3">
+          <Trophy className="w-8 h-8 text-yellow-300" />
+          <h2 className="text-xl font-bold">All Rituals Complete!</h2>
+        </div>
+        <p className="text-emerald-100">
+          Great job! You've completed all your daily habits. See you tomorrow!
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
