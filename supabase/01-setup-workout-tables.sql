@@ -129,7 +129,7 @@ INSERT INTO public.exercises (name, muscle_group, notes) VALUES
 ('Standing Calf Raise', 'Calves', 'Full range of motion'),
 ('Oblique Crunch', 'Obliques', 'Rotate at waist'),
 -- Lower Body B
-('Squat Jumps', 'Quads/Glutes', 'Land soft, explode up'),
+('Body Weight Squat', 'Quads/Glutes', 'Sit back, keep chest up'),
 ('Standing Glute Kickback', 'Glutes', 'Squeeze at top'),
 ('Leg Curl', 'Hamstrings', 'Control movement'),
 ('Leg Extension', 'Quads', 'Pause and squeeze'),
@@ -179,7 +179,7 @@ INSERT INTO public.workout_exercises (workout_id, exercise_id, sets, reps, rest_
 
 -- Lower Body B (workout_id = 4)
 INSERT INTO public.workout_exercises (workout_id, exercise_id, sets, reps, rest_seconds, sort_order) VALUES
-(4, 19, 2, 20, 45, 1), -- Squat Jumps
+(4, 19, 2, 20, 45, 1), -- Body Weight Squat
 (4, 20, 2, 20, 45, 2), -- Standing Glute Kickback
 (4, 21, 2, 20, 30, 3), -- Leg Curl
 (4, 22, 2, 20, 30, 4), -- Leg Extension
