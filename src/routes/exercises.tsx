@@ -65,7 +65,7 @@ function ExercisesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 pb-24 font-sans">
+    <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 pb-24 font-sans flex justify-center">
       {/* Header */}
       <div className="bg-white p-4 shadow-sm border-b sticky top-0 z-10 flex items-center gap-4 rounded-t-xl">
         <button
@@ -84,7 +84,7 @@ function ExercisesPage() {
         </button>
       </div>
 
-      <div className="p-4 max-w-2xl w-full mx-auto space-y-4">
+      <div className="p-4 max-w-2xl w-full space-y-4">
         {/* Add Exercise Form */}
         {showForm && (
           <form

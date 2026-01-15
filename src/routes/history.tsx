@@ -64,7 +64,7 @@ function HistoryPage() {
   }, [filteredLogs])
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 pb-24 font-sans">
+    <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 pb-24 font-sans flex justify-center">
       {/* Header */}
       <div className="bg-white p-4 shadow-sm border-b sticky top-0 z-10 flex items-center gap-4 rounded-t-xl">
         <button
@@ -76,7 +76,7 @@ function HistoryPage() {
         <h1 className="font-bold text-xl text-gray-900">Progress Tracker</h1>
       </div>
 
-      <div className="p-4 max-w-2xl w-full mx-auto space-y-6">
+      <div className="p-4 max-w-2xl w-full space-y-6">
         {/* Selector */}
         <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
           <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">
