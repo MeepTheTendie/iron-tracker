@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { supabase } from '../lib/supabase'
 import { HabitTracker } from '../components/HabitTracker'
 import { WorkoutCard } from '../components/WorkoutCard'
-import { TrendingUp } from 'lucide-react'
+import { TrendingUp, Dumbbell } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
   loader: async () => {
@@ -96,6 +96,27 @@ function Dashboard() {
 
         {/* Dynamic Workout Card */}
         <WorkoutCard workout={workout} />
+
+        {/* Exercise Library Button */}
+        <button
+          onClick={() => navigate({ to: '/exercises' })}
+          className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-200 active:scale-[0.98] transition-all group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-100 p-2.5 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+              <Dumbbell className="w-6 h-6" />
+            </div>
+            <div className="text-left">
+              <div className="font-bold text-gray-800 text-lg">
+                Exercise Library
+              </div>
+              <div className="text-xs text-gray-500 font-medium">
+                View and manage exercises
+              </div>
+            </div>
+          </div>
+          <div className="text-gray-300 font-bold text-xl pr-2">→</div>
+        </button>
       </div>
     </div>
   )
