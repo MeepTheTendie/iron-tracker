@@ -1,7 +1,16 @@
 import { Link, useLocation } from '@tanstack/react-router'
 
 import { useState } from 'react'
-import { Dumbbell, Flame, Home, Menu, Moon, Sun, TrendingUp, X } from 'lucide-react'
+import {
+  Dumbbell,
+  Flame,
+  Home,
+  Menu,
+  Moon,
+  Sun,
+  TrendingUp,
+  X,
+} from 'lucide-react'
 import { useDarkMode } from '../lib/useDarkMode'
 
 export default function Header() {
@@ -20,13 +29,14 @@ export default function Header() {
     return location.pathname.startsWith(path)
   }
 
-  const themeIcon = theme === 'dark' ? (
-    <Moon size={20} className="fill-yellow-300 text-yellow-300" />
-  ) : theme === 'system' ? (
-    <Sun size={20} className="text-orange-400" />
-  ) : (
-    <Sun size={20} className="text-yellow-400" />
-  )
+  const themeIcon =
+    theme === 'dark' ? (
+      <Moon size={20} className="fill-yellow-300 text-yellow-300" />
+    ) : theme === 'system' ? (
+      <Sun size={20} className="text-orange-400" />
+    ) : (
+      <Sun size={20} className="text-yellow-400" />
+    )
 
   return (
     <>
@@ -54,7 +64,7 @@ export default function Header() {
 
       {/* Side Navigation Drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-900 text-white-80 bg-gray shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 left-0 h-full w-72 bg-gray-900 text-gray-100 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         role="navigation"
@@ -115,7 +125,10 @@ export default function Header() {
       </aside>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40 safe-area-pb" aria-label="Bottom navigation">
+      <nav
+        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40 safe-area-pb"
+        aria-label="Bottom navigation"
+      >
         <div className="flex justify-around items-center h-16">
           {navItems.map((item) => {
             const active = isActive(item.to)

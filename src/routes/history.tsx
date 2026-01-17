@@ -14,7 +14,6 @@ import { supabase } from '../lib/supabase'
 
 export const Route = createFileRoute('/history')({
   loader: async () => {
-    // 1. Fetch all logs, ordered by date
     const { data: logs, error } = await supabase
       .from('workout_logs')
       .select('date, exercise_name, weight, reps')
@@ -22,7 +21,6 @@ export const Route = createFileRoute('/history')({
 
     if (error) throw error
 
-    // 2. Get unique list of exercises for the dropdown
     const exercises = Array.from(new Set(logs.map((l) => l.exercise_name)))
 
     return { logs, exercises }

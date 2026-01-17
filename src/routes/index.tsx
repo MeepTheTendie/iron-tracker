@@ -10,33 +10,33 @@ export const Route = createFileRoute('/')({
     const dateStr = today.toISOString().split('T')[0]
     const dayName = today.toLocaleDateString('en-US', { weekday: 'long' })
 
-    const { data: habits } = await supabase
-      .from('daily_habits')
-      .select('*')
-      .eq('date', dateStr)
-      .single()
-
-    const { data: workout, error } = await supabase
-      .from('workouts')
-      .select(
-        `
-        *,
-        workout_exercises (
-          id,
-          sets,
-          reps,
-          rest_seconds,
-          sort_order,
-          exercises (
-            name,
-            notes,
-            muscle_group
+    const [habitsResult, workoutResult] = await Promise.all([
+      supabase.from('daily_habits').select('*').eq('date', dateStr).single(),
+      supabase
+        .from('workouts')
+        .select(
+          `
+          *,
+          workout_exercises (
+            id,
+            sets,
+            reps,
+            rest_seconds,
+            sort_order,
+            exercises (
+              name,
+              notes,
+              muscle_group
+            )
           )
+        `,
         )
-      `,
-      )
-      .eq('day_of_week', dayName)
-      .single()
+        .eq('day_of_week', dayName)
+        .single(),
+    ])
+
+    const { data: habits } = habitsResult
+    const { data: workout, error } = workoutResult
 
     if (workout && workout.workout_exercises) {
       workout.workout_exercises.sort(

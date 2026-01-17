@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
 import { Check, Flame, Loader2, Trophy, Wifi, WifiOff } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { deletePendingHabit, getPendingHabits, savePendingHabit } from '../lib/offlineStorage'
+import {
+  deletePendingHabit,
+  getPendingHabits,
+  savePendingHabit,
+} from '../lib/offlineStorage'
 
 type HabitField = 'am_squats' | 'steps_7k' | 'bike_1hr' | 'pm_squats'
 
@@ -16,7 +20,9 @@ interface HabitProps {
 function HabitRow({ label, field, checked, isLoading }: HabitProps) {
   const handleClick = () => {
     if (!isLoading) {
-      document.dispatchEvent(new CustomEvent('toggle-habit', { detail: { field } }))
+      document.dispatchEvent(
+        new CustomEvent('toggle-habit', { detail: { field } }),
+      )
     }
   }
 
@@ -58,7 +64,9 @@ function HabitRow({ label, field, checked, isLoading }: HabitProps) {
         </span>
       </div>
       {checked && (
-        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Done</span>
+        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+          Done
+        </span>
       )}
     </button>
   )
@@ -126,7 +134,7 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
     if (pendingFields.has(field)) return
 
     const currentValue = habits?.[field] ?? false
-    setPendingFields(prev => new Set(prev).add(field))
+    setPendingFields((prev) => new Set(prev).add(field))
     setError(null)
 
     if ('vibrate' in navigator) navigator.vibrate(15)
@@ -135,12 +143,12 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
 
     if (!navigator.onLine) {
       await savePendingHabit({ date, field, value: newValue })
-      setPendingFields(prev => {
+      setPendingFields((prev) => {
         const next = new Set(prev)
         next.delete(field)
         return next
       })
-      setPendingCount(prev => prev + 1)
+      setPendingCount((prev) => prev + 1)
       if ('vibrate' in navigator) navigator.vibrate(30)
       return
     }
@@ -149,7 +157,7 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
       .from('daily_habits')
       .upsert({ date, [field]: newValue }, { onConflict: 'date' })
 
-    setPendingFields(prev => {
+    setPendingFields((prev) => {
       const next = new Set(prev)
       next.delete(field)
       return next
@@ -170,11 +178,14 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
       if (!habit.id) continue
       const { error: saveError } = await supabase
         .from('daily_habits')
-        .upsert({ date: habit.date, [habit.field]: habit.value }, { onConflict: 'date' })
+        .upsert(
+          { date: habit.date, [habit.field]: habit.value },
+          { onConflict: 'date' },
+        )
 
       if (!saveError) {
         await deletePendingHabit(habit.id)
-        setPendingCount(prev => Math.max(0, prev - 1))
+        setPendingCount((prev) => Math.max(0, prev - 1))
       }
     }
     router.invalidate()
@@ -187,12 +198,20 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
       }
     }
     document.addEventListener('sync-habits', handleSync)
-    return () => document.removeEventListener('sync-habits', handleSync)
-  }, [])
 
-  document.addEventListener('toggle-habit', ((e: CustomEvent<{ field: HabitField }>) => {
-    toggleHabit(e.detail.field)
-  }) as EventListener)
+    const handleToggle = (e: CustomEvent<{ field: HabitField }>) => {
+      toggleHabit(e.detail.field)
+    }
+    document.addEventListener('toggle-habit', handleToggle as EventListener)
+
+    return () => {
+      document.removeEventListener('sync-habits', handleSync)
+      document.removeEventListener(
+        'toggle-habit',
+        handleToggle as EventListener,
+      )
+    }
+  }, [])
 
   if (allCompleted) {
     return (
@@ -212,8 +231,13 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
     <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Flame className="w-5 h-5 text-orange-500 fill-orange-500" aria-hidden="true" />
-          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Daily Rituals</h2>
+          <Flame
+            className="w-5 h-5 text-orange-500 fill-orange-500"
+            aria-hidden="true"
+          />
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+            Daily Rituals
+          </h2>
         </div>
         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
           {completedCount}/{totalHabits}
@@ -221,13 +245,19 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
       </div>
 
       {error && (
-        <div className="mb-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm" role="alert">
+        <div
+          className="mb-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm"
+          role="alert"
+        >
           {error}
         </div>
       )}
 
       {!isOnline && (
-        <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-300 text-sm flex items-center gap-2" role="alert">
+        <div
+          className="mb-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-300 text-sm flex items-center gap-2"
+          role="alert"
+        >
           <WifiOff size={16} aria-hidden="true" />
           <span>You're offline. Changes will sync when connected.</span>
           {pendingCount > 0 && (
@@ -257,7 +287,11 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-3" role="list" aria-label="Habit checklist">
+      <div
+        className="grid grid-cols-1 gap-3"
+        role="list"
+        aria-label="Habit checklist"
+      >
         <HabitRow
           field="am_squats"
           label="15x AM Squats"
