@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { Dumbbell, TrendingUp } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { HabitTracker } from '../components/HabitTracker'
 import { WorkoutCard } from '../components/WorkoutCard'
-import { TrendingUp, Dumbbell } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
   loader: async () => {

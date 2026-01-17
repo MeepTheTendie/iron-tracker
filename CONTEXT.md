@@ -1,6 +1,6 @@
 # Iron Tracker - Persistent Project Context
 
-**Last Updated:** January 14, 2026 (after Supabase database setup)
+**Last Updated:** January 14, 2026 (after Japanese redesign attempt and revert)
 
 ## Quick Status Summary
 
@@ -89,6 +89,7 @@ All Supabase setup SQL is in `/supabase/` directory:
 - User prefers I ask questions when unclear
 - User appreciates mobile-first design
 - User will share credentials when needed for direct access
+- **IMPORTANT: Show design changes to user before committing**
 
 ## User Preferences Confirmed
 
@@ -114,12 +115,34 @@ All Supabase setup SQL is in `/supabase/` directory:
 - `src/routes/index.tsx` - Clean dashboard
 - `supabase/01-setup-workout-tables.sql` - Database schema
 
+**Redesign attempt (reverted):**
+
+- `src/components/BrushStrokes.tsx` - Created then deleted
+- `src/components/MiniMeep.tsx` - Created then deleted
+
 ## For Next Session
 
 1. Database is fully set up - no SQL needed
 2. App should display today's workout correctly
 3. If issues, check Vercel deployment and browser cache
 4. User may want to add step tracking integration later
+5. User prefers original design - AVOID major redesigns without explicit approval
+
+---
+
+## Session Notes (January 14, 2026)
+
+**Attempted:** Japanese-inspired redesign with:
+
+- Brush stroke decorations and SVG corner flourishes
+- Mini Meep mascot character with 5 animated variants
+- Fredoka One, Nunito, Space Mono fonts
+- Coral/cream/teal/gold color palette
+- Framer Motion animations throughout
+
+**Result:** Design didn't meet user expectations, reverted via Vercel instant rollback
+
+**User Preference Confirmed:** Original clean design preferred. Any design changes should be minimal and shown to user before committing.
 
 ---
 

@@ -1,16 +1,16 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { supabase } from '../lib/supabase'
 import { ArrowLeft, TrendingUp } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts'
+import { supabase } from '../lib/supabase'
 
 export const Route = createFileRoute('/history')({
   loader: async () => {
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/history')({
     if (error) throw error
 
     // 2. Get unique list of exercises for the dropdown
-    const exercises = Array.from(new Set(logs?.map((l) => l.exercise_name)))
+    const exercises = Array.from(new Set(logs.map((l) => l.exercise_name)))
 
     return { logs, exercises }
   },
@@ -41,7 +41,6 @@ function HistoryPage() {
 
   // 1. Filter the logs first (Available to the whole component now)
   const filteredLogs = useMemo(() => {
-    if (!logs) return []
     return logs.filter((l) => l.exercise_name === selectedExercise)
   }, [logs, selectedExercise])
 

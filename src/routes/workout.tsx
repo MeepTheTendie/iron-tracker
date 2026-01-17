@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { supabase } from '../lib/supabase'
-import { ArrowLeft, Save, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Save } from 'lucide-react'
 import { useState } from 'react'
+import { supabase } from '../lib/supabase'
 
 type WorkoutSearch = {
   workoutId?: number
@@ -79,6 +79,7 @@ function ExerciseLogger({ item }: { item: any }) {
 
     if (!error) {
       setSetsDone((prev) => prev + 1)
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (navigator.vibrate) navigator.vibrate(50)
     }
   }

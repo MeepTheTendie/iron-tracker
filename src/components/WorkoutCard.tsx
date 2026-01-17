@@ -1,4 +1,4 @@
-import { Dumbbell, Clock, Info } from 'lucide-react'
+import { Clock, Dumbbell, Info } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 
 // These types match what Supabase returns from our complicated join query
@@ -21,7 +21,7 @@ type WorkoutData = {
   name: string
   workout_type: string
   description: string | null
-  workout_exercises: WorkoutExercise[]
+  workout_exercises: Array<WorkoutExercise>
 }
 
 export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
