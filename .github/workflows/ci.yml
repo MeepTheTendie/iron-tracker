@@ -15,10 +15,12 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
-      - run: npm run lint --prefix iron-tracker
-      - run: npm run test --prefix iron-tracker
-      - run: npm run build --prefix iron-tracker
+      - working-directory: iron-tracker
+        run: |
+          npm ci
+          npm run lint
+          npm run test -- --run
+          npm run build
 
   deploy:
     needs: test
@@ -30,8 +32,10 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
-      - run: npm run build --prefix iron-tracker
+      - working-directory: iron-tracker
+        run: |
+          npm ci
+          npm run build
       - uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
