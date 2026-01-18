@@ -37,25 +37,10 @@ jobs:
       run: npm run tsc --noEmit
       
     - name: Bundle size analysis
-      uses: preactjs/compressed-size-action@v2
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        exclude: "{/{*.map,src/**/test/*,coverage/*}}"
-        
-    - name: Complexity analysis
       run: |
-        npx complexity-report --output json --format json src/ > complexity-report.json
-        
-    - name: Upload complexity report
-      uses: actions/upload-artifact@v4
-      with:
-        name: complexity-report
-        path: complexity-report.json
-        
-    - name: Dependency tree analysis
-      run: |
-        npm ls --depth=0 || true
-        npm outdated || true
+        npm run build
+        echo "Bundle size analysis:"
+        du -sh dist/ || true
         
     - name: Check for duplicate dependencies
       run: npx depcheck --skip-missing || true

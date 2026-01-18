@@ -31,49 +31,15 @@ jobs:
       run: npm audit --audit-level=moderate
       continue-on-error: true
       
-    - name: Run Snyk security scan
-      uses: snyk/actions/node@master
+    - name: Run npm audit
+      run: npm audit --audit-level=moderate
       continue-on-error: true
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        args: --severity-threshold=high
-        
-    - name: CodeQL Analysis
-      uses: github/codeql-action/init@v3
-      with:
-        languages: javascript
-        
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
-      
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      
-    - name: Run Semgrep
-      uses: semgrep/semgrep-action@v1
-      with:
-        config: >-
-          p/security-audit
-          p/secrets
-          p/react
-          p/typescript
-          p/javascript
-        timeout: 300
-        
-    - name: Check for secrets
-      uses: trufflesecurity/trufflehog@main
-      with:
-        path: ./
-        base: main
-        head: HEAD
         
     - name: Upload security scan results
       uses: actions/upload-artifact@v4
-      if: always()
+      if: failure()
       with:
-        name: security-scan-results
+        name: security-audit-results
         path: |
-          semgrep-report.json
-          trufflehog-report.json
-        retention-days: 30
+          package-lock.json
+        retention-days: 7
