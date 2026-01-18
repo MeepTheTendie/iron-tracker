@@ -230,7 +230,9 @@ class ErrorTracker {
 }
 
 // Create singleton instance
-export const errorTracker = new ErrorTracker();
+const errorTracker = new ErrorTracker();
+
+export { errorTracker };
 
 // React hook for easy usage
 export function useErrorTracker() {

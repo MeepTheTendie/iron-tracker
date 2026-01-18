@@ -5,7 +5,8 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
-import { ErrorBoundary, errorTracker } from './lib/error-tracking'
+import { ErrorBoundary } from './lib/error-tracking'
+import { errorTracker } from './lib/error-tracking'
 
 // Create a new router instance
 const router = createRouter({
