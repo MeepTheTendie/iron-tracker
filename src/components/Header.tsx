@@ -41,10 +41,10 @@ export default function Header() {
   return (
     <>
       {/* Top Header */}
-      <header className="w-full max-w-md mx-auto p-4 flex items-center justify-between bg-gray-900 text-white shadow-lg sticky top-0 z-40">
+      <header className="w-full max-w-md mx-auto p-4 flex items-center justify-between bg-rose-100 text-gray-800 shadow-sm border-b-2 border-rose-200 sticky top-0 z-40">
         <button
           onClick={() => setIsOpen(true)}
-          className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+          className="p-2 hover:bg-rose-200 rounded-lg transition-colors"
           aria-label="Open menu"
         >
           <Menu size={24} />
@@ -54,7 +54,7 @@ export default function Header() {
         </h1>
         <button
           onClick={toggleTheme}
-          className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+          className="p-2 hover:bg-rose-200 rounded-lg transition-colors"
           aria-label={`Current theme: ${theme}. Click to cycle through themes.`}
           title={`Theme: ${theme}`}
         >
@@ -62,19 +62,19 @@ export default function Header() {
         </button>
       </header>
 
-      {/* Side Navigation Drawer */}
+      {/* Side Navigation Drawer - Wes Anderson pastel */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-gray-900 text-gray-100 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 left-0 h-full w-72 bg-rose-50 text-gray-800 shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         role="navigation"
         aria-label="Main navigation"
       >
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold">Navigation</h2>
+        <div className="flex items-center justify-between p-4 border-b border-rose-200">
+          <h2 className="text-xl font-bold text-rose-800">Navigation</h2>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-rose-200 rounded-lg transition-colors"
             aria-label="Close menu"
           >
             <X size={24} />
@@ -88,7 +88,7 @@ export default function Header() {
               to={item.to}
               onClick={() => setIsOpen(false)}
               className={`flex items-center gap-3 p-3 rounded-lg transition-colors mb-2 ${
-                isActive(item.to) ? 'bg-emerald-600' : 'hover:bg-gray-800'
+                isActive(item.to) ? 'bg-rose-300 text-rose-900' : 'hover:bg-rose-200'
               }`}
               aria-current={isActive(item.to) ? 'page' : undefined}
             >
@@ -99,34 +99,34 @@ export default function Header() {
         </nav>
 
         {/* Theme Setting in Drawer */}
-        <div className="p-4 border-t border-gray-700">
+        <div className="p-4 border-t border-rose-200">
           <button
             onClick={toggleTheme}
-            className="flex items-center gap-3 p-3 w-full rounded-lg hover:bg-gray-800 transition-colors"
+            className="flex items-center gap-3 p-3 w-full rounded-lg hover:bg-rose-200 transition-colors"
           >
             {themeIcon}
             <div className="text-left">
               <div className="font-medium">Theme</div>
-              <div className="text-xs text-gray-400 capitalize">{theme}</div>
+              <div className="text-xs text-gray-500 capitalize">{theme}</div>
             </div>
           </button>
         </div>
 
         {/* User Stats in Drawer */}
-        <div className="p-4 border-t border-gray-700 bg-gray-800">
-          <div className="flex items-center gap-2 text-emerald-400">
-            <Flame size={20} className="fill-emerald-400" />
+        <div className="p-4 border-t border-rose-200 bg-rose-100">
+          <div className="flex items-center gap-2 text-rose-600">
+            <Flame size={20} className="fill-rose-400" />
             <span className="font-medium">Daily Rituals</span>
           </div>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Track your habits and progress
           </p>
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation Bar */}
+      {/* Mobile Bottom Navigation Bar - Pastel colors */}
       <nav
-        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40 safe-area-pb"
+        className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-100 shadow-lg z-40 safe-area-pb"
         aria-label="Bottom navigation"
       >
         <div className="flex justify-around items-center h-16">
@@ -136,10 +136,10 @@ export default function Header() {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-all ${
                   active
-                    ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                    ? 'text-rose-600 bg-rose-50'
+                    : 'text-gray-400 hover:text-gray-600'
                 }`}
                 aria-current={active ? 'page' : undefined}
               >
