@@ -1,72 +1,62 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, Dumbbell, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { convex } from '../lib/convex'
+import { api } from '../../convex/_generated/api'
 
 export const Route = createFileRoute('/exercises')({
   loader: async () => {
-    const { data: exercises } = await supabase
-      .from('exercises')
-      .select('*')
-      .order('name')
-
+    const exercises = await convex.query(api.exercises.list)
     return { exercises: exercises || [] }
   },
   component: ExercisesPage,
 })
 
 type Exercise = {
-  id: number
+  _id: any
   name: string
-  muscle_group: string | null
+  muscleGroup: string | null
   notes: string | null
 }
 
 function ExercisesPage() {
-  const { exercises } = Route.useLoaderData()
+  const { exercises } = Route.useLoaderData() as { exercises: Exercise[] }
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
-    muscle_group: '',
+    muscleGroup: '',
     notes: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!convex) return
     setIsSubmitting(true)
 
-    const { error } = await supabase.from('exercises').insert({
+    await convex.mutation(api.exercises.add, {
       name: formData.name,
-      muscle_group: formData.muscle_group || null,
-      notes: formData.notes || null,
+      muscleGroup: formData.muscleGroup || undefined,
+      notes: formData.notes || undefined,
     })
 
-    if (error) {
-      alert('Failed to add exercise: ' + error.message)
-    } else {
-      setFormData({ name: '', muscle_group: '', notes: '' })
-      setShowForm(false)
-      navigate({ to: '/exercises' }) // Refresh the page
-    }
+    setFormData({ name: '', muscleGroup: '', notes: '' })
+    setShowForm(false)
+    navigate({ to: '/exercises' })
     setIsSubmitting(false)
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: any) => {
     if (!confirm('Delete this exercise?')) return
+    if (!convex) return
 
-    const { error } = await supabase.from('exercises').delete().eq('id', id)
-    if (error) {
-      alert('Failed to delete: ' + error.message)
-    } else {
-      navigate({ to: '/exercises' }) // Refresh the page
-    }
+    await convex.mutation(api.exercises.remove, { id })
+    navigate({ to: '/exercises' })
   }
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 pb-24 font-sans flex justify-center">
-      {/* Header */}
       <div className="bg-white p-4 shadow-sm border-b sticky top-0 z-10 flex items-center gap-4 rounded-t-xl">
         <button
           onClick={() => navigate({ to: '/' })}
@@ -85,7 +75,6 @@ function ExercisesPage() {
       </div>
 
       <div className="p-4 max-w-2xl w-full space-y-4">
-        {/* Add Exercise Form */}
         {showForm && (
           <form
             onSubmit={handleSubmit}
@@ -115,9 +104,9 @@ function ExercisesPage() {
               </label>
               <input
                 type="text"
-                value={formData.muscle_group}
+                value={formData.muscleGroup}
                 onChange={(e) =>
-                  setFormData({ ...formData, muscle_group: e.target.value })
+                  setFormData({ ...formData, muscleGroup: e.target.value })
                 }
                 className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500"
                 placeholder="e.g., Back, Chest, Legs"
@@ -158,7 +147,6 @@ function ExercisesPage() {
           </form>
         )}
 
-        {/* Exercise List */}
         {exercises.length === 0 ? (
           <div className="text-center py-10 text-gray-500">
             No exercises yet. Add your first one!
@@ -166,7 +154,7 @@ function ExercisesPage() {
         ) : (
           exercises.map((exercise: Exercise) => (
             <div
-              key={exercise.id}
+              key={exercise._id}
               className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200"
             >
               <div className="flex items-start justify-between">
@@ -176,9 +164,9 @@ function ExercisesPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-800">{exercise.name}</h3>
-                    {exercise.muscle_group && (
+                    {exercise.muscleGroup && (
                       <span className="text-xs text-gray-500 uppercase tracking-wide">
-                        {exercise.muscle_group}
+                        {exercise.muscleGroup}
                       </span>
                     )}
                     {exercise.notes && (
@@ -189,7 +177,7 @@ function ExercisesPage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => handleDelete(exercise.id)}
+                  onClick={() => handleDelete(exercise._id)}
                   className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
                 >
                   <Trash2 className="w-4 h-4" />

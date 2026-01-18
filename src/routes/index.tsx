@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Dumbbell, TrendingUp } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { convex } from '../lib/convex'
+import { api } from '../../convex/_generated/api'
 import { HabitTracker } from '../components/HabitTracker'
 import { WorkoutCard } from '../components/WorkoutCard'
 import { WorkoutEmptyState } from '../components/EmptyState'
@@ -11,45 +12,21 @@ export const Route = createFileRoute('/')({
     const dateStr = today.toISOString().split('T')[0]
     const dayName = today.toLocaleDateString('en-US', { weekday: 'long' })
 
-    const [habitsResult, workoutResult] = await Promise.all([
-      supabase.from('daily_habits').select('*').eq('date', dateStr).single(),
-      supabase
-        .from('workouts')
-        .select(
-          `
-          *,
-          workout_exercises (
-            id,
-            sets,
-            reps,
-            rest_seconds,
-            sort_order,
-            exercises (
-              name,
-              notes,
-              muscle_group
-            )
-          )
-        `,
-        )
-        .eq('day_of_week', dayName)
-        .single(),
-    ])
-
-    const { data: habits } = habitsResult
-    const { data: workout, error } = workoutResult
-
-    if (workout && workout.workout_exercises) {
-      workout.workout_exercises.sort(
-        (a: any, b: any) => a.sort_order - b.sort_order,
-      )
+    if (!convex) {
+      return { habits: null, workout: null, dateStr, dayName }
     }
 
-    if (error && error.code !== 'PGRST116') {
-      console.error(error)
-    }
+    try {
+      const [habits, workout] = await Promise.all([
+        convex.query(api.dailyHabits.getTodayHabits, { date: dateStr }),
+        convex.query(api.workouts.getTodayWorkout, { dayOfWeek: dayName }),
+      ])
 
-    return { habits, workout, dateStr, dayName }
+      return { habits, workout, dateStr, dayName }
+    } catch (error) {
+      console.error('Failed to load data:', error)
+      return { habits: null, workout: null, dateStr, dayName }
+    }
   },
   component: Dashboard,
 })

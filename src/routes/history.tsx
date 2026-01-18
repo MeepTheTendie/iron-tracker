@@ -10,39 +10,31 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { supabase } from '../lib/supabase'
+import { convex } from '../lib/convex'
+import { api } from '../../convex/_generated/api'
 
 export const Route = createFileRoute('/history')({
   loader: async () => {
-    const { data: logs, error } = await supabase
-      .from('workout_logs')
-      .select('date, exercise_name, weight, reps')
-      .order('date', { ascending: true })
-
-    if (error) throw error
-
-    const exercises = Array.from(new Set(logs.map((l) => l.exercise_name)))
-
+    if (!convex) return { logs: [], exercises: [] }
+    const logs = await convex.query(api.workoutLogs.getWorkoutLogs)
+    const exercises = Array.from(new Set(logs.map((l: any) => l.exerciseName)))
     return { logs, exercises }
   },
   component: HistoryPage,
 })
 
 function HistoryPage() {
-  const { logs, exercises } = Route.useLoaderData()
+  const { logs, exercises } = Route.useLoaderData() as { logs: any[], exercises: string[] }
   const navigate = useNavigate()
 
-  // Default to Leg Press if it exists, otherwise the first one
   const [selectedExercise, setSelectedExercise] = useState(
     exercises.find((e) => e.includes('Leg Press')) || exercises[0] || '',
   )
 
-  // 1. Filter the logs first (Available to the whole component now)
   const filteredLogs = useMemo(() => {
-    return logs.filter((l) => l.exercise_name === selectedExercise)
+    return logs.filter((l) => l.exerciseName === selectedExercise)
   }, [logs, selectedExercise])
 
-  // 2. Process data for the chart (Find max weight per day)
   const chartData = useMemo(() => {
     const dailyMax = filteredLogs.reduce((acc: any, curr) => {
       const existing = acc.find((item: any) => item.date === curr.date)
@@ -56,13 +48,11 @@ function HistoryPage() {
       }
       return acc
     }, [])
-
     return dailyMax
   }, [filteredLogs])
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 pb-24 font-sans flex justify-center">
-      {/* Header */}
       <div className="bg-white p-4 shadow-sm border-b sticky top-0 z-10 flex items-center gap-4 rounded-t-xl">
         <button
           onClick={() => navigate({ to: '/' })}
@@ -74,7 +64,6 @@ function HistoryPage() {
       </div>
 
       <div className="p-4 max-w-2xl w-full space-y-6">
-        {/* Selector */}
         <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
           <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">
             Select Exercise
@@ -92,7 +81,6 @@ function HistoryPage() {
           </select>
         </div>
 
-        {/* The Chart */}
         <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 h-80">
           <div className="flex items-center gap-2 mb-6">
             <TrendingUp className="w-5 h-5 text-emerald-600" />
@@ -110,7 +98,7 @@ function HistoryPage() {
                 <XAxis
                   dataKey="date"
                   tick={{ fontSize: 12 }}
-                  tickFormatter={(str) => str.slice(5)} // Show "01-12" instead of "2026-01-12"
+                  tickFormatter={(str) => str.slice(5)}
                   stroke="#9ca3af"
                 />
                 <YAxis
@@ -149,7 +137,6 @@ function HistoryPage() {
           )}
         </div>
 
-        {/* Stats Summary */}
         {chartData.length > 0 && (
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">

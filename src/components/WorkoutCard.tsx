@@ -3,23 +3,23 @@ import { useNavigate } from '@tanstack/react-router'
 
 type ExerciseNode = {
   name: string
-  muscle_group: string | null
+  muscleGroup: string | null
   notes: string | null
 }
 
 type WorkoutExercise = {
-  id: number
+  _id: any
   sets: number
   reps: number
-  rest_seconds: number | null
+  restSeconds: number | null
   exercises: ExerciseNode
 }
 
 type WorkoutData = {
-  id: number
+  _id: any
   name: string
-  workout_type: string
-  description: string | null
+  workoutType: string
+  description: string | null | undefined
   workout_exercises: Array<WorkoutExercise>
 }
 
@@ -54,7 +54,6 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden">
-      {/* Colorful Header - Wes Anderson style flat colors */}
       <div className="bg-amber-100 p-5">
         <div className="flex items-center gap-2 mb-2 text-amber-700 text-sm font-medium uppercase tracking-wider">
           <Dumbbell className="w-4 h-4" />
@@ -66,11 +65,10 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
         )}
       </div>
 
-      {/* Exercise List */}
-      <div className="divide-y divide-gray-100">
-        {workout.workout_exercises.map((item, index) => (
+      <div className="divide-y divide-gray-50">
+        {workout.workout_exercises?.map((item, index) => (
           <div
-            key={item.id}
+            key={item._id}
             className="p-4 flex flex-col gap-2"
           >
             <div className="flex justify-between items-start">
@@ -79,7 +77,7 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
                   {index + 1}
                 </span>
                 <h3 className="font-bold text-gray-800 text-lg">
-                  {item.exercises.name}
+                  {item.exercises?.name}
                 </h3>
               </div>
               <div className="bg-gray-100 px-3 py-1.5 rounded-lg">
@@ -89,20 +87,18 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
               </div>
             </div>
 
-            {/* Muscle Group */}
-            {item.exercises.muscle_group && (
+            {item.exercises?.muscleGroup && (
               <div className="flex items-center gap-2 ml-11">
                 <span className="text-xs px-2.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full uppercase tracking-wide">
-                  {item.exercises.muscle_group}
+                  {item.exercises.muscleGroup}
                 </span>
-                {item.rest_seconds && (
-                  <span className="text-xs text-gray-400">{item.rest_seconds}s rest</span>
+                {item.restSeconds && (
+                  <span className="text-xs text-gray-400">{item.restSeconds}s rest</span>
                 )}
               </div>
             )}
 
-            {/* Notes Section */}
-            {item.exercises.notes && (
+            {item.exercises?.notes && (
               <div className="flex items-start gap-2 text-xs text-amber-700 bg-amber-50 p-2.5 rounded-lg ml-11 mt-1">
                 <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                 <span>{item.exercises.notes}</span>
@@ -112,13 +108,12 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
         ))}
       </div>
 
-      {/* Footer Action */}
       <div className="p-4 bg-gray-50">
         <button
           onClick={() =>
             navigate({
               to: '/workout',
-              search: { workoutId: workout.id, workoutName: workout.name },
+              search: { workoutId: workout._id, workoutName: workout.name },
             })
           }
           className="w-full bg-emerald-400 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-500 active:scale-[0.98] transition-all"

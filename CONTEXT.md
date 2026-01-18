@@ -1,14 +1,14 @@
 # Iron Tracker - Persistent Project Context
 
-**Last Updated:** January 18, 2026 (CI/CD simplified, Vercel auto-deploy configured)
+**Last Updated:** January 18, 2026 - Migrated to Convex!
 
 ---
 
 ## Quick Status Summary
 
 ✅ **Domain:** https://myworkouttracker.xyz (live)  
-✅ **Database:** 4 workouts, 24 exercises, 24 links loaded  
-✅ **Stack:** React 19, Vite, TanStack Router, Supabase, Tailwind CSS 4  
+✅ **Database:** Convex (migrated from Supabase!)  
+✅ **Stack:** React 19, Vite, TanStack Router, Convex, Tailwind CSS 4  
 ✅ **Deployment:** Vercel auto-deploys from GitHub (no CI workflow needed)
 
 ## User Profile
@@ -29,60 +29,61 @@
 
 **Feature:** When all 4 completed → Show celebration card ("All Rituals Complete!") instead of list.
 
-## Workout Schedule (8-Week Beginner Fat Loss Program)
-
-| Day       | Workout      | Focus                                     | Exercises   |
-| --------- | ------------ | ----------------------------------------- | ----------- |
-| Monday    | Upper Body A | Chest, Shoulders, Arms (Dumbbell-focused) | 6 exercises |
-| Wednesday | Lower Body A | Quads, Glutes, Hamstrings (Squat/Hinge)   | 6 exercises |
-| Friday    | Upper Body B | Back, Rear Delts, Core (Row/Fly-focused)  | 6 exercises |
-| Saturday  | Lower Body B | Glutes, Calves (Explosive/Isolation)      | 6 exercises |
-
-## Database Schema (Supabase)
+## Database (Convex)
 
 **Tables:**
-
-- `exercises` - 24 rows (reference data)
+- `dailyHabits` - Tracks habit completion by date
 - `workouts` - 4 rows (schedule)
-- `workout_exercises` - 24 rows (links exercises to workouts)
-- `workout_logs` - Tracks completed sets with weight/reps
-- `daily_habits` - Tracks habit completion by date
+- `exercises` - 24 rows (reference data)
+- `workoutExercises` - 24 rows (links exercises to workouts)
 
-**RLS Policies:** All tables have `USING (true)` for anon key access (no auth yet).
+## Setup Instructions
 
-## Supabase Project
+### First Time Setup
+```bash
+cd iron-tracker
+npx convex dev
+```
+This will:
+1. Create a Convex project
+2. Update .env.local with VITE_CONVEX_URL
+3. Auto-create tables from schema.ts
+4. Seed the database with workouts and exercises
 
-- **Project ID:** ibgkdujzzovcvyrfibjl
-- **URL:** https://ibgkdujzzovcvyrfibjl.supabase.co
-- **Anon Key:** Stored in Vercel environment variables
-- **Service Role Key:** Available in conversation context (for CLI)
+### Environment Variables
+After running `npx convex dev`, your .env.local will have:
+```
+VITE_CONVEX_URL=https://<project-name>.convex.cloud
+```
+
+## Migration from Supabase (January 18, 2026)
+
+- Migrated from Supabase to Convex for simpler DX
+- No RLS policies needed
+- No SQL migrations
+- Functions + tables defined in TypeScript
+- Same backend as Toku Tracker
 
 ## Important Notes
 
 ### Authentication
 
 - No user authentication yet (data is per-device/browser)
-- User uses GitHub OAuth for Supabase dashboard login
-- Service role key available but Supabase CLI doesn't support GitHub OAuth flow
+- User uses GitHub OAuth for Convex dashboard login (if needed)
 
-### Environment Variables (Vercel)
+### Setup Commands
 
+```bash
+# Set up Convex (first time)
+cd iron-tracker
+npx convex dev
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
 ```
-VITE_SUPABASE_URL=https://ibgkdujzzovcvyrfibjl.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
-
-### Known Issues / Gotchas
-
-1. Supabase dashboard requires GitHub OAuth - can't use CLI directly
-2. Daily habits table created with upsert on date conflict
-3. Workout logs need daily date field populated on insert
-
-## SQL Files Location
-
-All Supabase setup SQL is in `/supabase/` directory:
-
-- `01-setup-workout-tables.sql` - Main database setup (ready to run)
 
 ## Communication Style
 
@@ -102,58 +103,23 @@ All Supabase setup SQL is in `/supabase/` directory:
 ✅ Adequate bottom padding (pb-24 for nav bar)
 ✅ 7k steps goal (not 10k)
 ✅ Celebration card when all habits complete
-
-## User Declined (For Now)
-
-❌ Progress photos
-❌ Meal tracking
-❌ User authentication
-❌ Social features
+✅ Wes Anderson aesthetic (pastel colors, clean minimalism)
+✅ ALL IN ON CONVEX (no more Supabase!)
 
 ## Files Modified (Recent)
 
-- `src/components/Header.tsx` - Mobile bottom nav
-- `src/components/HabitTracker.tsx` - Completion celebration
-- `src/routes/index.tsx` - Clean dashboard
-- `supabase/01-setup-workout-tables.sql` - Database schema
-- `.github/workflows/` - Removed CI workflow, Vercel auto-deploys
-
-**January 18, 2026 - CI/CD Simplification:**
-
-- Removed `.github/workflows/ci.yml` - Vercel auto-deploys from repository settings
-- No local CI testing needed - Vercel handles deployment automatically
-- Simpler workflow: push code → Vercel deploys
-
-**PERMANENT RULE (Jan 18, 2026): NO GitHub Actions - use Vercel auto-deploy only**
-
-**Redesign attempt (reverted):**
-
-- `src/components/BrushStrokes.tsx` - Created then deleted
-- `src/components/MiniMeep.tsx` - Created then deleted
-
-## For Next Session
-
-1. Database is fully set up - no SQL needed
-2. App should display today's workout correctly
-3. If issues, check Vercel deployment and browser cache
-4. User may want to add step tracking integration later
-5. User prefers original design - AVOID major redesigns without explicit approval
+- `src/lib/convex.ts` - Convex client setup
+- `convex/schema.ts` - Database schema
+- `convex/dailyHabits.ts` - Habits queries/mutations
+- `convex/workouts.ts` - Workout queries
+- `src/routes/index.tsx` - Uses Convex instead of Supabase
+- `src/components/HabitTracker.tsx` - Uses Convex
+- `src/components/WorkoutCard.tsx` - Uses Convex data format
+- `.env` - Updated for Convex
 
 ---
 
-## Session Notes (January 14, 2026)
-
-**Attempted:** Japanese-inspired redesign with:
-
-- Brush stroke decorations and SVG corner flourishes
-- Mini Meep mascot character with 5 animated variants
-- Fredoka One, Nunito, Space Mono fonts
-- Coral/cream/teal/gold color palette
-- Framer Motion animations throughout
-
-**Result:** Design didn't meet user expectations, reverted via Vercel instant rollback
-
-**User Preference Confirmed:** Original clean design preferred. Any design changes should be minimal and shown to user before committing.
+**PERMANENT RULE (Jan 18, 2026): NO Supabase - use Convex only**
 
 ---
 

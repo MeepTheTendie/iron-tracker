@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, CheckCircle2, Save } from 'lucide-react'
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { convex } from '../lib/convex'
+import { api } from '../../convex/_generated/api'
 
 type WorkoutSearch = {
-  workoutId?: number
+  workoutId?: string
   workoutName?: string
 }
 
@@ -13,7 +14,7 @@ export const Route = createFileRoute('/workout')({
     search: Record<string, unknown> | undefined,
   ): WorkoutSearch => {
     return {
-      workoutId: (search?.workoutId as number) || undefined,
+      workoutId: (search?.workoutId as string) || undefined,
       workoutName: (search?.workoutName as string) || 'Freestyle',
     }
   },
@@ -25,37 +26,13 @@ export const Route = createFileRoute('/workout')({
 
   loader: async ({ deps }) => {
     if (deps.workoutId) {
-      const { data: workout } = await supabase
-        .from('workouts')
-        .select(
-          `
-          *,
-          workout_exercises (
-            id,
-            sets,
-            reps,
-            rest_seconds,
-            sort_order,
-            exercises (
-              name,
-              notes,
-              muscle_group
-            )
-          )
-        `,
-        )
-        .eq('id', deps.workoutId)
-        .single()
-
-      if (workout?.workout_exercises) {
-        workout.workout_exercises.sort(
-          (a: any, b: any) => a.sort_order - b.sort_order,
-        )
-      }
-
+      if (!convex) return { workout: null }
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' })
+      const workout = await convex.query(api.workouts.getTodayWorkout, {
+        dayOfWeek: today,
+      })
       return { workout }
     }
-
     return { workout: null }
   },
   component: WorkoutSession,
@@ -68,20 +45,18 @@ function ExerciseLogger({ item }: { item: any }) {
 
   const logSet = async () => {
     if (!weight || !reps) return
+    if (!convex) return
 
     const today = new Date().toISOString().split('T')[0]
-    const { error } = await supabase.from('workout_logs').insert({
+    await convex.mutation(api.workoutLogs.insert, {
       date: today,
-      exercise_name: item.exercises.name,
+      exerciseName: item.exercises.name,
       weight: parseFloat(weight),
       reps: parseInt(reps),
     })
 
-    if (!error) {
-      setSetsDone((prev) => prev + 1)
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (navigator.vibrate) navigator.vibrate(50)
-    }
+    setSetsDone((prev) => prev + 1)
+    if (navigator.vibrate) navigator.vibrate(50)
   }
 
   return (
@@ -89,9 +64,9 @@ function ExerciseLogger({ item }: { item: any }) {
       <div className="flex justify-between items-start mb-3">
         <div>
           <h3 className="font-bold text-gray-800 text-lg">
-            {item.exercises.name}
+            {item.exercises?.name || 'Exercise'}
           </h3>
-          {item.exercises.notes && (
+          {item.exercises?.notes && (
             <p className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded inline-block mt-1">
               {item.exercises.notes}
             </p>
@@ -150,7 +125,7 @@ function ExerciseLogger({ item }: { item: any }) {
 }
 
 function WorkoutSession() {
-  const { workout } = Route.useLoaderData()
+  const { workout } = Route.useLoaderData() as { workout: any }
   const navigate = useNavigate()
 
   return (
@@ -172,7 +147,7 @@ function WorkoutSession() {
 
       <div className="p-4">
         {workout?.workout_exercises?.map((item: any) => (
-          <ExerciseLogger key={item.id} item={item} />
+          <ExerciseLogger key={item._id} item={item} />
         ))}
 
         {!workout && (

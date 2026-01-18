@@ -1,20 +1,46 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
-import { Check, Flame, Loader2, Trophy, Wifi, WifiOff } from 'lucide-react'
-import { supabase } from '../lib/supabase'
-import {
-  deletePendingHabit,
-  getPendingHabits,
-  savePendingHabit,
-} from '../lib/offlineStorage'
+import { Check, Flame, Loader2, Trophy, WifiOff } from 'lucide-react'
+import { convex } from '../lib/convex'
+import { api } from '../../convex/_generated/api'
 
-type HabitField = 'am_squats' | 'steps_7k' | 'bike_1hr' | 'pm_squats'
+type HabitField = 'amSquats' | 'steps7k' | 'bike1hr' | 'pmSquats'
 
 interface HabitProps {
   label: string
   field: HabitField
   checked: boolean
   isLoading: boolean
+}
+
+interface HabitsData {
+  _id: string
+  _creationTime: number
+  date: string
+  amSquats: boolean
+  steps7k: boolean
+  bike1hr: boolean
+  pmSquats: boolean
+}
+
+function areAllHabitsCompleted(habits: HabitsData | null): boolean {
+  if (!habits) return false
+  return (
+    habits.amSquats === true &&
+    habits.steps7k === true &&
+    habits.bike1hr === true &&
+    habits.pmSquats === true
+  )
+}
+
+function getCompletedCount(habits: HabitsData | null): number {
+  if (!habits) return 0
+  let count = 0
+  if (habits.amSquats) count++
+  if (habits.steps7k) count++
+  if (habits.bike1hr) count++
+  if (habits.pmSquats) count++
+  return count
 }
 
 function HabitRow({ label, field, checked, isLoading }: HabitProps) {
@@ -72,41 +98,11 @@ function HabitRow({ label, field, checked, isLoading }: HabitProps) {
   )
 }
 
-interface Habits {
-  am_squats: boolean | null
-  steps_7k: boolean | null
-  bike_1hr: boolean | null
-  pm_squats: boolean | null
-}
-
-type HabitsOrNull = Habits | null
-
-function areAllHabitsCompleted(habits: HabitsOrNull): boolean {
-  if (!habits) return false
-  return (
-    habits.am_squats === true &&
-    habits.steps_7k === true &&
-    habits.bike_1hr === true &&
-    habits.pm_squats === true
-  )
-}
-
-function getCompletedCount(habits: HabitsOrNull): number {
-  if (!habits) return 0
-  let count = 0
-  if (habits.am_squats === true) count++
-  if (habits.steps_7k === true) count++
-  if (habits.bike_1hr === true) count++
-  if (habits.pm_squats === true) count++
-  return count
-}
-
 export function HabitTracker({ habits, date }: { habits: any; date: string }) {
   const router = useRouter()
   const [pendingFields, setPendingFields] = useState<Set<HabitField>>(new Set())
   const [error, setError] = useState<string | null>(null)
   const [isOnline, setIsOnline] = useState(true)
-  const [pendingCount, setPendingCount] = useState(0)
 
   useEffect(() => {
     setIsOnline(navigator.onLine)
@@ -119,12 +115,6 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
       window.removeEventListener('offline', handleOffline)
     }
   }, [])
-
-  useEffect(() => {
-    getPendingHabits().then((pending) => {
-      setPendingCount(pending.length)
-    })
-  }, [pendingFields])
 
   const allCompleted = areAllHabitsCompleted(habits)
   const completedCount = getCompletedCount(habits)
@@ -141,75 +131,44 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
 
     const newValue = !currentValue
 
-    if (!navigator.onLine) {
-      await savePendingHabit({ date, field, value: newValue })
+    if (!convex) {
+      setError('Convex not connected')
       setPendingFields((prev) => {
         const next = new Set(prev)
         next.delete(field)
         return next
       })
-      setPendingCount((prev) => prev + 1)
-      if ('vibrate' in navigator) navigator.vibrate(30)
       return
     }
 
-    const { error: saveError } = await supabase
-      .from('daily_habits')
-      .upsert({ date, [field]: newValue }, { onConflict: 'date' })
-
-    setPendingFields((prev) => {
-      const next = new Set(prev)
-      next.delete(field)
-      return next
-    })
-
-    if (saveError) {
-      setError('Failed to save. Tap to retry.')
-      console.error('Habit toggle error:', saveError)
-    } else {
+    try {
+      await convex.mutation(api.dailyHabits.toggleHabit, {
+        date,
+        field,
+        value: newValue,
+      })
       router.invalidate()
       if ('vibrate' in navigator) navigator.vibrate(30)
+    } catch (err) {
+      setError('Failed to save. Tap to retry.')
+      console.error('Habit toggle error:', err)
+    } finally {
+      setPendingFields((prev) => {
+        const next = new Set(prev)
+        next.delete(field)
+        return next
+      })
     }
-  }
-
-  const syncOfflineHabits = async () => {
-    const pending = await getPendingHabits()
-    for (const habit of pending) {
-      if (!habit.id) continue
-      const { error: saveError } = await supabase
-        .from('daily_habits')
-        .upsert(
-          { date: habit.date, [habit.field]: habit.value },
-          { onConflict: 'date' },
-        )
-
-      if (!saveError) {
-        await deletePendingHabit(habit.id)
-        setPendingCount((prev) => Math.max(0, prev - 1))
-      }
-    }
-    router.invalidate()
   }
 
   useEffect(() => {
-    const handleSync = async () => {
-      if (navigator.onLine) {
-        await syncOfflineHabits()
-      }
-    }
-    document.addEventListener('sync-habits', handleSync)
-
     const handleToggle = (e: CustomEvent<{ field: HabitField }>) => {
       toggleHabit(e.detail.field)
     }
     document.addEventListener('toggle-habit', handleToggle as EventListener)
 
     return () => {
-      document.removeEventListener('sync-habits', handleSync)
-      document.removeEventListener(
-        'toggle-habit',
-        handleToggle as EventListener,
-      )
+      document.removeEventListener('toggle-habit', handleToggle as EventListener)
     }
   }, [])
 
@@ -248,10 +207,7 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
 
       {error && (
         <div className="px-4 pt-3">
-          <div
-            className="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-            role="alert"
-          >
+          <div className="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" role="alert">
             {error}
           </div>
         </div>
@@ -259,24 +215,9 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
 
       {!isOnline && (
         <div className="px-4 pt-2">
-          <div
-            className="mb-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2"
-            role="alert"
-          >
+          <div className="mb-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2" role="alert">
             <WifiOff size={16} aria-hidden="true" />
-            <span>Offline - changes sync when connected</span>
-            {pendingCount > 0 && (
-              <span className="font-medium">({pendingCount} pending)</span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {isOnline && pendingCount > 0 && (
-        <div className="px-4 pt-2">
-          <div className="mb-2 p-3 bg-sky-50 border border-sky-200 rounded-lg text-sky-700 text-sm flex items-center gap-2">
-            <Wifi size={16} aria-hidden="true" />
-            <span>{pendingCount} offline changes pending</span>
+            <span>Offline - changes will sync when connected</span>
           </div>
         </div>
       )}
@@ -296,34 +237,30 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
           />
         </div>
 
-        <div
-          className="grid grid-cols-1 gap-2"
-          role="list"
-          aria-label="Habit checklist"
-        >
+        <div className="grid grid-cols-1 gap-2" role="list" aria-label="Habit checklist">
           <HabitRow
-            field="am_squats"
+            field="amSquats"
             label="15x AM Squats"
-            checked={habits?.am_squats || false}
-            isLoading={pendingFields.has('am_squats')}
+            checked={habits?.amSquats || false}
+            isLoading={pendingFields.has('amSquats')}
           />
           <HabitRow
-            field="steps_7k"
+            field="steps7k"
             label="7k Steps"
-            checked={habits?.steps_7k || false}
-            isLoading={pendingFields.has('steps_7k')}
+            checked={habits?.steps7k || false}
+            isLoading={pendingFields.has('steps7k')}
           />
           <HabitRow
-            field="bike_1hr"
+            field="bike1hr"
             label="1 Hour Bike"
-            checked={habits?.bike_1hr || false}
-            isLoading={pendingFields.has('bike_1hr')}
+            checked={habits?.bike1hr || false}
+            isLoading={pendingFields.has('bike1hr')}
           />
           <HabitRow
-            field="pm_squats"
+            field="pmSquats"
             label="15x PM Squats"
-            checked={habits?.pm_squats || false}
-            isLoading={pendingFields.has('pm_squats')}
+            checked={habits?.pmSquats || false}
+            isLoading={pendingFields.has('pmSquats')}
           />
         </div>
       </div>
