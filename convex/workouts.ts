@@ -1,5 +1,5 @@
-import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { query } from "./_generated/server";
 
 export const getTodayWorkout = query({
   args: { dayOfWeek: v.string() },
@@ -11,13 +11,11 @@ export const getTodayWorkout = query({
 
     if (!workout) return null;
 
-    // Get exercises for this workout
     const workoutExercises = await ctx.db
       .query("workoutExercises")
       .withIndex("by_workout", (q) => q.eq("workoutId", workout._id))
       .collect();
 
-    // Get exercise details
     const exercisesWithDetails = await Promise.all(
       workoutExercises.map(async (we) => {
         const exercise = await ctx.db.get(we.exerciseId);
