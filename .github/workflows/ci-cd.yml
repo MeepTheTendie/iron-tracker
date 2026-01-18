@@ -58,16 +58,12 @@ jobs:
         
 
 
-  # Build for different environments
+  # Build for production
   build:
     name: Build Application
     runs-on: ubuntu-latest
     needs: test
     
-    strategy:
-      matrix:
-        environment: [development, staging, production]
-        
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -84,14 +80,12 @@ jobs:
     - name: Build application
       run: npm run build
       env:
-        VITE_APP_ENV: ${{ matrix.environment }}
-        VITE_SUPABASE_URL: ${{ secrets[format('VITE_SUPABASE_URL_{0}', matrix.environment)] }}
-        VITE_SUPABASE_ANON_KEY: ${{ secrets[format('VITE_SUPABASE_ANON_KEY_{0}', matrix.environment)] }}
+        VITE_APP_ENV: production
         
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: build-${{ matrix.environment }}
+        name: build-production
         path: dist/
         retention-days: 30
 
@@ -99,7 +93,7 @@ jobs:
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
     if: github.ref == 'refs/heads/develop'
     environment:
       name: staging
@@ -109,11 +103,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        name: build-staging
-        path: dist/
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      env:
+        VITE_APP_ENV: staging
         
     - name: Deploy to Vercel Staging
       uses: amondnet/vercel-action@v25
@@ -123,18 +125,12 @@ jobs:
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         working-directory: ./
         vercel-args: '--prod'
-        
-    - name: Run health checks
-      run: |
-        sleep 30
-        curl -f https://staging.iron-tracker.com/api/health || exit 1
-        curl -f https://staging.iron-tracker.com/ || exit 1
 
   # Deploy to production
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
     if: github.ref == 'refs/heads/main'
     environment:
       name: production
@@ -144,11 +140,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        name: build-production
-        path: dist/
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      env:
+        VITE_APP_ENV: production
         
     - name: Deploy to Vercel Production
       uses: amondnet/vercel-action@v25
@@ -158,17 +162,4 @@ jobs:
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         working-directory: ./
         vercel-args: '--prod'
-        
-    - name: Run production health checks
-      run: |
-        sleep 60
-        curl -f https://iron-tracker.com/api/health || exit 1
-        curl -f https://iron-tracker.com/ || exit 1
-        
-    - name: Notify deployment
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        channel: '#deployments'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 

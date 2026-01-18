@@ -34,12 +34,3 @@ jobs:
     - name: Run npm audit
       run: npm audit --audit-level=moderate
       continue-on-error: true
-        
-    - name: Upload security scan results
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: security-audit-results
-        path: |
-          package-lock.json
-        retention-days: 7

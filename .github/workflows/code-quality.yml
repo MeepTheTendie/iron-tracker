@@ -36,11 +36,5 @@ jobs:
     - name: Run TypeScript compiler
       run: npm run tsc --noEmit
       
-    - name: Bundle size analysis
-      run: |
-        npm run build
-        echo "Bundle size analysis:"
-        du -sh dist/ || true
+
         
-    - name: Check for duplicate dependencies
-      run: npx depcheck --skip-missing || true
