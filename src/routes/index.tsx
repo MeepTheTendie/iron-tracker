@@ -3,8 +3,7 @@ import { Dumbbell, TrendingUp } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { HabitTracker } from '../components/HabitTracker'
 import { WorkoutCard } from '../components/WorkoutCard'
-import { HabitsEmptyState, WorkoutEmptyState } from '../components/EmptyState'
-import { useState } from 'react'
+import { WorkoutEmptyState } from '../components/EmptyState'
 
 export const Route = createFileRoute('/')({
   loader: async () => {
@@ -58,7 +57,6 @@ export const Route = createFileRoute('/')({
 function Dashboard() {
   const { habits, workout, dateStr, dayName } = Route.useLoaderData()
   const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 font-sans pb-24 flex justify-center">
@@ -68,21 +66,8 @@ function Dashboard() {
           {dayName}, {dateStr}
         </p>
 
-        {/* Habit Tracker with Loading State */}
-        {habits ? (
-          <HabitTracker habits={habits} date={dateStr} />
-        ) : isLoading ? (
-          <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 p-5">
-            <div className="h-6 w-32 bg-gray-100 rounded animate-pulse mb-4" />
-            <div className="grid grid-cols-7 gap-2">
-              {Array.from({ length: 7 }).map((_, i) => (
-                <div key={i} className="aspect-square rounded-lg bg-gray-100 animate-pulse" />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <HabitsEmptyState onAdd={() => setIsLoading(true)} />
-        )}
+        {/* Habit Tracker - Always show daily minimums */}
+        <HabitTracker habits={habits} date={dateStr} />
 
         {/* History Button - Wes Anderson Style */}
         <button

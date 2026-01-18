@@ -31,11 +31,11 @@ function HabitRow({ label, field, checked, isLoading }: HabitProps) {
       onClick={handleClick}
       disabled={isLoading}
       className={`
-        w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-200
+        w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all duration-200
         ${
           checked
-            ? 'bg-emerald-100 dark:bg-emerald-900/30 border-emerald-300 dark:border-emerald-700 shadow-sm'
-            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-emerald-200 dark:hover:border-emerald-700 active:scale-[0.99]'
+            ? 'bg-rose-100 border-rose-300'
+            : 'bg-white border-gray-200 hover:border-rose-200'
         }
         ${isLoading ? 'opacity-60 cursor-wait' : ''}
       `}
@@ -45,26 +45,26 @@ function HabitRow({ label, field, checked, isLoading }: HabitProps) {
       <div className="flex items-center gap-3">
         <div
           className={`
-          w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors
-          ${checked ? 'bg-emerald-500 border-emerald-500' : 'border-gray-300 dark:border-gray-600'}
+          w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-colors
+          ${checked ? 'bg-rose-400 border-rose-400' : 'border-gray-300'}
         `}
           role="presentation"
           aria-hidden="true"
         >
           {isLoading ? (
-            <Loader2 className="w-4 h-4 text-gray-400 dark:text-gray-500 animate-spin" />
+            <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
           ) : checked ? (
             <Check className="w-4 h-4 text-white" />
           ) : null}
         </div>
         <span
-          className={`font-semibold ${checked ? 'text-emerald-900 dark:text-emerald-300' : 'text-gray-700 dark:text-gray-300'}`}
+          className={`font-semibold ${checked ? 'text-rose-800' : 'text-gray-700'}`}
         >
           {label}
         </span>
       </div>
       {checked && (
-        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+        <span className="text-xs text-rose-600 font-medium bg-rose-50 px-2 py-1 rounded">
           Done
         </span>
       )}
@@ -215,107 +215,117 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
 
   if (allCompleted) {
     return (
-      <div className="bg-gradient-to-br from-emerald-400 to-emerald-600 p-6 rounded-2xl shadow-lg mb-6 text-white">
-        <div className="flex items-center gap-3 mb-3">
-          <Trophy className="w-8 h-8 text-yellow-300" aria-hidden="true" />
-          <h2 className="text-xl font-bold">All Rituals Complete!</h2>
+      <div className="bg-rose-200 p-5 rounded-2xl border-2 border-rose-300 mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <Trophy className="w-8 h-8 text-rose-600" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-rose-800">All Rituals Complete!</h2>
         </div>
-        <p className="text-emerald-100">
-          Great job! You've completed all your daily habits. See you tomorrow!
+        <p className="text-rose-600 text-sm">
+          Great job! See you tomorrow!
         </p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Flame
-            className="w-5 h-5 text-orange-500 fill-orange-500"
-            aria-hidden="true"
-          />
-          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
-            Daily Rituals
-          </h2>
+    <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 mb-6">
+      <div className="bg-rose-50 p-4 rounded-t-2xl border-b border-rose-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Flame
+              className="w-5 h-5 text-rose-500 fill-rose-400"
+              aria-hidden="true"
+            />
+            <h2 className="text-lg font-bold text-gray-800">
+              Daily Rituals
+            </h2>
+          </div>
+          <span className="text-sm font-bold text-rose-600 bg-rose-100 px-3 py-1 rounded-full">
+            {completedCount}/{totalHabits}
+          </span>
         </div>
-        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-          {completedCount}/{totalHabits}
-        </span>
       </div>
 
       {error && (
-        <div
-          className="mb-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm"
-          role="alert"
-        >
-          {error}
+        <div className="px-4 pt-3">
+          <div
+            className="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+            role="alert"
+          >
+            {error}
+          </div>
         </div>
       )}
 
       {!isOnline && (
-        <div
-          className="mb-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-300 text-sm flex items-center gap-2"
-          role="alert"
-        >
-          <WifiOff size={16} aria-hidden="true" />
-          <span>You're offline. Changes will sync when connected.</span>
-          {pendingCount > 0 && (
-            <span className="font-medium">({pendingCount} pending)</span>
-          )}
+        <div className="px-4 pt-2">
+          <div
+            className="mb-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2"
+            role="alert"
+          >
+            <WifiOff size={16} aria-hidden="true" />
+            <span>Offline - changes sync when connected</span>
+            {pendingCount > 0 && (
+              <span className="font-medium">({pendingCount} pending)</span>
+            )}
+          </div>
         </div>
       )}
 
       {isOnline && pendingCount > 0 && (
-        <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-700 dark:text-blue-300 text-sm flex items-center gap-2">
-          <Wifi size={16} aria-hidden="true" />
-          <span>{pendingCount} offline changes pending sync</span>
+        <div className="px-4 pt-2">
+          <div className="mb-2 p-3 bg-sky-50 border border-sky-200 rounded-lg text-sky-700 text-sm flex items-center gap-2">
+            <Wifi size={16} aria-hidden="true" />
+            <span>{pendingCount} offline changes pending</span>
+          </div>
         </div>
       )}
 
-      <div
-        className="w-full bg-gray-100 dark:bg-gray-700 h-2 rounded-full mb-4 overflow-hidden"
-        role="progressbar"
-        aria-valuenow={completedCount}
-        aria-valuemin={0}
-        aria-valuemax={totalHabits}
-        aria-label="Habit completion progress"
-      >
+      <div className="p-4">
         <div
-          className="bg-gradient-to-r from-orange-400 to-emerald-500 h-full transition-all duration-300"
-          style={{ width: `${(completedCount / totalHabits) * 100}%` }}
-        />
-      </div>
+          className="w-full bg-gray-100 h-2 rounded-full mb-4 overflow-hidden"
+          role="progressbar"
+          aria-valuenow={completedCount}
+          aria-valuemin={0}
+          aria-valuemax={totalHabits}
+          aria-label="Habit completion progress"
+        >
+          <div
+            className="bg-rose-400 h-full transition-all duration-300"
+            style={{ width: `${(completedCount / totalHabits) * 100}%` }}
+          />
+        </div>
 
-      <div
-        className="grid grid-cols-1 gap-3"
-        role="list"
-        aria-label="Habit checklist"
-      >
-        <HabitRow
-          field="am_squats"
-          label="15x AM Squats"
-          checked={habits?.am_squats || false}
-          isLoading={pendingFields.has('am_squats')}
-        />
-        <HabitRow
-          field="steps_7k"
-          label="7k Steps"
-          checked={habits?.steps_7k || false}
-          isLoading={pendingFields.has('steps_7k')}
-        />
-        <HabitRow
-          field="bike_1hr"
-          label="1 Hour Bike"
-          checked={habits?.bike_1hr || false}
-          isLoading={pendingFields.has('bike_1hr')}
-        />
-        <HabitRow
-          field="pm_squats"
-          label="15x PM Squats"
-          checked={habits?.pm_squats || false}
-          isLoading={pendingFields.has('pm_squats')}
-        />
+        <div
+          className="grid grid-cols-1 gap-2"
+          role="list"
+          aria-label="Habit checklist"
+        >
+          <HabitRow
+            field="am_squats"
+            label="15x AM Squats"
+            checked={habits?.am_squats || false}
+            isLoading={pendingFields.has('am_squats')}
+          />
+          <HabitRow
+            field="steps_7k"
+            label="7k Steps"
+            checked={habits?.steps_7k || false}
+            isLoading={pendingFields.has('steps_7k')}
+          />
+          <HabitRow
+            field="bike_1hr"
+            label="1 Hour Bike"
+            checked={habits?.bike_1hr || false}
+            isLoading={pendingFields.has('bike_1hr')}
+          />
+          <HabitRow
+            field="pm_squats"
+            label="15x PM Squats"
+            checked={habits?.pm_squats || false}
+            isLoading={pendingFields.has('pm_squats')}
+          />
+        </div>
       </div>
     </div>
   )
