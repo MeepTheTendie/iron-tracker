@@ -124,6 +124,8 @@ All Supabase setup SQL is in `/supabase/` directory:
 - No local CI testing needed - Vercel handles deployment automatically
 - Simpler workflow: push code → Vercel deploys
 
+**PERMANENT RULE (Jan 18, 2026): NO GitHub Actions - use Vercel auto-deploy only**
+
 **Redesign attempt (reverted):**
 
 - `src/components/BrushStrokes.tsx` - Created then deleted

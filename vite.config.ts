@@ -40,9 +40,26 @@ export default defineConfig({
   },
   build: {
     sourcemap: false,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: undefined,
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          charts: ['recharts'],
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name?.split('.') ?? ['file']
+          const ext = info[info.length - 1]
+          if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(assetInfo.name ?? '')) {
+            return `assets/img/[name]-[hash].${ext}`
+          }
+          if (/\.(css)$/.test(assetInfo.name ?? '')) {
+            return `assets/css/[name]-[hash].${ext}`
+          }
+          return `assets/[ext]/[name]-[hash].${ext}`
+        },
       },
     },
   },

@@ -6,7 +6,6 @@ import { routeTree } from './routeTree.gen'
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 
-
 // Create a new router instance
 const router = createRouter({
   routeTree,
@@ -24,8 +23,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-
-
 // Render the app
 const rootElement = document.getElementById('app')
 if (rootElement && !rootElement.innerHTML) {
@@ -37,20 +34,35 @@ if (rootElement && !rootElement.innerHTML) {
   )
 }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
+// Run web vitals asynchronously (don't block rendering)
+const runWebVitals = () => {
+  try {
+    reportWebVitals()
+  } catch (e) {
+    console.warn('WebVitals error:', e)
+  }
+}
 
+// Defer web vitals to not block initial render
+if (typeof requestIdleCallback !== 'undefined') {
+  requestIdleCallback(runWebVitals)
+} else {
+  setTimeout(runWebVitals, 1000)
+}
+
+// Defer service worker registration (Phase 1 optimization)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then((registration) => {
-        console.log('SW registered:', registration)
-      })
-      .catch((error) => {
-        console.log('SW registration failed:', error)
-      })
+    // Delay SW registration to not block initial load
+    setTimeout(() => {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered:', registration)
+        })
+        .catch((error) => {
+          console.log('SW registration failed:', error)
+        })
+    }, 5000) // Register after 5 seconds, not on initial load
   })
 }
