@@ -5,8 +5,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
-import { ErrorBoundary } from './lib/error-tracking'
-import { errorTracker } from './lib/error-tracking'
+
 
 // Create a new router instance
 const router = createRouter({
@@ -25,14 +24,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
-// Initialize error tracking
-if (import.meta.env.PROD) {
-  // Load persisted error queue
-  errorTracker.loadPersistedErrorQueue();
-  
-  // Flush any queued errors
-  errorTracker.forceFlush();
-}
+
 
 // Render the app
 const rootElement = document.getElementById('app')
@@ -40,9 +32,7 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <ErrorBoundary>
-        <RouterProvider router={router} />
-      </ErrorBoundary>
+      <RouterProvider router={router} />
     </StrictMode>,
   )
 }
