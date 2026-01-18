@@ -7,11 +7,11 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     reviewers:
-      - "elidianeasb"
+      - "MeepTheTendie"
     assignees:
-      - "elidianeasb"
+      - "MeepTheTendie"
     commit-message:
       prefix: "deps"
       include: "scope"
@@ -36,31 +36,14 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     reviewers:
-      - "elidianeasb"
+      - "MeepTheTendie"
     assignees:
-      - "elidianeasb"
+      - "MeepTheTendie"
     commit-message:
       prefix: "ci"
       include: "scope"
     labels:
       - "dependencies"
       - "github-actions"
-
-  # Docker updates (if added later)
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 3
-    reviewers:
-      - "elidianeasb"
-    assignees:
-      - "elidianeasb"
-    commit-message:
-      prefix: "docker"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "docker"
