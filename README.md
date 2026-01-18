@@ -160,46 +160,155 @@ Workout log entries for progress tracking.
 
 ## Available Scripts
 
-| Command           | Description                               |
-| ----------------- | ----------------------------------------- |
-| `npm run dev`     | Start development server on port 3000     |
-| `npm run build`   | Build for production (outputs to `dist/`) |
-| `npm run preview` | Preview production build locally          |
-| `npm run test`    | Run tests with Vitest                     |
-| `npm run lint`    | Check code with ESLint                    |
-| `npm run format`  | Format code with Prettier                 |
-| `npm run check`   | Format + lint + type check                |
+### Development Commands
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server with hot reload on port 3000 |
+| `npm run start` | Alias for `npm run dev` |
+| `npm run preview` | Preview production build locally |
 
-## Project Structure
+### Quality Assurance Commands
+| Command | Description |
+|---------|-------------|
+| `npm run test` | Run unit tests once |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage report |
+| `npm run lint` | Run ESLint code quality checks |
+| `npm run lint:fix` | Run ESLint and auto-fix issues |
+| `npm run format` | Format code with Prettier |
+| `npm run format:check` | Check code formatting without fixing |
+| `npm run tsc` | Run TypeScript type checking |
+| `npm run check` | Run format + lint + type check |
+| `npm run check:ci` | Full CI-quality checks (format:check + lint + tsc + test) |
+
+### Security Commands
+| Command | Description |
+|---------|-------------|
+| `npm run audit` | Run npm security audit |
+| `npm run audit:fix` | Automatically fix security vulnerabilities |
+| `npm run security` | Run comprehensive security checks (audit + lint + tsc) |
+
+### Dependency Management
+| Command | Description |
+|---------|-------------|
+| `npm run deps:check` | Check for outdated dependencies |
+| `npm run deps:update` | Update dependencies to latest versions |
+
+### Performance Commands
+| Command | Description |
+|---------|-------------|
+| `npm run analyze` | Analyze bundle size |
+| `npm run perf` | Run performance audit with Lighthouse |
+
+### Git Hooks
+| Command | Description |
+|---------|-------------|
+| `npm run pre-commit` | Run pre-commit quality checks |
+| `npm run pre-push` | Run pre-push comprehensive checks |
+
+### Build & Deployment
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Build for production (outputs to `dist/`) |
+| `npm run clean` | Clean build artifacts and cache |
+| `npm run clean:full` | Clean everything and reinstall dependencies |
+| `npm run release` | Prepare for release (full checks + build) |
+
+### Setup Commands
+| Command | Description |
+|---------|-------------|
+| `npm run setup` | Run complete development environment setup |
+
+### Docker Commands
+| Command | Description |
+|---------|-------------|
+| `npm run docker:build` | Build Docker image |
+| `npm run docker:run` | Run Docker container |
+
+## 🏗️ Automation & DevOps
+
+### CI/CD Pipeline
+Iron Tracker features a comprehensive CI/CD pipeline:
+
+- **Multi-environment Support**: Development, staging, and production deployments
+- **Automated Testing**: Multi-node testing, code quality, security scanning
+- **Performance Monitoring**: Lighthouse audits, bundle size analysis
+- **Rollback Capabilities**: Quick rollback mechanisms for failed deployments
+- **Environment-specific Configs**: Separate configurations for each environment
+
+### Quality Assurance
+- **Pre-commit Hooks**: Automatic code formatting, linting, and testing
+- **Pre-push Hooks**: Comprehensive validation before pushing
+- **Automated Testing**: Unit tests, integration tests, performance tests
+- **Code Coverage**: Comprehensive test coverage reporting
+- **Bundle Analysis**: Automated bundle size monitoring and optimization
+
+### Monitoring & Observability
+- **Health Check Endpoints**: `/api/health`, `/api/ready`, `/api/live`
+- **Performance Metrics**: Real-time application performance tracking
+- **Error Tracking**: Comprehensive error logging and analysis
+- **Uptime Monitoring**: Automated service availability checks
+- **Security Monitoring**: Continuous vulnerability scanning
+
+## 📁 Project Structure
 
 ```
 iron-tracker/
+├── .github/
+│   ├── workflows/         # GitHub Actions CI/CD workflows
+│   │   ├── ci-cd.yml     # Main CI/CD pipeline
+│   │   ├── security.yml  # Security scanning workflow
+│   │   ├── code-quality.yml # Code quality checks
+│   │   └── monitoring.yml # Health checks and monitoring
+│   └── dependabot.yml    # Automated dependency updates
 ├── src/
 │   ├── components/         # Reusable React components
-│   │   ├── Header.tsx     # App header with navigation
-│   │   ├── HabitTracker.tsx # Daily habit checklist
-│   │   └── WorkoutCard.tsx  # Workout display and start button
-│   ├── lib/
-│   │   └── supabase.ts    # Supabase client configuration
-│   ├── routes/            # TanStack Router file-based routes
-│   │   ├── __root.tsx     # Root route with layout
-│   │   ├── index.tsx      # Dashboard (home page)
-│   │   ├── history.tsx    # Progress charts and history
-│   │   └── workout.tsx    # Active workout tracking
-│   ├── main.tsx           # App entry point
-│   ├── routeTree.gen.ts   # Auto-generated router tree
-│   └── styles.css         # Tailwind CSS imports
-├── public/                # Static assets
-│   ├── manifest.json      # PWA manifest
-│   ├── robots.txt         # SEO rules
-│   └── favicon.ico        # App icon
-├── index.html             # HTML template
-├── package.json           # Dependencies and scripts
-├── vite.config.ts         # Vite configuration
-├── tsconfig.json          # TypeScript configuration
-├── .env.example           # Environment template
-├── SUPABASE_RLS_FIX.md    # Database security instructions
-└── README.md              # This file
+│   │   ├── ui/           # Base UI components
+│   │   ├── features/     # Feature-specific components
+│   │   └── layouts/      # Layout components
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utilities and configurations
+│   │   ├── supabase.ts   # Supabase client configuration
+│   │   └── error-tracking.ts # Error tracking system
+│   ├── routes/           # TanStack Router file-based routes
+│   │   ├── __root.tsx    # Root route with layout
+│   │   ├── index.tsx     # Dashboard (home page)
+│   │   ├── history.tsx   # Progress charts and history
+│   │   └── workout.tsx   # Active workout tracking
+│   ├── api/             # API endpoints
+│   │   └── health.ts     # Health check endpoints
+│   ├── types/           # TypeScript type definitions
+│   ├── styles/          # Global styles and themes
+│   ├── main.tsx         # App entry point
+│   ├── routeTree.gen.ts # Auto-generated router tree
+│   └── styles.css      # Tailwind CSS imports
+├── scripts/             # Automation and utility scripts
+│   ├── setup.sh         # Development environment setup
+│   ├── pre-commit.sh    # Pre-commit hook script
+│   ├── pre-push.sh      # Pre-push hook script
+│   ├── dev.sh          # Development server script
+│   ├── build.sh        # Production build script
+│   └── test.sh         # Test runner script
+├── public/              # Static assets
+│   ├── manifest.json    # Enhanced PWA manifest
+│   ├── robots.txt       # SEO rules
+│   └── favicon.ico      # App icon
+├── docs/                # Documentation
+│   ├── DEVELOPMENT.md   # Development guide
+│   ├── CONTRIBUTING.md  # Contributing guidelines
+│   ├── DEPLOYMENT.md    # Deployment procedures
+│   └── ARCHITECTURE.md  # Architecture documentation
+├── index.html           # HTML template
+├── package.json         # Dependencies and scripts
+├── vite.config.ts       # Vite configuration
+├── tsconfig.json        # TypeScript configuration
+├── eslint.config.js     # ESLint configuration
+├── lighthouserc.js      # Lighthouse CI configuration
+├── .pre-commit-config.yaml # Pre-commit hooks configuration
+├── .secrets.baseline   # Secrets detection baseline
+├── .env.example         # Environment template
+├── SUPABASE_RLS_FIX.md  # Database security instructions
+└── README.md            # This file
 ```
 
 ## Deployment
@@ -244,11 +353,38 @@ iron-tracker/
 - Build output: `/dist`
 - Add same environment variables
 
-## Security Setup
+## 🔒 Security Features
+
+Iron Tracker includes enterprise-grade security features:
+
+### Automated Security
+- **GitHub Dependabot**: Automated dependency updates and vulnerability scanning
+- **Security Workflows**: Comprehensive CI/CD security scanning
+- **Pre-commit Hooks**: Automatic secret detection and code quality checks
+- **Dependency Auditing**: Regular security audit with npm audit
+- **Snyk Integration**: Advanced vulnerability scanning
+- **Semgrep Analysis**: Static code analysis for security issues
+- **TruffleHog**: Secret detection in code history
+
+### Security Best Practices
+- **Environment Variables**: Secure management with `.env` files
+- **Row Level Security**: Supabase RLS for data protection
+- **Input Validation**: Comprehensive input sanitization
+- **HTTPS Enforcement**: SSL/TLS for all communications
+- **Error Tracking**: Comprehensive error monitoring and alerting
+- **Security Headers**: Proper security headers implementation
+
+### Security Setup
 
 **IMPORTANT**: Before deploying, you must enable Row Level Security (RLS) on your Supabase tables to prevent unauthorized access.
 
 See `SUPABASE_RLS_FIX.md` for detailed SQL commands to run in your Supabase SQL Editor.
+
+### Monitoring & Alerting
+- **Health Checks**: `/api/health` endpoint for monitoring
+- **Performance Metrics**: Real-time performance tracking
+- **Error Tracking**: Comprehensive error logging and analysis
+- **Uptime Monitoring**: Automated service availability checks
 
 ## TanStack Router Guide
 

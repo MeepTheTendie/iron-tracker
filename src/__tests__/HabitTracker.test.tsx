@@ -17,7 +17,7 @@ describe('HabitTracker', () => {
         <label>
           <input type="checkbox" /> 15x PM Squats
         </label>
-      </div>
+      </div>,
     )
 
     expect(screen.getByText('15x AM Squats')).toBeInTheDocument()
@@ -41,7 +41,7 @@ describe('HabitTracker', () => {
         <label>
           <input type="checkbox" defaultChecked={false} /> PM Squats
         </label>
-      </div>
+      </div>,
     )
 
     const checkboxes = screen.getAllByRole('checkbox')
@@ -61,7 +61,21 @@ describe('HabitTracker', () => {
       return count
     }
 
-    expect(getCompletedCount({ am_squats: true, steps_7k: true, bike_1hr: true, pm_squats: true })).toBe(4)
-    expect(getCompletedCount({ am_squats: true, steps_7k: false, bike_1hr: true, pm_squats: false })).toBe(2)
+    expect(
+      getCompletedCount({
+        am_squats: true,
+        steps_7k: true,
+        bike_1hr: true,
+        pm_squats: true,
+      }),
+    ).toBe(4)
+    expect(
+      getCompletedCount({
+        am_squats: true,
+        steps_7k: false,
+        bike_1hr: true,
+        pm_squats: false,
+      }),
+    ).toBe(2)
   })
 })

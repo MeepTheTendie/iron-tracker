@@ -27,7 +27,7 @@ export function trackEvent(
   action: string,
   category: string,
   label?: string,
-  value?: number
+  value?: number,
 ) {
   if (!window.gtag) return
   window.gtag('event', action, {

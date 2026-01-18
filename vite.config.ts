@@ -11,7 +11,10 @@ const securityHeaders = [
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'X-XSS-Protection', value: '1; mode=block' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=()',
+  },
 ]
 
 export default defineConfig({
@@ -33,7 +36,7 @@ export default defineConfig({
     cors: true,
   },
   preview: {
-    headers: Object.fromEntries(securityHeaders.map(h => [h.key, h.value])),
+    headers: Object.fromEntries(securityHeaders.map((h) => [h.key, h.value])),
   },
   build: {
     sourcemap: false,

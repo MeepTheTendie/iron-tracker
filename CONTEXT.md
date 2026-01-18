@@ -1,6 +1,8 @@
 # Iron Tracker - Persistent Project Context
 
-**Last Updated:** January 14, 2026 (after Japanese redesign attempt and revert)
+**Last Updated:** January 17, 2026 (UI fixes applied)
+
+---
 
 ## Quick Status Summary
 

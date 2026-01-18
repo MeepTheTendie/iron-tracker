@@ -1,0 +1,61 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run ESLint with auto-fix
+      run: npm run lint -- --fix
+      continue-on-error: true
+      
+    - name: Check formatting with Prettier
+      run: npm run format -- --check
+      
+    - name: Run TypeScript compiler
+      run: npm run tsc --noEmit
+      
+    - name: Bundle size analysis
+      uses: preactjs/compressed-size-action@v2
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        exclude: "{/{*.map,src/**/test/*,coverage/*}}"
+        
+    - name: Complexity analysis
+      run: |
+        npx complexity-report --output json --format json src/ > complexity-report.json
+        
+    - name: Upload complexity report
+      uses: actions/upload-artifact@v4
+      with:
+        name: complexity-report
+        path: complexity-report.json
+        
+    - name: Dependency tree analysis
+      run: |
+        npm ls --depth=0 || true
+        npm outdated || true
+        
+    - name: Check for duplicate dependencies
+      run: npx depcheck

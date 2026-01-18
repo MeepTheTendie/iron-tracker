@@ -16,11 +16,13 @@ To enable automatic deployments via GitHub Actions, you need to configure the fo
    - Copy the token value
 
 3. **Get Your Organization ID**
+
    ```bash
    npx vercel whoami --token YOUR_TOKEN
    ```
 
 4. **Get Your Project ID**
+
    ```bash
    npx vercel projects --token YOUR_TOKEN
    ```
@@ -35,6 +37,7 @@ To enable automatic deployments via GitHub Actions, you need to configure the fo
 ### Supabase (Iron Tracker Only)
 
 If using Supabase in production:
+
 - Go to [Supabase Dashboard](https://supabase.com/dashboard)
 - Navigate to Settings → API
 - Add these secrets:
@@ -44,6 +47,7 @@ If using Supabase in production:
 ### Google Analytics (Optional)
 
 To enable analytics tracking:
+
 - Go to [Google Analytics](https://analytics.google.com)
 - Create a GA4 property
 - Add the secret:
@@ -70,20 +74,24 @@ gh secret set VITE_GA_ID -b"G-XXXXXXXXXX"
 ## Testing the CI/CD Pipeline
 
 After adding secrets, push a commit to trigger the workflow:
+
 - The workflow will run tests, lint, and build
 - If successful, it will deploy to Vercel
 
 ## Troubleshooting
 
 ### Deployment Failed
+
 - Check the Actions tab for error logs
 - Ensure all required secrets are set
 - Verify Vercel project settings
 
 ### Tests Failed
+
 - Run `npm test` locally to see errors
 - Check for missing dependencies
 
 ### Build Failed
+
 - Run `npm run build` locally to see errors
 - Check environment variables are set correctly

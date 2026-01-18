@@ -36,16 +36,19 @@ describe('utils', () => {
       { id: '3', era: 'Showa' },
     ]
 
-    const groupByKey = (key: keyof typeof items[0]) => {
-      return items.reduce((acc, item) => {
-        const groupKey = String(item[key])
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (!acc[groupKey]) {
-          acc[groupKey] = []
-        }
-        acc[groupKey].push(item)
-        return acc
-      }, {} as Record<string, typeof items>)
+    const groupByKey = (key: keyof (typeof items)[0]) => {
+      return items.reduce(
+        (acc, item) => {
+          const groupKey = String(item[key])
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          if (!acc[groupKey]) {
+            acc[groupKey] = []
+          }
+          acc[groupKey].push(item)
+          return acc
+        },
+        {} as Record<string, typeof items>,
+      )
     }
 
     const grouped = groupByKey('era')

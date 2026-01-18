@@ -12,7 +12,10 @@ export function openDB(): Promise<IDBDatabase> {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result
       if (!db.objectStoreNames.contains(HABIT_STORE)) {
-        db.createObjectStore(HABIT_STORE, { keyPath: 'id', autoIncrement: true })
+        db.createObjectStore(HABIT_STORE, {
+          keyPath: 'id',
+          autoIncrement: true,
+        })
       }
     }
   })
@@ -26,7 +29,9 @@ export interface PendingHabit {
   createdAt: number
 }
 
-export async function savePendingHabit(habit: Omit<PendingHabit, 'id' | 'createdAt'>): Promise<number> {
+export async function savePendingHabit(
+  habit: Omit<PendingHabit, 'id' | 'createdAt'>,
+): Promise<number> {
   const db = await openDB()
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(HABIT_STORE, 'readwrite')
@@ -67,7 +72,9 @@ export async function clearOldPendingHabits(olderThan: number): Promise<void> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(HABIT_STORE, 'readwrite')
     const store = transaction.objectStore(HABIT_STORE)
-    const request = store.index('createdAt').openCursor(IDBKeyRange.upperBound(olderThan))
+    const request = store
+      .index('createdAt')
+      .openCursor(IDBKeyRange.upperBound(olderThan))
 
     request.onerror = () => reject(request.error)
     request.onsuccess = (event) => {

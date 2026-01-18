@@ -59,7 +59,11 @@ export function WorkoutTimer({ duration = 90, onComplete }: WorkoutTimerProps) {
               : 'bg-emerald-100 text-emerald-700'
           }`}
         >
-          {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+          {isRunning ? (
+            <Pause className="w-5 h-5" />
+          ) : (
+            <Play className="w-5 h-5" />
+          )}
           {isRunning ? 'Pause' : 'Start'}
         </button>
         <button
