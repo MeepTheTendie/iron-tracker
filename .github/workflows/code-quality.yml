@@ -37,7 +37,7 @@ jobs:
       run: npm run tsc --noEmit
       
     - name: Bundle size analysis
-      uses: preactjs/compressed-size-action@v2
+      uses: preactjs/compressed-size-action@v3
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
         exclude: "{/{*.map,src/**/test/*,coverage/*}}"
