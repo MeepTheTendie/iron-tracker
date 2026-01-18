@@ -19,7 +19,7 @@ type WorkoutData = {
   _id: any
   name: string
   workoutType: string
-  description: string | null | undefined
+  description?: string | null
   workout_exercises: Array<WorkoutExercise>
 }
 

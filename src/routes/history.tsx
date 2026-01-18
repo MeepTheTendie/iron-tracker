@@ -16,9 +16,13 @@ import { api } from '../../convex/_generated/api'
 export const Route = createFileRoute('/history')({
   loader: async () => {
     if (!convex) return { logs: [], exercises: [] }
-    const logs = await convex.query(api.workoutLogs.getWorkoutLogs)
-    const exercises = Array.from(new Set(logs.map((l: any) => l.exerciseName)))
-    return { logs, exercises }
+    try {
+      const logs = await convex.query(api.workoutLogs.getWorkoutLogs, {})
+      const exercises = Array.from(new Set(logs.map((l: any) => l.exerciseName)))
+      return { logs, exercises }
+    } catch {
+      return { logs: [], exercises: [] }
+    }
   },
   component: HistoryPage,
 })
