@@ -10,4 +10,3 @@ count.txt
 .wrangler
 .vercel
 .env*.local
-convex/_generated/

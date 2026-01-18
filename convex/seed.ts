@@ -1,8 +1,8 @@
 import { internalMutation } from "./_generated/server";
-import type { Id } from "./_generated/dataModel";
 
 export const seed = internalMutation({
   handler: async (ctx) => {
+    // Seed exercises
     const exercises = [
       { name: "Push-Ups", muscleGroup: "Chest", notes: "Standard or knee push-ups" },
       { name: "Dumbbell Chest Press", muscleGroup: "Chest", notes: "Use heavy dumbbells" },
@@ -30,14 +30,15 @@ export const seed = internalMutation({
       { name: "Squats", muscleGroup: "Legs", notes: "Bodyweight or dumbbell" },
     ];
 
-    const exerciseIds: Record<number, Id<"exercises">> = {};
+    const exerciseIds: Record<number, any> = {};
     for (const exercise of exercises) {
       const id = await ctx.db.insert("exercises", exercise);
       const index = Object.keys(exerciseIds).length;
       exerciseIds[index + 1] = id;
     }
 
-    const workoutIds: Record<number, Id<"workouts">> = {};
+    // Seed workouts
+    const workoutIds: Record<number, any> = {};
     const workouts = [
       { name: "Upper Body A", dayOfWeek: "Monday", workoutType: "Strength", description: "Chest, Shoulders, Arms" },
       { name: "Lower Body A", dayOfWeek: "Wednesday", workoutType: "Strength", description: "Quads, Glutes, Hamstrings" },
@@ -51,25 +52,30 @@ export const seed = internalMutation({
       workoutIds[index + 1] = id;
     }
 
+    // Seed workout exercises
     const workoutExercises = [
+      // Monday - Upper Body A
       { workoutId: 1, exerciseId: 1, sets: 3, reps: 10, sortOrder: 0 },
       { workoutId: 1, exerciseId: 2, sets: 3, reps: 10, sortOrder: 1 },
       { workoutId: 1, exerciseId: 3, sets: 3, reps: 10, sortOrder: 2 },
       { workoutId: 1, exerciseId: 4, sets: 3, reps: 10, sortOrder: 3 },
       { workoutId: 1, exerciseId: 5, sets: 3, reps: 10, sortOrder: 4 },
       { workoutId: 1, exerciseId: 13, sets: 3, reps: 30, sortOrder: 5 },
+      // Wednesday - Lower Body A
       { workoutId: 2, exerciseId: 24, sets: 4, reps: 12, sortOrder: 0 },
       { workoutId: 2, exerciseId: 7, sets: 3, reps: 10, sortOrder: 1 },
       { workoutId: 2, exerciseId: 8, sets: 3, reps: 10, sortOrder: 2 },
       { workoutId: 2, exerciseId: 16, sets: 3, reps: 15, sortOrder: 3 },
       { workoutId: 2, exerciseId: 17, sets: 3, reps: 10, sortOrder: 4 },
       { workoutId: 2, exerciseId: 14, sets: 3, reps: 15, sortOrder: 5 },
+      // Friday - Upper Body B
       { workoutId: 3, exerciseId: 10, sets: 3, reps: 12, sortOrder: 0 },
       { workoutId: 3, exerciseId: 11, sets: 3, reps: 10, sortOrder: 1 },
       { workoutId: 3, exerciseId: 12, sets: 3, reps: 10, sortOrder: 2 },
       { workoutId: 3, exerciseId: 18, sets: 3, reps: 12, sortOrder: 3 },
       { workoutId: 3, exerciseId: 20, sets: 3, reps: 12, sortOrder: 4 },
       { workoutId: 3, exerciseId: 19, sets: 3, reps: 12, sortOrder: 5 },
+      // Saturday - Lower Body B
       { workoutId: 4, exerciseId: 6, sets: 4, reps: 12, sortOrder: 0 },
       { workoutId: 4, exerciseId: 7, sets: 3, reps: 12, sortOrder: 1 },
       { workoutId: 4, exerciseId: 8, sets: 3, reps: 12, sortOrder: 2 },
