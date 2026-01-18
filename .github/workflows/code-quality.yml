@@ -27,7 +27,7 @@ jobs:
       run: npm ci
       
     - name: Install dependencies
-      run: npm install --legacy-peer-deps
+      run: npm ci
       
     - name: Run code quality checks
       run: npm run check:ci || true
