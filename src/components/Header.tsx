@@ -112,15 +112,22 @@ export default function Header() {
           </button>
         </div>
 
-        {/* User Stats in Drawer */}
-        <div className="p-4 border-t border-rose-200 bg-rose-100">
-          <div className="flex items-center gap-2 text-rose-600">
+        {/* Daily Rituals Stats */}
+        <div className="p-4 border-t border-rose-200 bg-rose-50">
+          <div className="flex items-center gap-2 text-rose-600 mb-2">
             <Flame size={20} className="fill-rose-400" />
-            <span className="font-medium">Daily Rituals</span>
+            <span className="font-bold">Daily Rituals</span>
           </div>
-          <p className="text-sm text-gray-500 mt-1">
-            Track your habits and progress
-          </p>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="bg-white rounded-lg p-2 text-center">
+              <div className="font-bold text-lg text-gray-800">0</div>
+              <div className="text-xs text-gray-500">Completed</div>
+            </div>
+            <div className="bg-white rounded-lg p-2 text-center">
+              <div className="font-bold text-lg text-gray-800">0</div>
+              <div className="text-xs text-gray-500">Streak</div>
+            </div>
+          </div>
         </div>
       </aside>
 
