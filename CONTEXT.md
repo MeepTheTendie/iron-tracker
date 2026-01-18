@@ -1,6 +1,6 @@
 # Iron Tracker - Persistent Project Context
 
-**Last Updated:** January 17, 2026 (UI fixes applied)
+**Last Updated:** January 18, 2026 (CI/CD simplified, Vercel auto-deploy configured)
 
 ---
 
@@ -9,7 +9,7 @@
 ✅ **Domain:** https://myworkouttracker.xyz (live)  
 ✅ **Database:** 4 workouts, 24 exercises, 24 links loaded  
 ✅ **Stack:** React 19, Vite, TanStack Router, Supabase, Tailwind CSS 4  
-✅ **Vercel:** Auto-deploys from GitHub
+✅ **Deployment:** Vercel auto-deploys from GitHub (no CI workflow needed)
 
 ## User Profile
 
@@ -116,6 +116,13 @@ All Supabase setup SQL is in `/supabase/` directory:
 - `src/components/HabitTracker.tsx` - Completion celebration
 - `src/routes/index.tsx` - Clean dashboard
 - `supabase/01-setup-workout-tables.sql` - Database schema
+- `.github/workflows/` - Removed CI workflow, Vercel auto-deploys
+
+**January 18, 2026 - CI/CD Simplification:**
+
+- Removed `.github/workflows/ci.yml` - Vercel auto-deploys from repository settings
+- No local CI testing needed - Vercel handles deployment automatically
+- Simpler workflow: push code → Vercel deploys
 
 **Redesign attempt (reverted):**
 
