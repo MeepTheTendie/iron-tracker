@@ -3,16 +3,17 @@ import { useNavigate } from '@tanstack/react-router'
 
 type ExerciseNode = {
   name: string
-  muscleGroup: string | null
-  notes: string | null
+  muscleGroup?: string | null
+  notes?: string | null
 }
 
 type WorkoutExercise = {
   _id: any
   sets: number
   reps: number
-  restSeconds: number | null
-  exercises: ExerciseNode
+  restSeconds?: number | null
+  sortOrder?: number | null
+  exercises?: ExerciseNode | null
 }
 
 type WorkoutData = {

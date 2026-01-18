@@ -6,6 +6,7 @@ import { api } from '../../convex/_generated/api'
 
 export const Route = createFileRoute('/exercises')({
   loader: async () => {
+    if (!convex) return { exercises: [] }
     const exercises = await convex.query(api.exercises.list)
     return { exercises: exercises || [] }
   },
