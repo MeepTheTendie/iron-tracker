@@ -232,6 +232,7 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
           aria-label="Habit completion progress"
         >
           <div
+            data-testid="progress-fill"
             className="bg-rose-400 h-full transition-all duration-300"
             style={{ width: `${(completedCount / totalHabits) * 100}%` }}
           />

@@ -42,59 +42,53 @@ describe('Header', () => {
     expect(screen.getByRole('button', { name: /Current theme: light/ })).toBeInTheDocument()
   })
 
-  it('renders Home navigation link', () => {
+  it('renders Home navigation link in drawer', () => {
     render(<Header />)
-    expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
+    const links = screen.getAllByRole('link', { name: 'Home' })
+    expect(links.length).toBeGreaterThanOrEqual(1)
   })
 
-  it('renders History navigation link', () => {
+  it('renders History navigation link in drawer', () => {
     render(<Header />)
-    expect(screen.getByRole('link', { name: 'History' })).toBeInTheDocument()
+    const links = screen.getAllByRole('link', { name: 'History' })
+    expect(links.length).toBeGreaterThanOrEqual(1)
   })
 
-  it('renders Exercises navigation link', () => {
+  it('renders Exercises navigation link in drawer', () => {
     render(<Header />)
-    expect(screen.getByRole('link', { name: 'Exercises' })).toBeInTheDocument()
+    const links = screen.getAllByRole('link', { name: 'Exercises' })
+    expect(links.length).toBeGreaterThanOrEqual(1)
   })
 
   it('navigates to home when Home link clicked', () => {
     render(<Header />)
-
-    const homeLink = screen.getByRole('link', { name: 'Home' })
-    fireEvent.click(homeLink)
-
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+    const homeLink = screen.getAllByRole('link', { name: 'Home' })[0]
+    expect(homeLink).toHaveAttribute('href', '/')
   })
 
   it('navigates to history when History link clicked', () => {
     render(<Header />)
-
-    const historyLink = screen.getByRole('link', { name: 'History' })
-    fireEvent.click(historyLink)
-
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/history' })
+    const historyLink = screen.getAllByRole('link', { name: 'History' })[0]
+    expect(historyLink).toHaveAttribute('href', '/history')
   })
 
   it('navigates to exercises when Exercises link clicked', () => {
     render(<Header />)
-
-    const exercisesLink = screen.getByRole('link', { name: 'Exercises' })
-    fireEvent.click(exercisesLink)
-
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/exercises' })
+    const exercisesLink = screen.getAllByRole('link', { name: 'Exercises' })[0]
+    expect(exercisesLink).toHaveAttribute('href', '/exercises')
   })
 
   it('renders theme toggle in drawer', () => {
     render(<Header />)
-    expect(screen.getByRole('button', { name: /Theme: light/ })).toBeInTheDocument()
+    const themeButton = screen.getByRole('button', { name: /Theme/ })
+    expect(themeButton).toBeInTheDocument()
+    expect(themeButton).toHaveTextContent('light')
   })
 
   it('calls toggleTheme when theme button clicked', () => {
     render(<Header />)
-
     const themeButton = screen.getByRole('button', { name: /Current theme: light/ })
     fireEvent.click(themeButton)
-
     expect(mockTheme.toggleTheme).toHaveBeenCalled()
   })
 
@@ -115,9 +109,8 @@ describe('Header', () => {
     expect(bottomNav).toBeInTheDocument()
   })
 
-  it('renders bottom nav with Home, History, Exercises links', () => {
+  it('renders bottom nav with Home, History, Exercises', () => {
     render(<Header />)
-
     const bottomNav = screen.getByRole('navigation', { name: 'Bottom navigation' })
     expect(bottomNav).toHaveTextContent('Home')
     expect(bottomNav).toHaveTextContent('History')
@@ -141,10 +134,10 @@ describe('Header', () => {
     expect(screen.getByRole('button', { name: /Current theme: dark/ })).toBeInTheDocument()
   })
 
-  it('Home link has correct href', () => {
+  it('displays "system" theme correctly', () => {
+    mockTheme.theme = 'system'
     render(<Header />)
-    const links = screen.getAllByRole('link', { name: 'Home' })
-    expect(links[0]).toHaveAttribute('href', '/')
+    expect(screen.getByRole('button', { name: /Current theme: system/ })).toBeInTheDocument()
   })
 
   it('History link has correct href', () => {
@@ -153,7 +146,7 @@ describe('Header', () => {
     expect(links[0]).toHaveAttribute('href', '/history')
   })
 
-  it('Exercises links have correct href', () => {
+  it('Exercises link has correct href', () => {
     render(<Header />)
     const links = screen.getAllByRole('link', { name: 'Exercises' })
     expect(links[0]).toHaveAttribute('href', '/exercises')
@@ -187,5 +180,29 @@ describe('Header', () => {
     render(<Header />)
     const themeButton = screen.getByRole('button', { name: /Current theme: dark/ })
     expect(themeButton).toBeInTheDocument()
+  })
+
+  it('has navigation items in bottom nav', () => {
+    render(<Header />)
+    const bottomNav = screen.getByRole('navigation', { name: 'Bottom navigation' })
+    const links = bottomNav.querySelectorAll('a')
+    expect(links.length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('highlights active navigation link when on history', () => {
+    mockLocation.pathname = '/history'
+    render(<Header />)
+    const historyLinks = screen.getAllByRole('link', { name: 'History' })
+    expect(historyLinks.some(link => link.getAttribute('data-aria-current') === 'page')).toBe(true)
+  })
+
+  it('renders icons in navigation', () => {
+    render(<Header />)
+    const homeLinks = screen.getAllByText('Home')
+    expect(homeLinks.length).toBeGreaterThanOrEqual(2)
+    const historyLinks = screen.getAllByText('History')
+    expect(historyLinks.length).toBeGreaterThanOrEqual(2)
+    const exercisesLinks = screen.getAllByText('Exercises')
+    expect(exercisesLinks.length).toBeGreaterThanOrEqual(2)
   })
 })

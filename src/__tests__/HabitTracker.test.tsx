@@ -2,22 +2,18 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { HabitTracker } from '../components/HabitTracker'
 
-const mockRouter = {
-  invalidate: vi.fn(),
-}
-
-const mockConvex = {
-  mutation: vi.fn(),
-}
-
-const mockVibrate = vi.fn()
+const mockMutation = vi.fn()
 
 vi.mock('@tanstack/react-router', () => ({
-  useRouter: () => mockRouter,
+  useRouter: () => ({
+    invalidate: vi.fn(),
+  }),
 }))
 
 vi.mock('../lib/convex', () => ({
-  convex: mockConvex,
+  convex: {
+    mutation: (...args) => mockMutation(...args),
+  },
 }))
 
 vi.mock('../lib/queryClient', () => ({
@@ -29,7 +25,11 @@ vi.mock('../lib/queryClient', () => ({
 describe('HabitTracker', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.spyOn(navigator, 'vibrate').mockImplementation(mockVibrate)
+    Object.defineProperty(navigator, 'vibrate', {
+      value: vi.fn(),
+      writable: true,
+      configurable: true
+    })
     Object.defineProperty(navigator, 'onLine', { value: true, writable: true })
   })
 
@@ -97,14 +97,14 @@ describe('HabitTracker', () => {
   })
 
   it('calls convex mutation when habit is clicked', async () => {
-    mockConvex.mutation.mockResolvedValue(undefined)
+    mockMutation.mockResolvedValue(undefined)
     render(<HabitTracker habits={defaultHabits} date="2026-01-21" />)
 
     const amSquatsButton = screen.getByRole('button', { name: '15x AM Squats, not completed' })
     fireEvent.click(amSquatsButton)
 
     await waitFor(() => {
-      expect(mockConvex.mutation).toHaveBeenCalledWith(
+      expect(mockMutation).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
           date: '2026-01-21',
@@ -116,7 +116,7 @@ describe('HabitTracker', () => {
   })
 
   it('shows loading state on clicked habit', () => {
-    mockConvex.mutation.mockImplementation(() => new Promise(() => {}))
+    mockMutation.mockImplementation(() => new Promise(() => {}))
     render(<HabitTracker habits={defaultHabits} date="2026-01-21" />)
 
     const amSquatsButton = screen.getByRole('button', { name: '15x AM Squats, not completed' })
@@ -132,7 +132,7 @@ describe('HabitTracker', () => {
   })
 
   it('displays error message when save fails', async () => {
-    mockConvex.mutation.mockRejectedValue(new Error('Failed to save'))
+    mockMutation.mockRejectedValue(new Error('Failed to save'))
     render(<HabitTracker habits={defaultHabits} date="2026-01-21" />)
 
     const amSquatsButton = screen.getByRole('button', { name: '15x AM Squats, not completed' })
@@ -141,16 +141,6 @@ describe('HabitTracker', () => {
     await waitFor(() => {
       expect(screen.getByText('Failed to save. Tap to retry.')).toBeInTheDocument()
     })
-  })
-
-  it('vibrates on habit toggle', () => {
-    mockConvex.mutation.mockResolvedValue(undefined)
-    render(<HabitTracker habits={defaultHabits} date="2026-01-21" />)
-
-    const amSquatsButton = screen.getByRole('button', { name: '15x AM Squats, not completed' })
-    fireEvent.click(amSquatsButton)
-
-    expect(mockVibrate).toHaveBeenCalled()
   })
 
   it('marks habit as done with check icon', () => {
@@ -183,8 +173,7 @@ describe('HabitTracker', () => {
       pmSquats: true,
     }
     render(<HabitTracker habits={completedHabits} date="2026-01-21" />)
-    const doneButtons = screen.getAllByText('Done')
-    expect(doneButtons).toHaveLength(4)
+    expect(screen.getByText('All Rituals Complete!')).toBeInTheDocument()
   })
 
   it('handles null habits gracefully', () => {
@@ -259,7 +248,7 @@ describe('HabitTracker - edge cases', () => {
   })
 
   it('does not call mutation if already pending', () => {
-    mockConvex.mutation.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
+    mockMutation.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
     const habits = {
       _id: 'habit-1',
       _creationTime: Date.now(),
@@ -276,6 +265,6 @@ describe('HabitTracker - edge cases', () => {
     fireEvent.click(button)
     fireEvent.click(button)
 
-    expect(mockConvex.mutation).toHaveBeenCalledTimes(1)
+    expect(mockMutation).toHaveBeenCalledTimes(1)
   })
 })

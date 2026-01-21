@@ -1,6 +1,6 @@
-const DB_NAME = 'iron-tracker-db'
-const DB_VERSION = 1
-const HABIT_STORE = 'pending-habits'
+export const DB_NAME = 'iron-tracker-db'
+export const DB_VERSION = 1
+export const HABIT_STORE = 'pending-habits'
 
 export function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
