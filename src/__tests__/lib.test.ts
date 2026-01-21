@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { trackEvent, trackPageView } from '../lib/analytics'
-import { PendingHabit, DB_NAME, DB_VERSION, HABIT_STORE } from '../lib/offlineStorage'
+import { DB_NAME, DB_VERSION, HABIT_STORE } from '../lib/offlineStorage'
+import type { PendingHabit } from '../lib/offlineStorage'
 
 describe('lib/analytics', () => {
   beforeEach(() => {

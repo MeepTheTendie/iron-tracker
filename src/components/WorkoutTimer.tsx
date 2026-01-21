@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Pause, Play, RotateCcw } from 'lucide-react'
 
 interface WorkoutTimerProps {
-  duration: number
+  duration?: number
   onComplete?: () => void
 }
 

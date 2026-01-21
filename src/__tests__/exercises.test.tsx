@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { useState } from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 
 const mockNavigate = vi.fn()
 const mockConvexQuery = vi.fn()
@@ -55,7 +55,6 @@ describe('routes/exercises', () => {
 
   it('toggles form when Add button clicked', () => {
     mockConvexQuery.mockResolvedValue([])
-    let showForm = false
     const TestComponent = () => {
       const [formOpen, setFormOpen] = useState(false)
       return (

@@ -12,7 +12,7 @@ vi.mock('@tanstack/react-router', () => ({
 
 vi.mock('../lib/convex', () => ({
   convex: {
-    mutation: (...args) => mockMutation(...args),
+    mutation: (...args: any[]) => mockMutation(...args),
   },
 }))
 
