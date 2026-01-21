@@ -48,17 +48,29 @@ export function EmptyState({ icon, title, description, action, color = 'blue' }:
 
 export function WorkoutEmptyState({ onStart }: { onStart: () => void }) {
   return (
-    <EmptyState
-      icon={
-        <svg className="w-8 h-8 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-      }
-      title="No Workout Today"
-      description="Take a rest day or start a custom workout"
-      action={{ label: 'Start Custom Workout', onClick: onStart }}
-      color="blue"
-    />
+    <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden">
+      <div className="bg-sky-200 p-8 text-center">
+        <button
+          onClick={onStart}
+          className={`w-16 h-16 bg-sky-100 rounded-xl flex items-center justify-center mx-auto mb-4 hover:bg-sky-300 active:scale-95 transition-all cursor-pointer`}
+          aria-label="Start custom workout"
+        >
+          <svg className="w-8 h-8 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+        </button>
+        <h3 className="text-xl font-bold text-sky-800 mb-2">No Workout Today</h3>
+        <p className="text-sky-600 opacity-70 text-sm">Take a rest day or start a custom workout</p>
+      </div>
+      <div className="p-4">
+        <button
+          onClick={onStart}
+          className="w-full flex items-center justify-center gap-2 bg-sky-200 text-sky-800 font-semibold py-3 px-4 rounded-xl hover:brightness-95 active:scale-[0.98] transition-all"
+        >
+          Start Custom Workout
+        </button>
+      </div>
+    </div>
   )
 }
 
