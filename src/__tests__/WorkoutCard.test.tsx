@@ -104,7 +104,7 @@ describe('WorkoutCard', () => {
 
   it('shows rest seconds when present', () => {
     render(<WorkoutCard workout={mockWorkout} />)
-    const restElements = screen.getAllByText((content, element) => {
+    const restElements = screen.getAllByText((_, element) => {
       return element?.textContent === '60s rest'
     })
     expect(restElements.length).toBeGreaterThanOrEqual(1)
