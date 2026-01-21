@@ -8,7 +8,7 @@ Thank you for your interest in contributing to Iron Tracker! This guide will hel
 
 - Node.js 18+ and npm
 - Git
-- Supabase account (for development)
+- Convex account (for development)
 - GitHub account
 
 ### Setup Development Environment
@@ -29,7 +29,7 @@ Thank you for your interest in contributing to Iron Tracker! This guide will hel
 3. **Configure Environment Variables**
    ```bash
    cp .env.example .env
-   # Edit .env with your Supabase credentials
+   # Edit .env with your Convex credentials
    ```
 
 4. **Start Development**

@@ -79,7 +79,7 @@ if [ ! -f ".env" ]; then
     if [ -f ".env.example" ]; then
         cp .env.example .env
         print_success "Created .env from .env.example"
-        print_warning "Please edit .env file with your Supabase credentials"
+        print_warning "Please edit .env file with your Convex credentials"
     else
         print_warning ".env.example not found. Creating basic .env file..."
         cat > .env << EOF
@@ -450,7 +450,7 @@ This guide covers everything you need to know about developing Iron Tracker.
 
 - Node.js 18+ and npm
 - Git
-- Supabase account
+- Convex account
 - VS Code (recommended)
 
 ### Initial Setup
@@ -465,7 +465,7 @@ This guide covers everything you need to know about developing Iron Tracker.
 
 2. **Configure Environment**
    ```bash
-   # Edit .env with your Supabase credentials
+   # Edit .env with your Convex credentials
    nano .env
    ```
 
@@ -524,7 +524,7 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`
 - **Frontend**: React 19.2.0 with TypeScript
 - **Routing**: TanStack Router (file-based, type-safe)
 - **Styling**: Tailwind CSS 4.0.6
-- **Backend**: Supabase (PostgreSQL + API)
+- **Backend**: Convex (PostgreSQL + API)
 - **Build Tool**: Vite 7.1.7
 - **Testing**: Vitest 3.0.5
 
@@ -533,7 +533,7 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`
 ```
 src/
 ├── components/         # Reusable React components
-├── lib/               # Utilities (Supabase client)
+├── lib/               # Utilities (Convex client)
 ├── routes/            # TanStack Router file-based routes
 ├── api/               # API endpoints
 ├── main.tsx           # App entry point
@@ -648,7 +648,7 @@ Security is scanned automatically:
 #### Best Practices
 
 1. Always validate user input
-2. Use Supabase Row Level Security (RLS)
+2. Use Convex Row Level Security (RLS)
 3. Keep dependencies updated
 4. Use HTTPS in production
 5. Implement proper error handling
@@ -672,7 +672,7 @@ Response:
 
 Set up error tracking (recommended):
 - Sentry for frontend errors
-- Supabase logs for backend errors
+- Convex logs for backend errors
 
 ### Contributing
 
@@ -738,7 +738,7 @@ echo ""
 echo "🎉 Your development environment is ready!"
 echo ""
 echo "Next steps:"
-echo "1. Edit .env with your Supabase credentials"
+echo "1. Edit .env with your Convex credentials"
 echo "2. Run 'npm run dev' to start development server"
 echo "3. Open http://localhost:3000 in your browser"
 echo "4. Read DEVELOPMENT.md for detailed guidance"

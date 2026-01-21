@@ -4,7 +4,7 @@ This document provides a comprehensive overview of Iron Tracker's architecture, 
 
 ## 🏗️ Overview
 
-Iron Tracker is a modern web application built with React, TypeScript, and Supabase. The architecture follows a component-based, event-driven design with emphasis on type safety, performance, and developer experience.
+Iron Tracker is a modern web application built with React, TypeScript, and Convex. The architecture follows a component-based, event-driven design with emphasis on type safety, performance, and developer experience.
 
 ### Core Principles
 
@@ -33,9 +33,7 @@ Iron Tracker is a modern web application built with React, TypeScript, and Supab
 
 | Technology | Purpose |
 |------------|---------|
-| Supabase | Backend-as-a-service (PostgreSQL + Auth + API) |
-| Supabase Auth | User authentication and authorization |
-| Supabase RLS | Row-level security for data protection |
+| Convex | Backend-as-a-service (database + serverless functions) |
 | PostgreSQL | Primary database with ACID compliance |
 
 ### Development Tools
@@ -59,19 +57,17 @@ Iron Tracker is a modern web application built with React, TypeScript, and Supab
 ├─────────────────┤    ├─────────────────┤    ├─────────────────┤
 │ React Components│◄───┤     Vite        │◄───┤   GitHub Actions │
 │ TanStack Router │    │   TypeScript    │    │     Vercel      │
-│ TanStack Query  │    │   Tailwind      │    │    Supabase     │
+│ TanStack Query  │    │   Tailwind      │    │    Convex       │
 │ PWA Features    │    │   ESLint/Prettier│   │    Monitoring   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                                              │
          └──────────────────────┬───────────────────────┘
                                 │
                        ┌─────────────────┐
-                       │  Supabase API   │
+                       │   Convex API    │
                        ├─────────────────┤
-                       │   Auth Service  │
                        │   Database      │
-                       │   Storage       │
-                       │   Edge Functions│
+                       │   Functions     │
                        └─────────────────┘
 ```
 
@@ -101,7 +97,7 @@ src/
 
 ```typescript
 // Data flow pattern
-Supabase DB → TanStack Query → React State → UI Components → User Interaction → Mutations → Supabase DB
+Convex → TanStack Query → React State → UI Components → User Interaction → Mutations → Convex
 ```
 
 ### Query Flow
@@ -112,15 +108,7 @@ export function useWorkouts() {
   return useQuery({
     queryKey: ['workouts'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('workouts')
-        .select(`
-          *,
-          exercises:program_exercises(
-            *,
-            exercise:exercises(*)
-          )
-        `);
+      const data = await ctx.runQuery(api.workouts.getAll)
       return data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes cache
@@ -138,11 +126,7 @@ export function useLogWorkout() {
   
   return useMutation({
     mutationFn: async (workoutLog: WorkoutLog) => {
-      const { data } = await supabase
-        .from('workout_logs')
-        .insert(workoutLog)
-        .select()
-        .single();
+      const data = await ctx.runMutation(api.workoutLogs.create, workoutLog)
       return data;
     },
     onSuccess: () => {
@@ -177,24 +161,24 @@ users 1→N daily_habits
 users 1→N workout_logs
 ```
 
-### Row Level Security (RLS)
+### Access Control
 
-```sql
--- Example RLS policy for workout_logs
-CREATE POLICY "Users can view their own workout logs"
-ON workout_logs
-FOR SELECT
-USING (auth.uid() = user_id);
+Convex handles access control at the function level. Each query and mutation can check authentication and authorization:
 
-CREATE POLICY "Users can insert their own workout logs"
-ON workout_logs
-FOR INSERT
-WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update their own workout logs"
-ON workout_logs
-FOR UPDATE
-USING (auth.uid() = user_id);
+```typescript
+// Example: Protected query with access control
+export const getWorkoutLogs = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+    return await ctx.runQuery(api.workoutLogs.getByUser, { 
+      userId: identity.subject 
+    });
+  },
+});
 ```
 
 ### Data Relationships
@@ -273,7 +257,7 @@ export const Route = createRootRoute({
 export const Route = createFileRoute('/workout')({
   loader: async () => {
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-    const { data } = await supabase
+    const { data } = await ctx.runQuery or ctx.runMutation
       .from('programs')
       .select('*, exercises:program_exercises(exercise:exercises(*))')
       .eq('day_of_week', today)
@@ -286,7 +270,7 @@ export const Route = createFileRoute('/workout')({
 // Route with parameters
 export const Route = createFileRoute('/exercise/$id')({
   loader: ({ params }) => {
-    return supabase
+    return ctx.runQuery or ctx.runMutation
       .from('exercises')
       .select('*')
       .eq('id', params.id)
@@ -377,7 +361,7 @@ export function DataProvider<T>({
 // Usage
 <DataProvider
   queryKey={['workouts']}
-  queryFn={() => supabase.from('workouts').select('*')}
+  queryFn={() => ctx.runQuery or ctx.runMutation.from('workouts').select('*')}
 >
   {(workouts) => <WorkoutList workouts={workouts} />}
 </DataProvider>
@@ -446,7 +430,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Initialize auth state
     const initAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await ctx.runQuery or ctx.runMutation.auth.getSession();
       setUser(session?.user ?? null);
       setLoading(false);
     };
@@ -454,7 +438,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = ctx.runQuery or ctx.runMutation.auth.onAuthStateChange(
       (event, session) => {
         setUser(session?.user ?? null);
       }
@@ -464,17 +448,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await ctx.runQuery or ctx.runMutation.auth.signInWithPassword({ email, password });
     if (error) throw error;
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await ctx.runQuery or ctx.runMutation.auth.signUp({ email, password });
     if (error) throw error;
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await ctx.runQuery or ctx.runMutation.auth.signOut();
     if (error) throw error;
   };
 
@@ -510,7 +494,7 @@ export class SecureAPI {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await ctx.runQuery or ctx.runMutation.auth.getSession();
     
     if (!session) {
       throw new Error('Authentication required');
@@ -815,20 +799,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 const config = {
   development: {
     apiUrl: 'http://localhost:54321',
-    supabaseUrl: process.env.VITE_SUPABASE_URL,
-    supabaseAnonKey: process.env.VITE_SUPABASE_ANON_KEY,
+    convexUrl: process.env.VITE_CONVEX_URL,
     debug: true,
   },
   staging: {
     apiUrl: 'https://api.staging.iron-tracker.com',
-    supabaseUrl: process.env.VITE_SUPABASE_URL,
-    supabaseAnonKey: process.env.VITE_SUPABASE_ANON_KEY,
+    convexUrl: process.env.VITE_CONVEX_URL,
     debug: false,
   },
   production: {
     apiUrl: 'https://api.iron-tracker.com',
-    supabaseUrl: process.env.VITE_SUPABASE_URL,
-    supabaseAnonKey: process.env.VITE_SUPABASE_ANON_KEY,
+    convexUrl: process.env.VITE_CONVEX_URL,
     debug: false,
   },
 }[import.meta.env.VITE_APP_ENV || 'development'];

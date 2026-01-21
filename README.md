@@ -1,6 +1,6 @@
 # Iron Tracker
 
-A modern web application for tracking daily habits and strength training progress. Built with React, Vite, and Supabase.
+A modern web application for tracking daily habits and strength training progress. Built with React, Vite, and Convex.
 
 ## Features
 
@@ -35,7 +35,7 @@ Iron Tracker is built on the modern **TanStack ecosystem** for a best-in-class d
 - **Frontend**: React 19.2.0 with TypeScript
 - **Build Tool**: Vite 7.1.7
 - **Styling**: Tailwind CSS 4.0.6
-- **Backend**: Supabase (PostgreSQL + auto-generated API)
+- **Backend**: Convex (serverless functions + database)
 - **Charts**: Recharts 3.6.0
 - **Icons**: Lucide React 0.545.0
 - **Testing**: Vitest 3.0.5
@@ -44,7 +44,7 @@ Iron Tracker is built on the modern **TanStack ecosystem** for a best-in-class d
 ## Prerequisites
 
 - Node.js 18+ and npm
-- Supabase account (free tier works)
+- Convex account (free tier works)
 - Git
 
 ## Getting Started
@@ -64,29 +64,26 @@ npm install
 
 ### 3. Configure Environment Variables
 
-Copy the environment template and add your Supabase credentials:
+Copy the environment template and add your Convex credentials:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and add your Supabase URL and anon key:
+Edit `.env` and add your Convex URL:
 
 ```
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_CONVEX_URL=https://your-project-id.convex.cloud
 ```
 
-**Where to find your Supabase credentials:**
+**Where to find your Convex credentials:**
 
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Select your project
-3. Go to Settings → API
-4. Copy the "Project URL" and "anon" public key
+1. Run `npx convex dev` to start Convex locally
+2. Your Convex URL will be displayed and auto-configured
 
-### 4. Set Up Supabase Database
+### 4. Set Up Convex Database
 
-Run the SQL commands from `SUPABASE_RLS_FIX.md` in your Supabase SQL Editor to enable Row Level Security.
+Run `npx convex dev` to start Convex locally and automatically set up your database schema.
 
 ### 5. Start Development Server
 
@@ -98,7 +95,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Database Schema
 
-Iron Tracker uses the following Supabase tables:
+Iron Tracker uses the following Convex tables:
 
 ### `programs`
 
@@ -268,7 +265,7 @@ iron-tracker/
 │   │   └── layouts/      # Layout components
 │   ├── hooks/            # Custom React hooks
 │   ├── lib/              # Utilities and configurations
-│   │   ├── supabase.ts   # Supabase client configuration
+│   │   ├── convex.ts     # Convex client configuration
 │   │   └── error-tracking.ts # Error tracking system
 │   ├── routes/           # TanStack Router file-based routes
 │   │   ├── __root.tsx    # Root route with layout
@@ -307,7 +304,7 @@ iron-tracker/
 ├── .pre-commit-config.yaml # Pre-commit hooks configuration
 ├── .secrets.baseline   # Secrets detection baseline
 ├── .env.example         # Environment template
-├── SUPABASE_RLS_FIX.md  # Database security instructions
+├── CONVEX_SETUP.md   # Database setup instructions
 └── README.md            # This file
 ```
 
@@ -327,17 +324,15 @@ iron-tracker/
 
 3. **Add Environment Variables**
    - Go to Settings → Environment Variables
-   - Add `VITE_SUPABASE_URL` with your Supabase URL
-   - Add `VITE_SUPABASE_ANON_KEY` with your anon key
+   - Add `VITE_CONVEX_URL` with your Convex URL
 
 4. **Add Custom Domain**
    - Go to Settings → Domains
    - Add `myworkouttracker.xyz`
    - Vercel will automatically provision SSL
 
-5. **Configure Supabase**
-   - Go to Supabase Dashboard → Authentication → URL Configuration
-   - Add `https://myworkouttracker.xyz` to Redirect URLs
+5. **Configure Convex**
+   - Run `npx convex deploy` to deploy your Convex functions to production
 
 ### Alternative Deployments
 
@@ -368,7 +363,7 @@ Iron Tracker includes enterprise-grade security features:
 
 ### Security Best Practices
 - **Environment Variables**: Secure management with `.env` files
-- **Row Level Security**: Supabase RLS for data protection
+- **Row Level Security**: Convex handles data access at the function level
 - **Input Validation**: Comprehensive input sanitization
 - **HTTPS Enforcement**: SSL/TLS for all communications
 - **Error Tracking**: Comprehensive error monitoring and alerting
@@ -376,9 +371,7 @@ Iron Tracker includes enterprise-grade security features:
 
 ### Security Setup
 
-**IMPORTANT**: Before deploying, you must enable Row Level Security (RLS) on your Supabase tables to prevent unauthorized access.
-
-See `SUPABASE_RLS_FIX.md` for detailed SQL commands to run in your Supabase SQL Editor.
+**IMPORTANT**: Convex automatically handles data access control. No additional RLS configuration needed.
 
 ### Monitoring & Alerting
 - **Health Checks**: `/api/health` endpoint for monitoring
@@ -450,12 +443,9 @@ Each route can define a `loader` function to fetch data before rendering:
 
 ```tsx
 export const Route = createFileRoute('/history')({
-  loader: async () => {
-    const { data } = await supabase
-      .from('workout_logs')
-      .select('date, exercise_name, weight, reps')
-      .order('date', { ascending: true })
-    return { logs: data }
+  loader: async ({ ctx }) => {
+    const logs = await ctx.runQuery(api.workoutLogs.getHistory)
+    return { logs }
   },
   component: HistoryPage,
 })
@@ -558,10 +548,10 @@ export function MyComponent({ title, icon: Icon }: Props) {
 
 When modifying the database schema:
 
-1. Make changes in Supabase Dashboard
-2. Update TypeScript interfaces in component files to match
+1. Make changes in `convex/schema.ts`
+2. Run `npx convex dev` to apply changes locally
 3. Test locally with `npm run dev`
-4. Deploy with `npm run build && vercel deploy`
+4. Deploy with `npm run build && npx convex deploy`
 
 ## Contributing
 
@@ -582,7 +572,7 @@ MIT License - feel free to use this project for your own purposes.
   - [TanStack DevTools](https://tanstack.com/devtools) for React debugging
   - [TanStack Query](https://tanstack.com/query) for data fetching (recommended for future enhancement)
 - [Tailwind CSS](https://tailwindcss.com) for utility-first styling
-- [Supabase](https://supabase.com) for backend-as-a-service
+- [Convex](https://convex.dev) for backend-as-a-service (database + functions)
 - [Recharts](https://recharts.org) for beautiful charts
 - [Lucide](https://lucide.dev) for consistent icons
 

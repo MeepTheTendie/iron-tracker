@@ -34,11 +34,11 @@ To enable automatic deployments via GitHub Actions, you need to configure the fo
      - `ORG_ID`: Your Vercel organization ID
      - `PROJECT_ID`: Your Vercel project ID
 
-### Supabase (Iron Tracker Only)
+### Convex (Iron Tracker Only)
 
-If using Supabase in production:
+If using Convex in production:
 
-- Go to [Supabase Dashboard](https://supabase.com/dashboard)
+- Go to [Convex Dashboard](https://supabase.com/dashboard)
 - Navigate to Settings → API
 - Add these secrets:
   - `SUPABASE_URL`: Your project URL
@@ -63,7 +63,7 @@ gh secret set VERCEL_TOKEN -b"your-vercel-token"
 gh secret set ORG_ID -b"your-org-id"
 gh secret set PROJECT_ID -b"your-project-id"
 
-# Supabase secrets (Iron Tracker only)
+# Convex secrets (Iron Tracker only)
 gh secret set SUPABASE_URL -b"https://your-project.supabase.co"
 gh secret set SUPABASE_ANON_KEY -b"your-anon-key"
 

@@ -7,19 +7,19 @@ This guide covers the deployment process for Iron Tracker across different envir
 ### Development
 - **Purpose**: Local development and testing
 - **URL**: `http://localhost:3000`
-- **Database**: Local Supabase project
+- **Database**: Local Convex project
 - **Features**: Hot reload, DevTools, debug logging
 
 ### Staging
 - **Purpose**: Pre-production testing
 - **URL**: `https://staging.iron-tracker.com`
-- **Database**: Staging Supabase project
+- **Database**: Staging Convex project
 - **Features**: Production-like environment, test data
 
 ### Production
 - **Purpose**: Live application
 - **URL**: `https://iron-tracker.com`
-- **Database**: Production Supabase project
+- **Database**: Production Convex project
 - **Features**: Optimized performance, monitoring, analytics
 
 ## 🚀 Deployment Platforms
@@ -79,8 +79,8 @@ Vercel provides the best experience for React applications with automatic deploy
    ```
 
 3. **Environment Variables**
-   - `VITE_SUPABASE_URL`: Supabase project URL
-   - `VITE_SUPABASE_ANON_KEY`: Supabase anonymous key
+   - `VITE_SUPABASE_URL`: Convex project URL
+   - `VITE_SUPABASE_ANON_KEY`: Convex anonymous key
    - `VITE_GA_ID`: Google Analytics ID (optional)
 
 #### Deployment Commands
@@ -479,11 +479,11 @@ git push -f origin main
 ### Database Rollback
 
 ```sql
--- Supabase rollback
+-- Convex rollback
 SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'your_database';
 
 -- Or restore from backup
--- Use Supabase Dashboard to restore point-in-time
+-- Use Convex Dashboard to restore point-in-time
 ```
 
 ## 📈 Monitoring and Analytics
