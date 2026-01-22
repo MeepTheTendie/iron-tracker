@@ -71,7 +71,13 @@ function HabitRow({ label, checked, isLoading, onClick }: HabitProps) {
   )
 }
 
-export function HabitTracker({ habits, date }: { habits: HabitsData | null; date: string }) {
+export function HabitTracker({
+  habits,
+  date,
+}: {
+  habits: HabitsData | null
+  date: string
+}) {
   const router = useRouter()
   const [pendingFields, setPendingFields] = useState<Set<HabitField>>(new Set())
   const [error, setError] = useState<string | null>(null)
@@ -113,57 +119,60 @@ export function HabitTracker({ habits, date }: { habits: HabitsData | null; date
   const completedCount = getCompletedCount()
   const totalHabits = 4
 
-  const handleToggle = useCallback(async (field: HabitField) => {
-    if (pendingFields.has(field) || !habits) return
+  const handleToggle = useCallback(
+    async (field: HabitField) => {
+      if (pendingFields.has(field) || !habits) return
 
-    const currentValue = (habits[field] ?? false)
-    setPendingFields((prev) => new Set(prev).add(field))
-    setError(null)
+      const currentValue = habits[field] ?? false
+      setPendingFields((prev) => new Set(prev).add(field))
+      setError(null)
 
-    if ('vibrate' in navigator) navigator.vibrate(15)
+      if ('vibrate' in navigator) navigator.vibrate(15)
 
-    const newValue = !currentValue
+      const newValue = !currentValue
 
-    if (!convex) {
-      setError('Convex not connected')
-      setPendingFields((prev) => {
-        const next = new Set(prev)
-        next.delete(field)
-        return next
-      })
-      return
-    }
+      if (!convex) {
+        setError('Convex not connected')
+        setPendingFields((prev) => {
+          const next = new Set(prev)
+          next.delete(field)
+          return next
+        })
+        return
+      }
 
-    try {
-      await convex.mutation(api.dailyHabits.toggleHabit, {
-        date,
-        field,
-        value: newValue,
-      })
-      router.invalidate()
-      if ('vibrate' in navigator) navigator.vibrate(30)
-    } catch (err) {
-      setError('Failed to save. Tap to retry.')
-      console.error('Habit toggle error:', err)
-    } finally {
-      setPendingFields((prev) => {
-        const next = new Set(prev)
-        next.delete(field)
-        return next
-      })
-    }
-  }, [habits, date, pendingFields, router])
+      try {
+        await convex.mutation(api.dailyHabits.toggleHabit, {
+          date,
+          field,
+          value: newValue,
+        })
+        router.invalidate()
+        if ('vibrate' in navigator) navigator.vibrate(30)
+      } catch (err) {
+        setError('Failed to save. Tap to retry.')
+        console.error('Habit toggle error:', err)
+      } finally {
+        setPendingFields((prev) => {
+          const next = new Set(prev)
+          next.delete(field)
+          return next
+        })
+      }
+    },
+    [habits, date, pendingFields, router],
+  )
 
   if (allCompletedVal) {
     return (
       <div className="bg-rose-200 p-5 rounded-2xl border-2 border-rose-300 mb-6">
         <div className="flex items-center gap-3 mb-2">
           <Trophy className="w-8 h-8 text-rose-600" aria-hidden="true" />
-          <h2 className="text-xl font-bold text-rose-800">All Rituals Complete!</h2>
+          <h2 className="text-xl font-bold text-rose-800">
+            All Rituals Complete!
+          </h2>
         </div>
-        <p className="text-rose-600 text-sm">
-          Great job! See you tomorrow!
-        </p>
+        <p className="text-rose-600 text-sm">Great job! See you tomorrow!</p>
       </div>
     )
   }
@@ -177,9 +186,7 @@ export function HabitTracker({ habits, date }: { habits: HabitsData | null; date
               className="w-5 h-5 text-rose-500 fill-rose-400"
               aria-hidden="true"
             />
-            <h2 className="text-lg font-bold text-gray-800">
-              Daily Rituals
-            </h2>
+            <h2 className="text-lg font-bold text-gray-800">Daily Rituals</h2>
           </div>
           <span className="text-sm font-bold text-rose-600 bg-rose-100 px-3 py-1 rounded-full">
             {completedCount}/{totalHabits}
@@ -189,7 +196,10 @@ export function HabitTracker({ habits, date }: { habits: HabitsData | null; date
 
       {error && (
         <div className="px-4 pt-3">
-          <div className="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" role="alert">
+          <div
+            className="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+            role="alert"
+          >
             {error}
           </div>
         </div>
@@ -197,7 +207,10 @@ export function HabitTracker({ habits, date }: { habits: HabitsData | null; date
 
       {!isOnline && (
         <div className="px-4 pt-2">
-          <div className="mb-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2" role="alert">
+          <div
+            className="mb-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2"
+            role="alert"
+          >
             <WifiOff size={16} aria-hidden="true" />
             <span>Offline - changes will sync when connected</span>
           </div>
@@ -220,7 +233,11 @@ export function HabitTracker({ habits, date }: { habits: HabitsData | null; date
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-2" role="list" aria-label="Habit checklist">
+        <div
+          className="grid grid-cols-1 gap-2"
+          role="list"
+          aria-label="Habit checklist"
+        >
           <HabitRow
             field="amSquats"
             label="15x AM Squats"

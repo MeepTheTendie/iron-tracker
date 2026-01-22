@@ -1,7 +1,13 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { ErrorBoundary } from '../components/ErrorBoundary'
-import { Skeleton, SkeletonCard, SkeletonList, SkeletonButton, SkeletonHabitTracker } from '../components/Skeleton'
+import {
+  Skeleton,
+  SkeletonCard,
+  SkeletonList,
+  SkeletonButton,
+  SkeletonHabitTracker,
+} from '../components/Skeleton'
 import { WorkoutTimer } from '../components/WorkoutTimer'
 import { StreakDisplay } from '../components/StreakTracker'
 
@@ -37,12 +43,16 @@ describe('ErrorBoundary', () => {
     }
 
     const { container } = render(
-      <ErrorBoundary fallback={<div data-testid="fallback">Custom fallback</div>}>
+      <ErrorBoundary
+        fallback={<div data-testid="fallback">Custom fallback</div>}
+      >
         <ThrowError />
       </ErrorBoundary>,
     )
 
-    expect(container.querySelector('[data-testid="fallback"]')).toBeInTheDocument()
+    expect(
+      container.querySelector('[data-testid="fallback"]'),
+    ).toBeInTheDocument()
   })
 
   it('shows error message when error occurs', () => {
@@ -88,7 +98,9 @@ describe('ErrorBoundary', () => {
     )
 
     const errorDiv = container.querySelector('.p-4.bg-red-50')
-    expect(errorDiv).toHaveClass('p-4 bg-red-50 border border-red-200 rounded-lg text-red-700')
+    expect(errorDiv).toHaveClass(
+      'p-4 bg-red-50 border border-red-200 rounded-lg text-red-700',
+    )
   })
 })
 
@@ -214,31 +226,71 @@ describe('StreakDisplay', () => {
   })
 
   it('renders current streak', () => {
-    render(<StreakDisplay streakData={{ currentStreak: 5, longestStreak: 10, lastCompletedDate: '2026-01-21' }} />)
+    render(
+      <StreakDisplay
+        streakData={{
+          currentStreak: 5,
+          longestStreak: 10,
+          lastCompletedDate: '2026-01-21',
+        }}
+      />,
+    )
     expect(screen.getByText('5')).toBeInTheDocument()
     expect(screen.getByText('day streak')).toBeInTheDocument()
   })
 
   it('renders longest streak', () => {
-    render(<StreakDisplay streakData={{ currentStreak: 5, longestStreak: 10, lastCompletedDate: '2026-01-21' }} />)
+    render(
+      <StreakDisplay
+        streakData={{
+          currentStreak: 5,
+          longestStreak: 10,
+          lastCompletedDate: '2026-01-21',
+        }}
+      />,
+    )
     expect(screen.getByText('10')).toBeInTheDocument()
     expect(screen.getByText('best')).toBeInTheDocument()
   })
 
   it('renders with zero streak', () => {
-    render(<StreakDisplay streakData={{ currentStreak: 0, longestStreak: 0, lastCompletedDate: null }} />)
+    render(
+      <StreakDisplay
+        streakData={{
+          currentStreak: 0,
+          longestStreak: 0,
+          lastCompletedDate: null,
+        }}
+      />,
+    )
     expect(screen.getAllByText('0')[0]).toBeInTheDocument()
   })
 
   it('has correct styling classes for current streak', () => {
-    render(<StreakDisplay streakData={{ currentStreak: 2, longestStreak: 1, lastCompletedDate: '2026-01-21' }} />)
+    render(
+      <StreakDisplay
+        streakData={{
+          currentStreak: 2,
+          longestStreak: 1,
+          lastCompletedDate: '2026-01-21',
+        }}
+      />,
+    )
     const currentStreakDiv = screen.getByText('2').closest('div.bg-orange-100')
     expect(currentStreakDiv).toBeInTheDocument()
     expect(currentStreakDiv).toHaveClass('bg-orange-100 px-4 py-2 rounded-lg')
   })
 
   it('has correct styling classes for longest streak', () => {
-    render(<StreakDisplay streakData={{ currentStreak: 1, longestStreak: 5, lastCompletedDate: '2026-01-21' }} />)
+    render(
+      <StreakDisplay
+        streakData={{
+          currentStreak: 1,
+          longestStreak: 5,
+          lastCompletedDate: '2026-01-21',
+        }}
+      />,
+    )
     const longestStreakDiv = screen.getByText('5').closest('div.bg-amber-100')
     expect(longestStreakDiv).toBeInTheDocument()
     expect(longestStreakDiv).toHaveClass('bg-amber-100 px-4 py-2 rounded-lg')

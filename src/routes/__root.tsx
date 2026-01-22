@@ -17,9 +17,10 @@ export const Route = createRootRoute({
           {
             id: 'tanstack-router',
             name: 'Tanstack Router',
-            render: (el) => import('react-dom/client').then(({ createRoot }) => {
-              createRoot(el).render(<TanStackRouterDevtoolsPanel />)
-            }),
+            render: (el) =>
+              import('react-dom/client').then(({ createRoot }) => {
+                createRoot(el).render(<TanStackRouterDevtoolsPanel />)
+              }),
           },
         ]}
       />

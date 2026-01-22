@@ -88,7 +88,9 @@ export default function Header() {
               to={item.to}
               onClick={() => setIsOpen(false)}
               className={`flex items-center gap-3 p-3 rounded-lg transition-colors mb-2 ${
-                isActive(item.to) ? 'bg-rose-300 text-rose-900' : 'hover:bg-rose-200'
+                isActive(item.to)
+                  ? 'bg-rose-300 text-rose-900'
+                  : 'hover:bg-rose-200'
               }`}
               aria-current={isActive(item.to) ? 'page' : undefined}
             >

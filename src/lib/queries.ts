@@ -21,7 +21,8 @@ export const queryKeys = {
   logs: {
     all: ['logs'] as const,
     byDate: (date: string) => ['logs', 'date', date] as const,
-    history: (startDate: string, endDate: string) => ['logs', 'history', startDate, endDate] as const,
+    history: (startDate: string, endDate: string) =>
+      ['logs', 'history', startDate, endDate] as const,
   },
 }
 
@@ -49,7 +50,11 @@ export function useToggleHabit() {
   return useMutation({
     mutationFn: async ({ date, field, value }: ToggleHabitParams) => {
       if (!convex) throw new Error('Convex not connected')
-      return convex.mutation(api.dailyHabits.toggleHabit, { date, field, value })
+      return convex.mutation(api.dailyHabits.toggleHabit, {
+        date,
+        field,
+        value,
+      })
     },
     onSuccess: (_, { date }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.habits.today(date) })
@@ -118,9 +123,19 @@ export function useLogWorkout() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ date, exerciseName, weight, reps }: LogWorkoutParams) => {
+    mutationFn: async ({
+      date,
+      exerciseName,
+      weight,
+      reps,
+    }: LogWorkoutParams) => {
       if (!convex) throw new Error('Convex not connected')
-      return convex.mutation(api.workoutLogs.insert, { date, exerciseName, weight, reps })
+      return convex.mutation(api.workoutLogs.insert, {
+        date,
+        exerciseName,
+        weight,
+        reps,
+      })
     },
     onSuccess: (_, { date }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.logs.byDate(date) })

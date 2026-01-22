@@ -4,8 +4,9 @@ export function Skeleton({ className = '' }: { className?: string }) {
       data-testid="skeleton"
       className={`animate-pulse bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] rounded ${className}`}
       style={{
-        backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
-        animation: 'shimmer 1.5s infinite'
+        backgroundImage:
+          'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+        animation: 'shimmer 1.5s infinite',
       }}
     />
   )
@@ -13,7 +14,10 @@ export function Skeleton({ className = '' }: { className?: string }) {
 
 export function SkeletonCard() {
   return (
-    <div data-testid="skeleton-card" className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-5">
+    <div
+      data-testid="skeleton-card"
+      className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-5"
+    >
       <div className="flex items-center gap-3 mb-4">
         <Skeleton className="w-12 h-12 rounded-xl" />
         <div className="flex-1">
@@ -43,7 +47,10 @@ export function SkeletonList({ count = 3 }: { count?: number }) {
 
 export function SkeletonButton() {
   return (
-    <div data-testid="skeleton-button" className="bg-white rounded-2xl border border-gray-200 p-4">
+    <div
+      data-testid="skeleton-button"
+      className="bg-white rounded-2xl border border-gray-200 p-4"
+    >
       <div className="flex items-center gap-3">
         <Skeleton className="w-10 h-10 rounded-xl" />
         <div className="flex-1">
@@ -58,11 +65,17 @@ export function SkeletonButton() {
 
 export function SkeletonHabitTracker() {
   return (
-    <div data-testid="skeleton-habit-tracker" className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+    <div
+      data-testid="skeleton-habit-tracker"
+      className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5"
+    >
       <Skeleton className="h-6 w-32 mb-4" />
       <div className="grid grid-cols-7 gap-2">
         {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="aspect-square rounded-xl bg-gray-100 animate-pulse" />
+          <div
+            key={i}
+            className="aspect-square rounded-xl bg-gray-100 animate-pulse"
+          />
         ))}
       </div>
     </div>

@@ -14,6 +14,7 @@ Thank you for your interest in contributing to Iron Tracker! This guide will hel
 ### Setup Development Environment
 
 1. **Fork the Repository**
+
    ```bash
    # Fork the repository on GitHub, then clone your fork
    git clone https://github.com/YOUR_USERNAME/iron-tracker.git
@@ -21,12 +22,14 @@ Thank you for your interest in contributing to Iron Tracker! This guide will hel
    ```
 
 2. **Setup Environment**
+
    ```bash
    chmod +x scripts/setup.sh
    ./scripts/setup.sh
    ```
 
 3. **Configure Environment Variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your Convex credentials
@@ -121,16 +124,16 @@ Then create a Pull Request on GitHub with:
 ```typescript
 // ✅ Good: Use interfaces for type definitions
 interface Exercise {
-  id: number;
-  name: string;
-  sets: number;
-  reps: number;
+  id: number
+  name: string
+  sets: number
+  reps: number
 }
 
 // ✅ Good: Use proper typing for props
 interface WorkoutCardProps {
-  workout: Workout;
-  onStart: () => void;
+  workout: Workout
+  onStart: () => void
 }
 
 export function WorkoutCard({ workout, onStart }: WorkoutCardProps) {
@@ -149,7 +152,7 @@ function processData(data: any) {
 // ✅ Good: Functional components with hooks
 export function HabitTracker({ habits }: HabitTrackerProps) {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
-  
+
   const toggleHabit = useCallback((habitId: string) => {
     setCompleted(prev => {
       const newSet = new Set(prev);
@@ -184,7 +187,7 @@ export function useWorkoutHistory(exerciseId?: string) {
           .select('*')
           .eq('exercise_id', exerciseId)
           .order('date', { ascending: true });
-        
+
         setLogs(data || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -214,14 +217,14 @@ export function useWorkoutHistory(exerciseId?: string) {
 
 ```typescript
 // ✅ Good: Organized imports
-import React, { useState, useEffect } from 'react';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { supabase } from '../lib/supabase';
-import { WorkoutCard } from '../components/WorkoutCard';
-import type { Workout, Exercise } from '../types/workout.types';
+import React, { useState, useEffect } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { supabase } from '../lib/supabase'
+import { WorkoutCard } from '../components/WorkoutCard'
+import type { Workout, Exercise } from '../types/workout.types'
 
 // Local imports last
-import './WorkoutPage.css';
+import './WorkoutPage.css'
 ```
 
 ## 🧪 Testing Guidelines
@@ -249,9 +252,9 @@ describe('WorkoutCard', () => {
   it('calls onStart when start button is clicked', async () => {
     const mockOnStart = vi.fn();
     const user = userEvent.setup();
-    
+
     render(<WorkoutCard workout={mockWorkout} onStart={mockOnStart} />);
-    
+
     await user.click(screen.getByRole('button', { name: /start workout/i }));
     expect(mockOnStart).toHaveBeenCalledTimes(1);
   });
@@ -352,28 +355,35 @@ When reporting bugs, please include:
 
 ```markdown
 ## Bug Description
+
 Brief description of the bug
 
 ## Environment
+
 - OS: [e.g., macOS 14.0]
 - Browser: [e.g., Chrome 120]
 - Node.js: [e.g., 20.10.0]
 
 ## Steps to Reproduce
+
 1. Go to...
 2. Click on...
 3. See error
 
 ## Expected Behavior
+
 Describe what should happen
 
 ## Actual Behavior
+
 Describe what actually happens
 
 ## Screenshots
+
 Add screenshots if helpful
 
 ## Additional Context
+
 Any other relevant information
 ```
 
@@ -390,18 +400,23 @@ For feature requests:
 
 ```markdown
 ## Feature Description
+
 Clear description of the feature
 
 ## Problem Statement
+
 What problem does this solve?
 
 ## Proposed Solution
+
 How should this be implemented?
 
 ## Alternatives Considered
+
 Other approaches you considered
 
 ## Additional Context
+
 Any other relevant information
 ```
 

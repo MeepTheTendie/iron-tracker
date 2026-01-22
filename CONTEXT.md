@@ -32,6 +32,7 @@
 ## Database (Convex)
 
 **Tables:**
+
 - `dailyHabits` - Tracks habit completion by date
 - `workouts` - 4 rows (schedule)
 - `exercises` - 24 rows (reference data)
@@ -40,18 +41,23 @@
 ## Setup Instructions
 
 ### First Time Setup
+
 ```bash
 cd iron-tracker
 npx convex dev
 ```
+
 This will:
+
 1. Create a Convex project
 2. Update .env.local with VITE_CONVEX_URL
 3. Auto-create tables from schema.ts
 4. Seed the database with workouts and exercises
 
 ### Environment Variables
+
 After running `npx convex dev`, your .env.local will have:
+
 ```
 VITE_CONVEX_URL=https://<project-name>.convex.cloud
 ```

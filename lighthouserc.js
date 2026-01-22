@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   ci: {
     collect: {
       url: ['http://localhost:3000'],
@@ -7,8 +7,8 @@ module.exports = {
       startServerReadyPattern: 'Local:',
       startServerReadyTimeout: 30000,
       settings: {
-        chromeFlags: '--headless'
-      }
+        chromeFlags: '--headless',
+      },
     },
     assert: {
       assertions: {
@@ -16,11 +16,11 @@ module.exports = {
         'categories:accessibility': ['error', { minScore: 0.95 }],
         'categories:best-practices': ['warn', { minScore: 0.85 }],
         'categories:seo': ['warn', { minScore: 0.85 }],
-        'categories:pwa': 'off'
-      }
+        'categories:pwa': 'off',
+      },
     },
     upload: {
-      target: 'temporary-public-storage'
-    }
-  }
+      target: 'temporary-public-storage',
+    },
+  },
 }

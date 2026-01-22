@@ -68,7 +68,9 @@ describe('EmptyState', () => {
         color="pink"
       />,
     )
-    const headerDiv = screen.getByRole('heading', { name: 'Test' }).closest('div')
+    const headerDiv = screen
+      .getByRole('heading', { name: 'Test' })
+      .closest('div')
     expect(headerDiv).toHaveClass('bg-rose-200')
   })
 
@@ -81,7 +83,9 @@ describe('EmptyState', () => {
         color="blue"
       />,
     )
-    const headerDiv = screen.getByRole('heading', { name: 'Test' }).closest('div')
+    const headerDiv = screen
+      .getByRole('heading', { name: 'Test' })
+      .closest('div')
     expect(headerDiv).toHaveClass('bg-sky-200')
   })
 
@@ -94,7 +98,9 @@ describe('EmptyState', () => {
         color="green"
       />,
     )
-    const headerDiv = screen.getByRole('heading', { name: 'Test' }).closest('div')
+    const headerDiv = screen
+      .getByRole('heading', { name: 'Test' })
+      .closest('div')
     expect(headerDiv).toHaveClass('bg-emerald-200')
   })
 
@@ -120,7 +126,9 @@ describe('WorkoutEmptyState', () => {
 
   it('renders rest day description', () => {
     render(<WorkoutEmptyState onStart={() => {}} />)
-    expect(screen.getByText('Take a rest day or start a custom workout')).toBeInTheDocument()
+    expect(
+      screen.getByText('Take a rest day or start a custom workout'),
+    ).toBeInTheDocument()
   })
 
   it('has clickable plus button', () => {
@@ -133,7 +141,9 @@ describe('WorkoutEmptyState', () => {
 
   it('has Start Custom Workout button', () => {
     render(<WorkoutEmptyState onStart={() => {}} />)
-    expect(screen.getByRole('button', { name: 'Start Custom Workout' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Start Custom Workout' }),
+    ).toBeInTheDocument()
   })
 
   it('shows plus icon in header', () => {
@@ -152,13 +162,17 @@ describe('HabitsEmptyState', () => {
   it('renders Add Your First Habit button', () => {
     const handleAdd = vi.fn()
     render(<HabitsEmptyState onAdd={handleAdd} />)
-    expect(screen.getByRole('button', { name: 'Add Your First Habit' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Add Your First Habit' }),
+    ).toBeInTheDocument()
   })
 
   it('calls onAdd when button is clicked', () => {
     const handleAdd = vi.fn()
     render(<HabitsEmptyState onAdd={handleAdd} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Add Your First Habit' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Add Your First Habit' }),
+    )
     expect(handleAdd).toHaveBeenCalledTimes(1)
   })
 })

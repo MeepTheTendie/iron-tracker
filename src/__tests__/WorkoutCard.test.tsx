@@ -64,7 +64,9 @@ describe('WorkoutCard', () => {
 
   it('renders exercise sets and reps', () => {
     render(<WorkoutCard workout={mockWorkout} />)
-    const spans = screen.getAllByText(/^[0-9]+$/, { selector: '.bg-gray-100 span' })
+    const spans = screen.getAllByText(/^[0-9]+$/, {
+      selector: '.bg-gray-100 span',
+    })
     expect(spans.length).toBe(4)
     expect(spans[0]).toHaveTextContent('3')
     expect(spans[1]).toHaveTextContent('10')
@@ -90,7 +92,9 @@ describe('WorkoutCard', () => {
 
   it('has Start Workout button', () => {
     render(<WorkoutCard workout={mockWorkout} />)
-    expect(screen.getByRole('button', { name: 'Start Workout' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Start Workout' }),
+    ).toBeInTheDocument()
   })
 
   it('navigates to workout page when Start Workout is clicked', () => {
@@ -135,17 +139,25 @@ describe('WorkoutCard - null workout', () => {
   it('renders recovery message', () => {
     render(<WorkoutCard workout={null} />)
     expect(screen.getByText('Light movement, big gains')).toBeInTheDocument()
-    expect(screen.getByText('Focus on your 7k steps and the Bike today. Recovery is when muscles grow.')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Focus on your 7k steps and the Bike today. Recovery is when muscles grow.',
+      ),
+    ).toBeInTheDocument()
   })
 
   it('has Start Custom Workout button', () => {
     render(<WorkoutCard workout={null} />)
-    expect(screen.getByRole('button', { name: 'Start Custom Workout' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Start Custom Workout' }),
+    ).toBeInTheDocument()
   })
 
   it('navigates to workout page when button clicked', () => {
     render(<WorkoutCard workout={null} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Start Custom Workout' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Start Custom Workout' }),
+    )
     expect(mockNavigate).toHaveBeenCalledWith({ to: '/workout' })
   })
 })

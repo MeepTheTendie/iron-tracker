@@ -10,7 +10,9 @@ vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
   useLocation: () => mockLocation,
   Link: ({ to, children, className, 'aria-current': ariaCurrent }: any) => (
-    <a href={to} className={className} data-aria-current={ariaCurrent}>{children}</a>
+    <a href={to} className={className} data-aria-current={ariaCurrent}>
+      {children}
+    </a>
   ),
 }))
 
@@ -29,17 +31,23 @@ describe('Header', () => {
 
   it('renders Iron Tracker title', () => {
     render(<Header />)
-    expect(screen.getByRole('heading', { name: 'Iron Tracker' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Iron Tracker' }),
+    ).toBeInTheDocument()
   })
 
   it('renders menu button', () => {
     render(<Header />)
-    expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Open menu' }),
+    ).toBeInTheDocument()
   })
 
   it('renders theme toggle button', () => {
     render(<Header />)
-    expect(screen.getByRole('button', { name: /Current theme: light/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Current theme: light/ }),
+    ).toBeInTheDocument()
   })
 
   it('renders Home navigation link in drawer', () => {
@@ -87,7 +95,9 @@ describe('Header', () => {
 
   it('calls toggleTheme when theme button clicked', () => {
     render(<Header />)
-    const themeButton = screen.getByRole('button', { name: /Current theme: light/ })
+    const themeButton = screen.getByRole('button', {
+      name: /Current theme: light/,
+    })
     fireEvent.click(themeButton)
     expect(mockTheme.toggleTheme).toHaveBeenCalled()
   })
@@ -105,13 +115,17 @@ describe('Header', () => {
 
   it('renders bottom navigation bar', () => {
     render(<Header />)
-    const bottomNav = screen.getByRole('navigation', { name: 'Bottom navigation' })
+    const bottomNav = screen.getByRole('navigation', {
+      name: 'Bottom navigation',
+    })
     expect(bottomNav).toBeInTheDocument()
   })
 
   it('renders bottom nav with Home, History, Exercises', () => {
     render(<Header />)
-    const bottomNav = screen.getByRole('navigation', { name: 'Bottom navigation' })
+    const bottomNav = screen.getByRole('navigation', {
+      name: 'Bottom navigation',
+    })
     expect(bottomNav).toHaveTextContent('Home')
     expect(bottomNav).toHaveTextContent('History')
     expect(bottomNav).toHaveTextContent('Exercises')
@@ -119,25 +133,33 @@ describe('Header', () => {
 
   it('renders Navigation header', () => {
     render(<Header />)
-    expect(screen.getByRole('heading', { name: 'Navigation' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Navigation' }),
+    ).toBeInTheDocument()
   })
 
   it('displays "system" theme correctly', () => {
     mockTheme.theme = 'system'
     render(<Header />)
-    expect(screen.getByRole('button', { name: /Current theme: system/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Current theme: system/ }),
+    ).toBeInTheDocument()
   })
 
   it('displays "dark" theme correctly', () => {
     mockTheme.theme = 'dark'
     render(<Header />)
-    expect(screen.getByRole('button', { name: /Current theme: dark/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Current theme: dark/ }),
+    ).toBeInTheDocument()
   })
 
   it('displays "system" theme correctly', () => {
     mockTheme.theme = 'system'
     render(<Header />)
-    expect(screen.getByRole('button', { name: /Current theme: system/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Current theme: system/ }),
+    ).toBeInTheDocument()
   })
 
   it('History link has correct href', () => {
@@ -178,13 +200,17 @@ describe('Header', () => {
   it('theme button shows current theme', () => {
     mockTheme.theme = 'dark'
     render(<Header />)
-    const themeButton = screen.getByRole('button', { name: /Current theme: dark/ })
+    const themeButton = screen.getByRole('button', {
+      name: /Current theme: dark/,
+    })
     expect(themeButton).toBeInTheDocument()
   })
 
   it('has navigation items in bottom nav', () => {
     render(<Header />)
-    const bottomNav = screen.getByRole('navigation', { name: 'Bottom navigation' })
+    const bottomNav = screen.getByRole('navigation', {
+      name: 'Bottom navigation',
+    })
     const links = bottomNav.querySelectorAll('a')
     expect(links.length).toBeGreaterThanOrEqual(3)
   })
@@ -193,7 +219,11 @@ describe('Header', () => {
     mockLocation.pathname = '/history'
     render(<Header />)
     const historyLinks = screen.getAllByRole('link', { name: 'History' })
-    expect(historyLinks.some(link => link.getAttribute('data-aria-current') === 'page')).toBe(true)
+    expect(
+      historyLinks.some(
+        (link) => link.getAttribute('data-aria-current') === 'page',
+      ),
+    ).toBe(true)
   })
 
   it('renders icons in navigation', () => {

@@ -13,6 +13,7 @@ This file is kept for historical reference but is no longer updated.
 **Mistake:** Removed `convex/_generated/` from git, then added `npx convex codegen` to build.
 
 **Result:** Builds failed on Vercel because:
+
 1. `npx convex codegen` requires Convex credentials (`CONVEX_DEPLOY_KEY`)
 2. Vercel wasn't configured with these credentials
 3. Generated files were needed at build time
@@ -29,6 +30,7 @@ This file is kept for historical reference but is no longer updated.
 ### Pre-commit Hook Tuning
 
 Too aggressive secret scanning causes false positives:
+
 - Package names flagged as secrets
 - Code patterns like `token: string` flagged
 
@@ -39,6 +41,7 @@ Too aggressive secret scanning causes false positives:
 ## For Complete Lessons Database
 
 See **`/home/meep/MEGA_LEARNINGS.md`** which includes:
+
 - Framework selection best practices
 - Windows development patterns
 - Repo hygiene checklist

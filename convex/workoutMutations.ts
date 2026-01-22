@@ -1,5 +1,5 @@
-import { internalMutation } from "./_generated/server";
-import { v } from "convex/values";
+import { internalMutation } from './_generated/server'
+import { v } from 'convex/values'
 
 export const insert = internalMutation({
   args: {
@@ -10,6 +10,6 @@ export const insert = internalMutation({
     phase: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("workouts", args);
+    await ctx.db.insert('workouts', args)
   },
-});
+})

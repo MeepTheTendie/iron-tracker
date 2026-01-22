@@ -158,73 +158,83 @@ Workout log entries for progress tracking.
 ## Available Scripts
 
 ### Development Commands
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot reload on port 3000 |
-| `npm run start` | Alias for `npm run dev` |
-| `npm run preview` | Preview production build locally |
+
+| Command           | Description                                           |
+| ----------------- | ----------------------------------------------------- |
+| `npm run dev`     | Start development server with hot reload on port 3000 |
+| `npm run start`   | Alias for `npm run dev`                               |
+| `npm run preview` | Preview production build locally                      |
 
 ### Quality Assurance Commands
-| Command | Description |
-|---------|-------------|
-| `npm run test` | Run unit tests once |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:coverage` | Run tests with coverage report |
-| `npm run lint` | Run ESLint code quality checks |
-| `npm run lint:fix` | Run ESLint and auto-fix issues |
-| `npm run format` | Format code with Prettier |
-| `npm run format:check` | Check code formatting without fixing |
-| `npm run tsc` | Run TypeScript type checking |
-| `npm run check` | Run format + lint + type check |
-| `npm run check:ci` | Full CI-quality checks (format:check + lint + tsc + test) |
+
+| Command                 | Description                                               |
+| ----------------------- | --------------------------------------------------------- |
+| `npm run test`          | Run unit tests once                                       |
+| `npm run test:watch`    | Run tests in watch mode                                   |
+| `npm run test:coverage` | Run tests with coverage report                            |
+| `npm run lint`          | Run ESLint code quality checks                            |
+| `npm run lint:fix`      | Run ESLint and auto-fix issues                            |
+| `npm run format`        | Format code with Prettier                                 |
+| `npm run format:check`  | Check code formatting without fixing                      |
+| `npm run tsc`           | Run TypeScript type checking                              |
+| `npm run check`         | Run format + lint + type check                            |
+| `npm run check:ci`      | Full CI-quality checks (format:check + lint + tsc + test) |
 
 ### Security Commands
-| Command | Description |
-|---------|-------------|
-| `npm run audit` | Run npm security audit |
-| `npm run audit:fix` | Automatically fix security vulnerabilities |
-| `npm run security` | Run comprehensive security checks (audit + lint + tsc) |
+
+| Command             | Description                                            |
+| ------------------- | ------------------------------------------------------ |
+| `npm run audit`     | Run npm security audit                                 |
+| `npm run audit:fix` | Automatically fix security vulnerabilities             |
+| `npm run security`  | Run comprehensive security checks (audit + lint + tsc) |
 
 ### Dependency Management
-| Command | Description |
-|---------|-------------|
-| `npm run deps:check` | Check for outdated dependencies |
+
+| Command               | Description                            |
+| --------------------- | -------------------------------------- |
+| `npm run deps:check`  | Check for outdated dependencies        |
 | `npm run deps:update` | Update dependencies to latest versions |
 
 ### Performance Commands
-| Command | Description |
-|---------|-------------|
-| `npm run analyze` | Analyze bundle size |
-| `npm run perf` | Run performance audit with Lighthouse |
+
+| Command           | Description                           |
+| ----------------- | ------------------------------------- |
+| `npm run analyze` | Analyze bundle size                   |
+| `npm run perf`    | Run performance audit with Lighthouse |
 
 ### Git Hooks
-| Command | Description |
-|---------|-------------|
-| `npm run pre-commit` | Run pre-commit quality checks |
-| `npm run pre-push` | Run pre-push comprehensive checks |
+
+| Command              | Description                       |
+| -------------------- | --------------------------------- |
+| `npm run pre-commit` | Run pre-commit quality checks     |
+| `npm run pre-push`   | Run pre-push comprehensive checks |
 
 ### Build & Deployment
-| Command | Description |
-|---------|-------------|
-| `npm run build` | Build for production (outputs to `dist/`) |
-| `npm run clean` | Clean build artifacts and cache |
+
+| Command              | Description                                 |
+| -------------------- | ------------------------------------------- |
+| `npm run build`      | Build for production (outputs to `dist/`)   |
+| `npm run clean`      | Clean build artifacts and cache             |
 | `npm run clean:full` | Clean everything and reinstall dependencies |
-| `npm run release` | Prepare for release (full checks + build) |
+| `npm run release`    | Prepare for release (full checks + build)   |
 
 ### Setup Commands
-| Command | Description |
-|---------|-------------|
+
+| Command         | Description                                |
+| --------------- | ------------------------------------------ |
 | `npm run setup` | Run complete development environment setup |
 
 ### Docker Commands
-| Command | Description |
-|---------|-------------|
-| `npm run docker:build` | Build Docker image |
-| `npm run docker:run` | Run Docker container |
+
+| Command                | Description          |
+| ---------------------- | -------------------- |
+| `npm run docker:build` | Build Docker image   |
+| `npm run docker:run`   | Run Docker container |
 
 ## 🏗️ Automation & DevOps
 
 ### CI/CD Pipeline
+
 Iron Tracker features a comprehensive CI/CD pipeline:
 
 - **Multi-environment Support**: Development, staging, and production deployments
@@ -234,6 +244,7 @@ Iron Tracker features a comprehensive CI/CD pipeline:
 - **Environment-specific Configs**: Separate configurations for each environment
 
 ### Quality Assurance
+
 - **Pre-commit Hooks**: Automatic code formatting, linting, and testing
 - **Pre-push Hooks**: Comprehensive validation before pushing
 - **Automated Testing**: Unit tests, integration tests, performance tests
@@ -241,6 +252,7 @@ Iron Tracker features a comprehensive CI/CD pipeline:
 - **Bundle Analysis**: Automated bundle size monitoring and optimization
 
 ### Monitoring & Observability
+
 - **Health Check Endpoints**: `/api/health`, `/api/ready`, `/api/live`
 - **Performance Metrics**: Real-time application performance tracking
 - **Error Tracking**: Comprehensive error logging and analysis
@@ -353,6 +365,7 @@ iron-tracker/
 Iron Tracker includes enterprise-grade security features:
 
 ### Automated Security
+
 - **GitHub Dependabot**: Automated dependency updates and vulnerability scanning
 - **Security Workflows**: Comprehensive CI/CD security scanning
 - **Pre-commit Hooks**: Automatic secret detection and code quality checks
@@ -362,6 +375,7 @@ Iron Tracker includes enterprise-grade security features:
 - **TruffleHog**: Secret detection in code history
 
 ### Security Best Practices
+
 - **Environment Variables**: Secure management with `.env` files
 - **Row Level Security**: Convex handles data access at the function level
 - **Input Validation**: Comprehensive input sanitization
@@ -374,6 +388,7 @@ Iron Tracker includes enterprise-grade security features:
 **IMPORTANT**: Convex automatically handles data access control. No additional RLS configuration needed.
 
 ### Monitoring & Alerting
+
 - **Health Checks**: `/api/health` endpoint for monitoring
 - **Performance Metrics**: Real-time performance tracking
 - **Error Tracking**: Comprehensive error logging and analysis

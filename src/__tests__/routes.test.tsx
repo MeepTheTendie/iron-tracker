@@ -41,7 +41,9 @@ describe('routes/index', () => {
   it('navigates to history page when Training History button clicked', () => {
     render(
       <div>
-        <button onClick={() => mockNavigate({ to: '/history' })}>Training History</button>
+        <button onClick={() => mockNavigate({ to: '/history' })}>
+          Training History
+        </button>
       </div>,
     )
 
@@ -53,7 +55,9 @@ describe('routes/index', () => {
   it('navigates to exercises page when Exercise Library button clicked', () => {
     render(
       <div>
-        <button onClick={() => mockNavigate({ to: '/exercises' })}>Exercise Library</button>
+        <button onClick={() => mockNavigate({ to: '/exercises' })}>
+          Exercise Library
+        </button>
       </div>,
     )
 
@@ -63,17 +67,13 @@ describe('routes/index', () => {
   })
 
   it('shows loading state when data is being fetched', () => {
-    render(
-      <div className="animate-pulse">Loading...</div>,
-    )
+    render(<div className="animate-pulse">Loading...</div>)
 
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
   it('handles empty workout state', () => {
-    render(
-      <div>No workout scheduled</div>,
-    )
+    render(<div>No workout scheduled</div>)
 
     expect(screen.getByText('No workout scheduled')).toBeInTheDocument()
   })
@@ -85,11 +85,11 @@ describe('routes/history', () => {
   })
 
   it('renders Progress Tracker title', () => {
-    render(
-      <h1>Progress Tracker</h1>,
-    )
+    render(<h1>Progress Tracker</h1>)
 
-    expect(screen.getByRole('heading', { name: 'Progress Tracker' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Progress Tracker' }),
+    ).toBeInTheDocument()
   })
 
   it('renders exercise select dropdown', () => {
@@ -110,7 +110,9 @@ describe('routes/history', () => {
       </div>,
     )
 
-    expect(screen.getByRole('heading', { name: 'Strength Curve' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Strength Curve' }),
+    ).toBeInTheDocument()
   })
 
   it('shows no data message when chart is empty', () => {
@@ -120,7 +122,9 @@ describe('routes/history', () => {
       </div>,
     )
 
-    expect(screen.getByText('No data logged for this exercise yet.')).toBeInTheDocument()
+    expect(
+      screen.getByText('No data logged for this exercise yet.'),
+    ).toBeInTheDocument()
   })
 
   it('navigates back to home with back button', () => {
@@ -141,8 +145,12 @@ describe('routes/history', () => {
     render(
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-          <div className="text-blue-600 text-xs font-bold uppercase mb-1">Max Weight</div>
-          <div className="text-2xl font-black text-blue-900">225 <span className="text-sm font-medium">lbs</span></div>
+          <div className="text-blue-600 text-xs font-bold uppercase mb-1">
+            Max Weight
+          </div>
+          <div className="text-2xl font-black text-blue-900">
+            225 <span className="text-sm font-medium">lbs</span>
+          </div>
         </div>
       </div>,
     )
@@ -155,7 +163,9 @@ describe('routes/history', () => {
     render(
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-purple-50 p-4 rounded-2xl border border-purple-100">
-          <div className="text-purple-600 text-xs font-bold uppercase mb-1">Total Sets</div>
+          <div className="text-purple-600 text-xs font-bold uppercase mb-1">
+            Total Sets
+          </div>
           <div className="text-2xl font-black text-purple-900">12</div>
         </div>
       </div>,
@@ -171,27 +181,25 @@ describe('routes/workout', () => {
   })
 
   it('renders workout page title', () => {
-    render(
-      <h1>Freestyle Session</h1>,
-    )
+    render(<h1>Freestyle Session</h1>)
 
-    expect(screen.getByRole('heading', { name: 'Freestyle Session' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Freestyle Session' }),
+    ).toBeInTheDocument()
   })
 
   it('renders Focus Mode subtitle', () => {
-    render(
-      <p className="text-xs text-gray-400">Focus Mode</p>,
-    )
+    render(<p className="text-xs text-gray-400">Focus Mode</p>)
 
     expect(screen.getByText('Focus Mode')).toBeInTheDocument()
   })
 
   it('renders Finish Workout button', () => {
-    render(
-      <button>Finish Workout</button>,
-    )
+    render(<button>Finish Workout</button>)
 
-    expect(screen.getByRole('button', { name: 'Finish Workout' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Finish Workout' }),
+    ).toBeInTheDocument()
   })
 
   it('navigates to home when Finish Workout clicked', () => {
@@ -211,7 +219,9 @@ describe('routes/workout', () => {
       </div>,
     )
 
-    expect(screen.getByText('No program loaded. You are in freestyle mode.')).toBeInTheDocument()
+    expect(
+      screen.getByText('No program loaded. You are in freestyle mode.'),
+    ).toBeInTheDocument()
   })
 
   it('renders exercise logger input fields', () => {
@@ -253,8 +263,12 @@ describe('routes/workout', () => {
         <div className="flex justify-between items-start mb-3">
           <h3>Bench Press</h3>
           <div className="text-right">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Target</span>
-            <div className="font-mono text-sm font-bold text-gray-600">3 x 10</div>
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+              Target
+            </span>
+            <div className="font-mono text-sm font-bold text-gray-600">
+              3 x 10
+            </div>
           </div>
         </div>
       </div>,

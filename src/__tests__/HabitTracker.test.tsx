@@ -22,7 +22,7 @@ describe('HabitTracker', () => {
     Object.defineProperty(navigator, 'vibrate', {
       value: vi.fn(),
       writable: true,
-      configurable: true
+      configurable: true,
     })
     Object.defineProperty(navigator, 'onLine', { value: true, writable: true })
   })
@@ -48,10 +48,18 @@ describe('HabitTracker', () => {
 
   it('renders all four habit buttons', () => {
     render(<HabitTracker habits={defaultHabits} date="2026-01-21" />)
-    expect(screen.getByRole('button', { name: '15x AM Squats, not completed' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '7k Steps, not completed' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '1 Hour Bike, not completed' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '15x PM Squats, not completed' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '15x AM Squats, not completed' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '7k Steps, not completed' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '1 Hour Bike, not completed' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '15x PM Squats, not completed' }),
+    ).toBeInTheDocument()
   })
 
   it('shows progress bar with 0% when no habits completed', () => {
@@ -94,7 +102,9 @@ describe('HabitTracker', () => {
     mockMutation.mockResolvedValue(undefined)
     render(<HabitTracker habits={defaultHabits} date="2026-01-21" />)
 
-    const amSquatsButton = screen.getByRole('button', { name: '15x AM Squats, not completed' })
+    const amSquatsButton = screen.getByRole('button', {
+      name: '15x AM Squats, not completed',
+    })
     fireEvent.click(amSquatsButton)
 
     await waitFor(() => {
@@ -113,27 +123,37 @@ describe('HabitTracker', () => {
     mockMutation.mockImplementation(() => new Promise(() => {}))
     render(<HabitTracker habits={defaultHabits} date="2026-01-21" />)
 
-    const amSquatsButton = screen.getByRole('button', { name: '15x AM Squats, not completed' })
+    const amSquatsButton = screen.getByRole('button', {
+      name: '15x AM Squats, not completed',
+    })
     fireEvent.click(amSquatsButton)
 
-    expect(screen.getByRole('button', { name: '15x AM Squats, not completed' })).toHaveClass('opacity-60')
+    expect(
+      screen.getByRole('button', { name: '15x AM Squats, not completed' }),
+    ).toHaveClass('opacity-60')
   })
 
   it('shows offline warning when disconnected', () => {
     Object.defineProperty(navigator, 'onLine', { value: false, writable: true })
     render(<HabitTracker habits={defaultHabits} date="2026-01-21" />)
-    expect(screen.getByText('Offline - changes will sync when connected')).toBeInTheDocument()
+    expect(
+      screen.getByText('Offline - changes will sync when connected'),
+    ).toBeInTheDocument()
   })
 
   it('displays error message when save fails', async () => {
     mockMutation.mockRejectedValue(new Error('Failed to save'))
     render(<HabitTracker habits={defaultHabits} date="2026-01-21" />)
 
-    const amSquatsButton = screen.getByRole('button', { name: '15x AM Squats, not completed' })
+    const amSquatsButton = screen.getByRole('button', {
+      name: '15x AM Squats, not completed',
+    })
     fireEvent.click(amSquatsButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to save. Tap to retry.')).toBeInTheDocument()
+      expect(
+        screen.getByText('Failed to save. Tap to retry.'),
+      ).toBeInTheDocument()
     })
   })
 
@@ -144,7 +164,9 @@ describe('HabitTracker', () => {
     }
     render(<HabitTracker habits={completedHabits} date="2026-01-21" />)
 
-    const amSquatsButton = screen.getByRole('button', { name: '15x AM Squats, completed' })
+    const amSquatsButton = screen.getByRole('button', {
+      name: '15x AM Squats, completed',
+    })
     expect(amSquatsButton).toHaveClass('bg-rose-100')
     expect(amSquatsButton).toHaveClass('border-rose-300')
   })
@@ -208,7 +230,9 @@ describe('HabitTracker - offline functionality', () => {
       pmSquats: false,
     }
     render(<HabitTracker habits={habits} date="2026-01-21" />)
-    expect(screen.getByText('Offline - changes will sync when connected')).toBeInTheDocument()
+    expect(
+      screen.getByText('Offline - changes will sync when connected'),
+    ).toBeInTheDocument()
   })
 })
 
@@ -242,7 +266,9 @@ describe('HabitTracker - edge cases', () => {
   })
 
   it('does not call mutation if already pending', () => {
-    mockMutation.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
+    mockMutation.mockImplementation(
+      () => new Promise((resolve) => setTimeout(resolve, 100)),
+    )
     const habits = {
       _id: 'habit-1',
       _creationTime: Date.now(),
@@ -254,7 +280,9 @@ describe('HabitTracker - edge cases', () => {
     }
     render(<HabitTracker habits={habits} date="2026-01-21" />)
 
-    const button = screen.getByRole('button', { name: '15x AM Squats, not completed' })
+    const button = screen.getByRole('button', {
+      name: '15x AM Squats, not completed',
+    })
     fireEvent.click(button)
     fireEvent.click(button)
     fireEvent.click(button)

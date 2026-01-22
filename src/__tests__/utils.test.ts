@@ -40,7 +40,7 @@ describe('utils', () => {
       return items.reduce(
         (acc, item) => {
           const groupKey = String(item[key])
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
           if (!acc[groupKey]) {
             acc[groupKey] = []
           }
@@ -78,7 +78,9 @@ describe('Date Utilities', () => {
     ]
 
     testCases.forEach(({ date, expected }) => {
-      const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'long' })
+      const dayName = new Date(date).toLocaleDateString('en-US', {
+        weekday: 'long',
+      })
       expect(dayName).toBe(expected)
     })
   })
@@ -92,7 +94,10 @@ describe('Workout Calculations', () => {
       { weight: 155, reps: 5 },
     ]
 
-    const totalVolume = sets.reduce((sum, set) => sum + set.weight * set.reps, 0)
+    const totalVolume = sets.reduce(
+      (sum, set) => sum + set.weight * set.reps,
+      0,
+    )
     expect(totalVolume).toBe(3205)
   })
 
@@ -188,7 +193,8 @@ describe('Validation', () => {
 
 describe('String Helpers', () => {
   it('capitalizes first letter', () => {
-    const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+    const capitalize = (str: string) =>
+      str.charAt(0).toUpperCase() + str.slice(1)
     expect(capitalize('bench press')).toBe('Bench press')
     expect(capitalize('BENCH')).toBe('BENCH')
     expect(capitalize('')).toBe('')

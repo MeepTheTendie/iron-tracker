@@ -18,7 +18,9 @@ export const Route = createFileRoute('/history')({
     if (!convex) return { logs: [], exercises: [] }
     try {
       const logs = await convex.query(api.workoutLogs.getWorkoutLogs, {})
-      const exercises = Array.from(new Set(logs.map((l: any) => l.exerciseName)))
+      const exercises = Array.from(
+        new Set(logs.map((l: any) => l.exerciseName)),
+      )
       return { logs, exercises }
     } catch {
       return { logs: [], exercises: [] }
@@ -28,7 +30,10 @@ export const Route = createFileRoute('/history')({
 })
 
 function HistoryPage() {
-  const { logs, exercises } = Route.useLoaderData() as { logs: any[], exercises: string[] }
+  const { logs, exercises } = Route.useLoaderData() as {
+    logs: any[]
+    exercises: string[]
+  }
   const navigate = useNavigate()
 
   const [selectedExercise, setSelectedExercise] = useState(

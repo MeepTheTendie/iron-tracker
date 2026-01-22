@@ -1,11 +1,11 @@
-import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { mutation, query } from './_generated/server'
+import { v } from 'convex/values'
 
 export const list = query({
   handler: async (ctx) => {
-    return await ctx.db.query("exercises").collect();
+    return await ctx.db.query('exercises').collect()
   },
-});
+})
 
 export const add = mutation({
   args: {
@@ -14,15 +14,15 @@ export const add = mutation({
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("exercises", args);
+    await ctx.db.insert('exercises', args)
   },
-});
+})
 
 export const remove = mutation({
   args: {
-    id: v.id("exercises"),
+    id: v.id('exercises'),
   },
   handler: async (ctx, args) => {
-    await ctx.db.delete(args.id);
+    await ctx.db.delete(args.id)
   },
-});
+})

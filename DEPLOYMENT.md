@@ -5,18 +5,21 @@ This guide covers the deployment process for Iron Tracker across different envir
 ## 🌍 Environments
 
 ### Development
+
 - **Purpose**: Local development and testing
 - **URL**: `http://localhost:3000`
 - **Database**: Local Convex project
 - **Features**: Hot reload, DevTools, debug logging
 
 ### Staging
+
 - **Purpose**: Pre-production testing
 - **URL**: `https://staging.iron-tracker.com`
 - **Database**: Staging Convex project
 - **Features**: Production-like environment, test data
 
 ### Production
+
 - **Purpose**: Live application
 - **URL**: `https://iron-tracker.com`
 - **Database**: Production Convex project
@@ -31,18 +34,20 @@ Vercel provides the best experience for React applications with automatic deploy
 #### Setup
 
 1. **Connect Repository**
+
    ```bash
    # Install Vercel CLI
    npm i -g vercel
-   
+
    # Login to Vercel
    vercel login
-   
+
    # Link project
    vercel link
    ```
 
 2. **Configure Project**
+
    ```json
    // vercel.json
    {
@@ -106,33 +111,35 @@ vercel --scope team
    - Add environment variables
 
 2. **Build Configuration**
+
    ```toml
    # netlify.toml
    [build]
      publish = "dist"
      command = "npm run build"
-   
+
    [build.environment]
      NODE_VERSION = "20"
-   
+
    [[redirects]]
      from = "/api/*"
      to = "/.netlify/functions/:splat"
      status = 200
-   
+
    [[redirects]]
      from = "/*"
      to = "/index.html"
      status = 200
-   
+
    [context.production.environment]
      VITE_APP_ENV = "production"
-   
+
    [context.deploy-preview.environment]
      VITE_APP_ENV = "staging"
    ```
 
 #### Environment Variables
+
 Same as Vercel, configured in Netlify dashboard.
 
 ### Docker
@@ -170,12 +177,12 @@ services:
   app:
     build: .
     ports:
-      - "80:80"
+      - '80:80'
     environment:
       - VITE_SUPABASE_URL=${SUPABASE_URL}
       - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/api/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost/api/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -184,7 +191,7 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "443:443"
+      - '443:443'
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
@@ -202,14 +209,15 @@ services:
    - Add environment variables
 
 2. **Build Configuration**
+
    ```toml
    # wrangler.toml
    name = "iron-tracker"
    compatibility_date = "2024-01-17"
-   
+
    [env.production]
    vars = { ENVIRONMENT = "production" }
-   
+
    [env.staging]
    vars = { ENVIRONMENT = "staging" }
    ```
@@ -272,6 +280,7 @@ jobs:
 ### Environment-specific Configurations
 
 #### Development
+
 ```bash
 # .env.development
 VITE_APP_ENV=development
@@ -281,6 +290,7 @@ VITE_DEBUG=true
 ```
 
 #### Staging
+
 ```bash
 # .env.staging
 VITE_APP_ENV=staging
@@ -290,6 +300,7 @@ VITE_DEBUG=false
 ```
 
 #### Production
+
 ```bash
 # .env.production
 VITE_APP_ENV=production
@@ -306,19 +317,22 @@ VITE_GA_ID=G-XXXXXXXXXX
 ```typescript
 // src/api/health.ts
 export async function GET() {
-  return new Response(JSON.stringify({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || '1.0.0',
-    environment: import.meta.env.VITE_APP_ENV,
-    uptime: process.uptime()
-  }), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache'
-    }
-  });
+  return new Response(
+    JSON.stringify({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      version: process.env.npm_package_version || '1.0.0',
+      environment: import.meta.env.VITE_APP_ENV,
+      uptime: process.uptime(),
+    }),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
+    },
+  )
 }
 ```
 
@@ -344,9 +358,9 @@ curl -f https://iron-tracker.com/api/health
 
 ```typescript
 // vite.config.ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   plugins: [
@@ -354,9 +368,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
-      }
-    })
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+      },
+    }),
   ],
   build: {
     rollupOptions: {
@@ -364,13 +378,13 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['@tanstack/react-router'],
-          charts: ['recharts']
-        }
-      }
+          charts: ['recharts'],
+        },
+      },
     },
-    chunkSizeWarningLimit: 1000
-  }
-});
+    chunkSizeWarningLimit: 1000,
+  },
+})
 ```
 
 ### Bundle Analysis
@@ -407,14 +421,14 @@ location /api/ {
 server {
     listen 443 ssl http2;
     server_name iron-tracker.com;
-    
+
     ssl_certificate /etc/nginx/ssl/cert.pem;
     ssl_certificate_key /etc/nginx/ssl/key.pem;
-    
+
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
     ssl_prefer_server_ciphers off;
-    
+
     add_header Strict-Transport-Security "max-age=63072000" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
@@ -441,22 +455,18 @@ server {
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open('iron-tracker-v1').then((cache) => {
-      return cache.addAll([
-        '/',
-        '/manifest.json',
-        '/icons/icon-192x192.png'
-      ]);
-    })
-  );
-});
+      return cache.addAll(['/', '/manifest.json', '/icons/icon-192x192.png'])
+    }),
+  )
+})
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
-});
+      return response || fetch(event.request)
+    }),
+  )
+})
 ```
 
 ## 🚨 Rollback Procedures
@@ -492,23 +502,25 @@ SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'your_dat
 
 ```typescript
 // src/lib/analytics.ts
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
 
 function sendToAnalytics(metric: any) {
   // Send to analytics service
   gtag('event', metric.name, {
     event_category: 'Web Vitals',
     event_label: metric.id,
-    value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+    value: Math.round(
+      metric.name === 'CLS' ? metric.value * 1000 : metric.value,
+    ),
     non_interaction: true,
-  });
+  })
 }
 
-getCLS(sendToAnalytics);
-getFID(sendToAnalytics);
-getFCP(sendToAnalytics);
-getLCP(sendToAnalytics);
-getTTFB(sendToAnalytics);
+getCLS(sendToAnalytics)
+getFID(sendToAnalytics)
+getFCP(sendToAnalytics)
+getLCP(sendToAnalytics)
+getTTFB(sendToAnalytics)
 ```
 
 ### Error Tracking
@@ -516,8 +528,8 @@ getTTFB(sendToAnalytics);
 ```typescript
 // src/lib/error-tracking.ts
 export function trackError(error: Error, context?: any) {
-  console.error('Application Error:', error);
-  
+  console.error('Application Error:', error)
+
   // Send to error tracking service
   if (import.meta.env.PROD) {
     // Sentry, LogRocket, etc.
@@ -528,6 +540,7 @@ export function trackError(error: Error, context?: any) {
 ## 🔄 Deployment Checklist
 
 ### Pre-deployment
+
 - [ ] All tests passing
 - [ ] Code reviewed and approved
 - [ ] Security scan passed
@@ -537,6 +550,7 @@ export function trackError(error: Error, context?: any) {
 - [ ] Backup strategy in place
 
 ### Post-deployment
+
 - [ ] Health checks passing
 - [ ] Monitoring configured
 - [ ] Analytics tracking
@@ -548,11 +562,12 @@ export function trackError(error: Error, context?: any) {
 ### Common Issues
 
 1. **Build Fails**
+
    ```bash
    # Check Node.js version
    node --version
    npm --version
-   
+
    # Clear cache
    npm cache clean --force
    rm -rf node_modules package-lock.json
@@ -560,28 +575,31 @@ export function trackError(error: Error, context?: any) {
    ```
 
 2. **Environment Variables Missing**
+
    ```bash
    # Verify variables
    printenv | grep VITE_
-   
+
    # Check .env file
    cat .env
    ```
 
 3. **Health Check Failing**
+
    ```bash
    # Check logs
    docker logs iron-tracker
-   
+
    # Test endpoint locally
    curl -f http://localhost:3000/api/health
    ```
 
 4. **Performance Issues**
+
    ```bash
    # Run Lighthouse
    npm run perf
-   
+
    # Check bundle size
    npm run analyze
    ```

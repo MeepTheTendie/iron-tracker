@@ -49,6 +49,7 @@ function ExercisesPage() {
   }
 
   const handleDelete = async (id: any) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Delete this exercise?')) return
     if (!convex) return
 

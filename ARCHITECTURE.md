@@ -18,33 +18,33 @@ Iron Tracker is a modern web application built with React, TypeScript, and Conve
 
 ### Frontend Technologies
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| React | 19.2.0 | UI framework with concurrent features |
-| TypeScript | 5.7.2 | Type safety and enhanced DX |
-| Vite | 7.1.7 | Build tool with hot module replacement |
-| TanStack Router | 1.132.0 | Type-safe file-based routing |
-| TanStack Query | 5.0.0 | Server state management and caching |
-| Tailwind CSS | 4.0.6 | Utility-first styling |
-| Recharts | 3.6.0 | Data visualization and charts |
-| Lucide React | 0.545.0 | Icon library |
+| Technology      | Version | Purpose                                |
+| --------------- | ------- | -------------------------------------- |
+| React           | 19.2.0  | UI framework with concurrent features  |
+| TypeScript      | 5.7.2   | Type safety and enhanced DX            |
+| Vite            | 7.1.7   | Build tool with hot module replacement |
+| TanStack Router | 1.132.0 | Type-safe file-based routing           |
+| TanStack Query  | 5.0.0   | Server state management and caching    |
+| Tailwind CSS    | 4.0.6   | Utility-first styling                  |
+| Recharts        | 3.6.0   | Data visualization and charts          |
+| Lucide React    | 0.545.0 | Icon library                           |
 
 ### Backend Technologies
 
-| Technology | Purpose |
-|------------|---------|
-| Convex | Backend-as-a-service (database + serverless functions) |
-| PostgreSQL | Primary database with ACID compliance |
+| Technology | Purpose                                                |
+| ---------- | ------------------------------------------------------ |
+| Convex     | Backend-as-a-service (database + serverless functions) |
+| PostgreSQL | Primary database with ACID compliance                  |
 
 ### Development Tools
 
-| Technology | Purpose |
-|------------|---------|
-| ESLint | Code linting and quality checks |
-| Prettier | Code formatting and consistency |
-| Vitest | Unit and integration testing |
-| Husky | Git hooks for quality enforcement |
-| Commitizen | Conventional commit standards |
+| Technology | Purpose                                |
+| ---------- | -------------------------------------- |
+| ESLint     | Code linting and quality checks        |
+| Prettier   | Code formatting and consistency        |
+| Vitest     | Unit and integration testing           |
+| Husky      | Git hooks for quality enforcement      |
+| Commitizen | Conventional commit standards          |
 | Lighthouse | Performance and accessibility auditing |
 
 ## 🏛️ System Architecture
@@ -109,11 +109,11 @@ export function useWorkouts() {
     queryKey: ['workouts'],
     queryFn: async () => {
       const data = await ctx.runQuery(api.workouts.getAll)
-      return data;
+      return data
     },
     staleTime: 5 * 60 * 1000, // 5 minutes cache
     cacheTime: 10 * 60 * 1000, // 10 minutes cache
-  });
+  })
 }
 ```
 
@@ -122,23 +122,23 @@ export function useWorkouts() {
 ```typescript
 // Example: Workout log mutation
 export function useLogWorkout() {
-  const queryClient = useQueryClient();
-  
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async (workoutLog: WorkoutLog) => {
       const data = await ctx.runMutation(api.workoutLogs.create, workoutLog)
-      return data;
+      return data
     },
     onSuccess: () => {
       // Invalidate related queries
-      queryClient.invalidateQueries(['workout-logs']);
-      queryClient.invalidateQueries(['workout-stats']);
+      queryClient.invalidateQueries(['workout-logs'])
+      queryClient.invalidateQueries(['workout-stats'])
     },
     onError: (error) => {
       // Handle error
-      console.error('Failed to log workout:', error);
+      console.error('Failed to log workout:', error)
     },
-  });
+  })
 }
 ```
 
@@ -170,15 +170,15 @@ Convex handles access control at the function level. Each query and mutation can
 export const getWorkoutLogs = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
+    const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      throw new Error("Not authenticated");
+      throw new Error('Not authenticated')
     }
-    return await ctx.runQuery(api.workoutLogs.getByUser, { 
-      userId: identity.subject 
-    });
+    return await ctx.runQuery(api.workoutLogs.getByUser, {
+      userId: identity.subject,
+    })
   },
-});
+})
 ```
 
 ### Data Relationships
@@ -186,37 +186,37 @@ export const getWorkoutLogs = query({
 ```typescript
 // Type definitions
 interface Program {
-  id: number;
-  name: string;
-  day_of_week: string;
-  program_exercises?: ProgramExercise[];
+  id: number
+  name: string
+  day_of_week: string
+  program_exercises?: ProgramExercise[]
 }
 
 interface Exercise {
-  id: number;
-  name: string;
-  notes?: string;
+  id: number
+  name: string
+  notes?: string
 }
 
 interface ProgramExercise {
-  id: number;
-  program_id: number;
-  exercise_id: number;
-  sets: number;
-  reps: number;
-  rest_seconds: number;
-  sort_order: number;
-  exercise?: Exercise;
+  id: number
+  program_id: number
+  exercise_id: number
+  sets: number
+  reps: number
+  rest_seconds: number
+  sort_order: number
+  exercise?: Exercise
 }
 
 interface WorkoutLog {
-  id: number;
-  user_id: string;
-  date: string;
-  exercise_name: string;
-  weight: number;
-  reps: number;
-  created_at: string;
+  id: number
+  user_id: string
+  date: string
+  exercise_name: string
+  weight: number
+  reps: number
+  created_at: string
 }
 ```
 
@@ -351,10 +351,10 @@ export function DataProvider<T>({
   children,
 }: DataProviderProps<T>) {
   const { data, isLoading, error } = useQuery({ queryKey, queryFn });
-  
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-  
+
   return children(data);
 }
 
@@ -372,36 +372,41 @@ export function DataProvider<T>({
 ```typescript
 // Complex state management
 export function useWorkoutSession(workoutId: number) {
-  const [currentExercise, setCurrentExercise] = useState(0);
-  const [completedSets, setCompletedSets] = useState<Set<string>>(new Set());
+  const [currentExercise, setCurrentExercise] = useState(0)
+  const [completedSets, setCompletedSets] = useState<Set<string>>(new Set())
   const [sessionStats, setSessionStats] = useState<SessionStats>({
     totalSets: 0,
     completedSets: 0,
     totalWeight: 0,
-  });
+  })
 
-  const { data: workout } = useWorkout(workoutId);
-  const logMutation = useLogWorkout();
+  const { data: workout } = useWorkout(workoutId)
+  const logMutation = useLogWorkout()
 
-  const completeSet = useCallback((exerciseId: string, weight: number, reps: number) => {
-    setCompletedSets(prev => new Set(prev).add(exerciseId));
-    setSessionStats(prev => ({
-      ...prev,
-      completedSets: prev.completedSets + 1,
-      totalWeight: prev.totalWeight + (weight * reps),
-    }));
-    
-    logMutation.mutate({
-      exercise_id: exerciseId,
-      weight,
-      reps,
-      completed_at: new Date().toISOString(),
-    });
-  }, [logMutation]);
+  const completeSet = useCallback(
+    (exerciseId: string, weight: number, reps: number) => {
+      setCompletedSets((prev) => new Set(prev).add(exerciseId))
+      setSessionStats((prev) => ({
+        ...prev,
+        completedSets: prev.completedSets + 1,
+        totalWeight: prev.totalWeight + weight * reps,
+      }))
+
+      logMutation.mutate({
+        exercise_id: exerciseId,
+        weight,
+        reps,
+        completed_at: new Date().toISOString(),
+      })
+    },
+    [logMutation],
+  )
 
   const nextExercise = useCallback(() => {
-    setCurrentExercise(prev => Math.min(prev + 1, (workout?.exercises?.length || 0) - 1));
-  }, [workout?.exercises?.length]);
+    setCurrentExercise((prev) =>
+      Math.min(prev + 1, (workout?.exercises?.length || 0) - 1),
+    )
+  }, [workout?.exercises?.length])
 
   return {
     currentExercise,
@@ -411,7 +416,7 @@ export function useWorkoutSession(workoutId: number) {
     completeSet,
     nextExercise,
     isComplete: currentExercise === (workout?.exercises?.length || 0) - 1,
-  };
+  }
 }
 ```
 
@@ -476,7 +481,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 // Protected data access
 export function useProtectedData<T>(queryKey: string[], queryFn: () => Promise<T>) {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey,
     queryFn,
@@ -495,7 +500,7 @@ export class SecureAPI {
     options: RequestInit = {}
   ): Promise<T> {
     const { data: { session } } = await ctx.runQuery or ctx.runMutation.auth.getSession();
-    
+
     if (!session) {
       throw new Error('Authentication required');
     }
@@ -606,7 +611,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom', '@tanstack/react-router'],
   },
-});
+})
 ```
 
 ## 🧪 Testing Architecture
@@ -654,7 +659,7 @@ describe('WorkoutCard', () => {
 
   it('renders workout information correctly', () => {
     render(<WorkoutCard workout={mockWorkout} onStart={vi.fn()} />);
-    
+
     expect(screen.getByText('Upper Body A')).toBeInTheDocument();
     expect(screen.getByText('Bench Press')).toBeInTheDocument();
   });
@@ -662,17 +667,17 @@ describe('WorkoutCard', () => {
   it('calls onStart when start button is clicked', async () => {
     const mockOnStart = vi.fn();
     const user = userEvent.setup();
-    
+
     render(<WorkoutCard workout={mockWorkout} onStart={mockOnStart} />);
-    
+
     await user.click(screen.getByRole('button', { name: /start workout/i }));
-    
+
     expect(mockOnStart).toHaveBeenCalledTimes(1);
   });
 
   it('shows loading state', () => {
     render(<WorkoutCard workout={mockWorkout} onStart={vi.fn()} loading />);
-    
+
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 });
@@ -685,7 +690,7 @@ import { useWorkoutData } from './useWorkoutData';
 describe('useWorkoutData', () => {
   it('fetches workout data successfully', async () => {
     const queryClient = new QueryClient();
-    
+
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>
         {children}
@@ -780,15 +785,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 # CI/CD flow
 1. Code Push → GitHub
 2. GitHub Actions triggers
-   - Install dependencies
-   - Run tests
-   - Lint and format check
-   - Security scan
-   - Build application
-   - Run performance audit
+- Install dependencies
+- Run tests
+- Lint and format check
+- Security scan
+- Build application
+- Run performance audit
 3. Deploy to appropriate environment
-   - Staging (develop branch)
-   - Production (main branch)
+- Staging (develop branch)
+- Production (main branch)
 4. Health checks and monitoring
 ```
 
@@ -812,7 +817,7 @@ const config = {
     convexUrl: process.env.VITE_CONVEX_URL,
     debug: false,
   },
-}[import.meta.env.VITE_APP_ENV || 'development'];
+}[import.meta.env.VITE_APP_ENV || 'development']
 ```
 
 ## 📊 Monitoring Architecture
@@ -821,7 +826,7 @@ const config = {
 
 ```typescript
 // Web Vitals tracking
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
 
 function sendToAnalytics(metric: any) {
   // Send to analytics service
@@ -830,15 +835,15 @@ function sendToAnalytics(metric: any) {
       event_category: 'Web Vitals',
       value: Math.round(metric.value),
       non_interaction: true,
-    });
+    })
   }
 }
 
-getCLS(sendToAnalytics);
-getFID(sendToAnalytics);
-getFCP(sendToAnalytics);
-getLCP(sendToAnalytics);
-getTTFB(sendToAnalytics);
+getCLS(sendToAnalytics)
+getFID(sendToAnalytics)
+getFCP(sendToAnalytics)
+getLCP(sendToAnalytics)
+getTTFB(sendToAnalytics)
 ```
 
 ### Error Tracking
@@ -848,7 +853,7 @@ getTTFB(sendToAnalytics);
 export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
-    
+
     // Send to error tracking service
     if (import.meta.env.PROD) {
       // Sentry.captureException(error, { extra: errorInfo });

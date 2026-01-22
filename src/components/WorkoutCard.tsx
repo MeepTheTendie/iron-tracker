@@ -35,12 +35,17 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
             <Clock className="w-6 h-6 text-sky-600" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-sky-800">Active Recovery Day</h3>
+            <h3 className="text-lg font-bold text-sky-800">
+              Active Recovery Day
+            </h3>
             <p className="text-sky-600 text-sm">Light movement, big gains</p>
           </div>
         </div>
         <div className="bg-white rounded-xl p-4 mb-4">
-          <p className="text-gray-700">Focus on your 7k steps and the Bike today. Recovery is when muscles grow.</p>
+          <p className="text-gray-700">
+            Focus on your 7k steps and the Bike today. Recovery is when muscles
+            grow.
+          </p>
         </div>
         <button
           onClick={() => navigate({ to: '/workout' })}
@@ -68,10 +73,7 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
 
       <div className="divide-y divide-gray-50">
         {workout.workout_exercises?.map((item, index) => (
-          <div
-            key={item._id}
-            className="p-4 flex flex-col gap-2"
-          >
+          <div key={item._id} className="p-4 flex flex-col gap-2">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
                 <span className="w-8 h-8 bg-rose-300 rounded-lg flex items-center justify-center text-rose-800 font-bold text-sm">
@@ -94,7 +96,9 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
                   {item.exercises.muscleGroup}
                 </span>
                 {item.restSeconds && (
-                  <span className="text-xs text-gray-400">{item.restSeconds}s rest</span>
+                  <span className="text-xs text-gray-400">
+                    {item.restSeconds}s rest
+                  </span>
                 )}
               </div>
             )}
