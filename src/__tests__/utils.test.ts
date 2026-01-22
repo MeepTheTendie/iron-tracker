@@ -68,17 +68,17 @@ describe('Date Utilities', () => {
 
   it('gets day name correctly', () => {
     const testCases = [
-      { date: '2026-01-20', expected: 'Monday' },
-      { date: '2026-01-21', expected: 'Tuesday' },
-      { date: '2026-01-22', expected: 'Wednesday' },
-      { date: '2026-01-23', expected: 'Thursday' },
-      { date: '2026-01-24', expected: 'Friday' },
-      { date: '2026-01-25', expected: 'Saturday' },
-      { date: '2026-01-26', expected: 'Sunday' },
+      { date: '2026-01-20', expected: 'Tuesday' },
+      { date: '2026-01-21', expected: 'Wednesday' },
+      { date: '2026-01-22', expected: 'Thursday' },
+      { date: '2026-01-23', expected: 'Friday' },
+      { date: '2026-01-24', expected: 'Saturday' },
+      { date: '2026-01-25', expected: 'Sunday' },
+      { date: '2026-01-26', expected: 'Monday' },
     ]
 
     testCases.forEach(({ date, expected }) => {
-      const dayName = new Date(date).toLocaleDateString('en-US', {
+      const dayName = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
         weekday: 'long',
       })
       expect(dayName).toBe(expected)
