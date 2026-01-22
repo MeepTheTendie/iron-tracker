@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from '@tanstack/react-router'
 import { Check, Flame, Loader2, Trophy, WifiOff } from 'lucide-react'
 import { convex } from '../lib/convex'
@@ -11,50 +11,23 @@ interface HabitProps {
   field: HabitField
   checked: boolean
   isLoading: boolean
+  onClick: () => void
 }
 
 interface HabitsData {
   _id: string
   _creationTime: number
   date: string
-  amSquats: boolean
-  steps7k: boolean
-  bike1hr: boolean
-  pmSquats: boolean
+  amSquats?: boolean
+  steps7k?: boolean
+  bike1hr?: boolean
+  pmSquats?: boolean
 }
 
-function areAllHabitsCompleted(habits: HabitsData | null): boolean {
-  if (!habits) return false
-  return (
-    habits.amSquats === true &&
-    habits.steps7k === true &&
-    habits.bike1hr === true &&
-    habits.pmSquats === true
-  )
-}
-
-function getCompletedCount(habits: HabitsData | null): number {
-  if (!habits) return 0
-  let count = 0
-  if (habits.amSquats) count++
-  if (habits.steps7k) count++
-  if (habits.bike1hr) count++
-  if (habits.pmSquats) count++
-  return count
-}
-
-function HabitRow({ label, field, checked, isLoading }: HabitProps) {
-  const handleClick = () => {
-    if (!isLoading) {
-      document.dispatchEvent(
-        new CustomEvent('toggle-habit', { detail: { field } }),
-      )
-    }
-  }
-
+function HabitRow({ label, checked, isLoading, onClick }: HabitProps) {
   return (
     <button
-      onClick={handleClick}
+      onClick={onClick}
       disabled={isLoading}
       className={`
         w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all duration-200
@@ -98,11 +71,31 @@ function HabitRow({ label, field, checked, isLoading }: HabitProps) {
   )
 }
 
-export function HabitTracker({ habits, date }: { habits: any; date: string }) {
+export function HabitTracker({ habits, date }: { habits: HabitsData | null; date: string }) {
   const router = useRouter()
   const [pendingFields, setPendingFields] = useState<Set<HabitField>>(new Set())
   const [error, setError] = useState<string | null>(null)
   const [isOnline, setIsOnline] = useState(true)
+
+  const allCompleted = useCallback(() => {
+    if (!habits) return false
+    return (
+      (habits.amSquats ?? false) === true &&
+      (habits.steps7k ?? false) === true &&
+      (habits.bike1hr ?? false) === true &&
+      (habits.pmSquats ?? false) === true
+    )
+  }, [habits])
+
+  const getCompletedCount = useCallback(() => {
+    if (!habits) return 0
+    let count = 0
+    if (habits.amSquats ?? false) count++
+    if (habits.steps7k ?? false) count++
+    if (habits.bike1hr ?? false) count++
+    if (habits.pmSquats ?? false) count++
+    return count
+  }, [habits])
 
   useEffect(() => {
     setIsOnline(navigator.onLine)
@@ -116,14 +109,14 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
     }
   }, [])
 
-  const allCompleted = areAllHabitsCompleted(habits)
-  const completedCount = getCompletedCount(habits)
+  const allCompletedVal = allCompleted()
+  const completedCount = getCompletedCount()
   const totalHabits = 4
 
-  const toggleHabit = async (field: HabitField) => {
-    if (pendingFields.has(field)) return
+  const handleToggle = useCallback(async (field: HabitField) => {
+    if (pendingFields.has(field) || !habits) return
 
-    const currentValue = habits?.[field] ?? false
+    const currentValue = (habits[field] ?? false)
     setPendingFields((prev) => new Set(prev).add(field))
     setError(null)
 
@@ -159,20 +152,9 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
         return next
       })
     }
-  }
+  }, [habits, date, pendingFields, router])
 
-  useEffect(() => {
-    const handleToggle = (e: CustomEvent<{ field: HabitField }>) => {
-      toggleHabit(e.detail.field)
-    }
-    document.addEventListener('toggle-habit', handleToggle as EventListener)
-
-    return () => {
-      document.removeEventListener('toggle-habit', handleToggle as EventListener)
-    }
-  }, [])
-
-  if (allCompleted) {
+  if (allCompletedVal) {
     return (
       <div className="bg-rose-200 p-5 rounded-2xl border-2 border-rose-300 mb-6">
         <div className="flex items-center gap-3 mb-2">
@@ -242,26 +224,30 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
           <HabitRow
             field="amSquats"
             label="15x AM Squats"
-            checked={habits?.amSquats || false}
+            checked={habits?.amSquats ?? false}
             isLoading={pendingFields.has('amSquats')}
+            onClick={() => handleToggle('amSquats')}
           />
           <HabitRow
             field="steps7k"
             label="7k Steps"
-            checked={habits?.steps7k || false}
+            checked={habits?.steps7k ?? false}
             isLoading={pendingFields.has('steps7k')}
+            onClick={() => handleToggle('steps7k')}
           />
           <HabitRow
             field="bike1hr"
             label="1 Hour Bike"
-            checked={habits?.bike1hr || false}
+            checked={habits?.bike1hr ?? false}
             isLoading={pendingFields.has('bike1hr')}
+            onClick={() => handleToggle('bike1hr')}
           />
           <HabitRow
             field="pmSquats"
             label="15x PM Squats"
-            checked={habits?.pmSquats || false}
+            checked={habits?.pmSquats ?? false}
             isLoading={pendingFields.has('pmSquats')}
+            onClick={() => handleToggle('pmSquats')}
           />
         </div>
       </div>

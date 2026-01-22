@@ -1,8 +1,11 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import { routeTree } from './routeTree.gen'
+import { queryClient } from './lib/queryClient'
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 
@@ -23,13 +26,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
+// Error boundary for unhandled errors
+const handleError = (error: Error, errorInfo: { componentStack?: string }) => {
+  console.error('Unhandled error:', error)
+  console.error('Component stack:', errorInfo.componentStack)
+}
+
+const RootApp = () => (
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+    {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+  </QueryClientProvider>
+)
+
 // Render the app
 const rootElement = document.getElementById('app')
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <RootApp />
     </StrictMode>,
   )
 }
@@ -58,7 +74,7 @@ if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js')
         .then((registration) => {
-          console.log('SW registered:', registration)
+          console.log('SW registered:', registration.scope)
         })
         .catch((error) => {
           console.log('SW registration failed:', error)

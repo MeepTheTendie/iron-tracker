@@ -18,7 +18,7 @@ export default [
       '@typescript-eslint/no-non-null-assertion': 'warn',
       '@typescript-eslint/prefer-const': 'error',
       '@typescript-eslint/no-var-requires': 'error',
-      
+
       // React specific rules
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
@@ -42,7 +42,7 @@ export default [
       'react/jsx-fragments': ['error', 'syntax'],
       'react/jsx-no-useless-fragment': 'error',
       'react/jsx-pascal-case': 'error',
-      
+
       // General code quality
       'no-console': 'warn',
       'no-debugger': 'error',
