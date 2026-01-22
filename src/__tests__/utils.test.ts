@@ -78,9 +78,12 @@ describe('Date Utilities', () => {
     ]
 
     testCases.forEach(({ date, expected }) => {
-      const dayName = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', {
-        weekday: 'long',
-      })
+      const dayName = new Date(`${date}T12:00:00Z`).toLocaleDateString(
+        'en-US',
+        {
+          weekday: 'long',
+        },
+      )
       expect(dayName).toBe(expected)
     })
   })
