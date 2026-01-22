@@ -77,7 +77,7 @@ export function useWorkouts() {
     queryKey: queryKeys.workouts.all,
     queryFn: async () => {
       if (!convex) throw new Error('Convex not connected')
-      return convex.query(api.workouts.getAll)
+      return convex.query(api.workouts.getAllWorkouts)
     },
     enabled: !!convex,
   })
@@ -89,7 +89,7 @@ export function useExercises() {
     queryKey: queryKeys.exercises.all,
     queryFn: async () => {
       if (!convex) throw new Error('Convex not connected')
-      return convex.query(api.exercises.getAll)
+      return convex.query(api.exercises.list)
     },
     enabled: !!convex,
   })
@@ -101,7 +101,7 @@ export function useWorkoutLogs(date: string) {
     queryKey: queryKeys.logs.byDate(date),
     queryFn: async () => {
       if (!convex) throw new Error('Convex not connected')
-      return convex.query(api.workoutLogs.getByDate, { date })
+      return convex.query(api.workoutLogs.getWorkoutLogs, { date })
     },
     enabled: !!convex && !!date,
   })
@@ -120,7 +120,7 @@ export function useLogWorkout() {
   return useMutation({
     mutationFn: async ({ date, exerciseName, weight, reps }: LogWorkoutParams) => {
       if (!convex) throw new Error('Convex not connected')
-      return convex.mutation(api.workoutLogs.logWorkout, { date, exerciseName, weight, reps })
+      return convex.mutation(api.workoutLogs.insert, { date, exerciseName, weight, reps })
     },
     onSuccess: (_, { date }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.logs.byDate(date) })

@@ -27,10 +27,7 @@ declare module '@tanstack/react-router' {
 }
 
 // Error boundary for unhandled errors
-const handleError = (error: Error, errorInfo: { componentStack?: string }) => {
-  console.error('Unhandled error:', error)
-  console.error('Component stack:', errorInfo.componentStack)
-}
+// Note: TanStack Router handles errors via errorElement in route definitions
 
 const RootApp = () => (
   <QueryClientProvider client={queryClient}>
