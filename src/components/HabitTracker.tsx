@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useRouter } from '@tanstack/react-router'
 import { Check, Flame, Loader2, Trophy, WifiOff } from 'lucide-react'
-import { convex } from '../lib/convex'
-import { api } from '../../convex/_generated/api'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTodayHabits, useToggleHabit, useHabitsCompletion } from '../hooks/useHabits'
 
 type HabitField = 'amSquats' | 'steps7k' | 'bike1hr' | 'pmSquats'
 
@@ -11,51 +10,24 @@ interface HabitProps {
   field: HabitField
   checked: boolean
   isLoading: boolean
+  onToggle: (field: HabitField) => void
+  index: number
 }
 
-interface HabitsData {
-  _id: string
-  _creationTime: number
-  date: string
-  amSquats: boolean
-  steps7k: boolean
-  bike1hr: boolean
-  pmSquats: boolean
-}
-
-function areAllHabitsCompleted(habits: HabitsData | null): boolean {
-  if (!habits) return false
-  return (
-    habits.amSquats === true &&
-    habits.steps7k === true &&
-    habits.bike1hr === true &&
-    habits.pmSquats === true
-  )
-}
-
-function getCompletedCount(habits: HabitsData | null): number {
-  if (!habits) return 0
-  let count = 0
-  if (habits.amSquats) count++
-  if (habits.steps7k) count++
-  if (habits.bike1hr) count++
-  if (habits.pmSquats) count++
-  return count
-}
-
-function HabitRow({ label, field, checked, isLoading }: HabitProps) {
+function HabitRow({ label, field, checked, isLoading, onToggle, index }: HabitProps) {
   const handleClick = () => {
     if (!isLoading) {
-      document.dispatchEvent(
-        new CustomEvent('toggle-habit', { detail: { field } }),
-      )
+      onToggle(field)
     }
   }
 
   return (
-    <button
+    <motion.button
       onClick={handleClick}
       disabled={isLoading}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.1 }}
       className={`
         w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all duration-200
         ${
@@ -69,40 +41,54 @@ function HabitRow({ label, field, checked, isLoading }: HabitProps) {
       aria-label={`${label}, ${checked ? 'completed' : 'not completed'}`}
     >
       <div className="flex items-center gap-3">
-        <div
+        <motion.div
           className={`
           w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-colors
           ${checked ? 'bg-rose-400 border-rose-400' : 'border-gray-300'}
         `}
           role="presentation"
           aria-hidden="true"
+          animate={{ scale: checked ? [1, 1.2, 1] : 1 }}
+          transition={{ duration: 0.3 }}
         >
           {isLoading ? (
             <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
           ) : checked ? (
-            <Check className="w-4 h-4 text-white" />
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+            >
+              <Check className="w-4 h-4 text-white" />
+            </motion.div>
           ) : null}
-        </div>
+        </motion.div>
         <span
           className={`font-semibold ${checked ? 'text-rose-800' : 'text-gray-700'}`}
         >
           {label}
         </span>
       </div>
-      {checked && (
-        <span className="text-xs text-rose-600 font-medium bg-rose-50 px-2 py-1 rounded">
-          Done
-        </span>
-      )}
-    </button>
+      <AnimatePresence>
+        {checked && (
+          <motion.span
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="text-xs text-rose-600 font-medium bg-rose-50 px-2 py-1 rounded"
+          >
+            Done
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
   )
 }
 
-export function HabitTracker({ habits, date }: { habits: any; date: string }) {
-  const router = useRouter()
-  const [pendingFields, setPendingFields] = useState<Set<HabitField>>(new Set())
-  const [error, setError] = useState<string | null>(null)
+export function HabitTracker({ habits: _habits, date }: { habits?: any; date: string }) {
   const [isOnline, setIsOnline] = useState(true)
+  const { data: habits, isPending } = useTodayHabits(date)
+  const toggleHabit = useToggleHabit()
+  const { completed, count, total } = useHabitsCompletion(habits || null)
 
   useEffect(() => {
     setIsOnline(navigator.onLine)
@@ -116,155 +102,175 @@ export function HabitTracker({ habits, date }: { habits: any; date: string }) {
     }
   }, [])
 
-  const allCompleted = areAllHabitsCompleted(habits)
-  const completedCount = getCompletedCount(habits)
-  const totalHabits = 4
-
-  const toggleHabit = async (field: HabitField) => {
-    if (pendingFields.has(field)) return
-
+  const handleToggle = (field: HabitField) => {
     const currentValue = habits?.[field] ?? false
-    setPendingFields((prev) => new Set(prev).add(field))
-    setError(null)
+    const newValue = !currentValue
 
     if ('vibrate' in navigator) navigator.vibrate(15)
 
-    const newValue = !currentValue
+    toggleHabit.mutate({ date, field, value: newValue })
 
-    if (!convex) {
-      setError('Convex not connected')
-      setPendingFields((prev) => {
-        const next = new Set(prev)
-        next.delete(field)
-        return next
-      })
-      return
-    }
-
-    try {
-      await convex.mutation(api.dailyHabits.toggleHabit, {
-        date,
-        field,
-        value: newValue,
-      })
-      router.invalidate()
-      if ('vibrate' in navigator) navigator.vibrate(30)
-    } catch (err) {
-      setError('Failed to save. Tap to retry.')
-      console.error('Habit toggle error:', err)
-    } finally {
-      setPendingFields((prev) => {
-        const next = new Set(prev)
-        next.delete(field)
-        return next
-      })
-    }
+    if ('vibrate' in navigator) navigator.vibrate(30)
   }
 
-  useEffect(() => {
-    const handleToggle = (e: CustomEvent<{ field: HabitField }>) => {
-      toggleHabit(e.detail.field)
-    }
-    document.addEventListener('toggle-habit', handleToggle as EventListener)
+  const habitsList = [
+    { field: 'amSquats' as HabitField, label: '15x AM Squats' },
+    { field: 'steps7k' as HabitField, label: '7k Steps' },
+    { field: 'bike1hr' as HabitField, label: '1 Hour Bike' },
+    { field: 'pmSquats' as HabitField, label: '15x PM Squats' },
+  ]
 
-    return () => {
-      document.removeEventListener('toggle-habit', handleToggle as EventListener)
-    }
-  }, [])
-
-  if (allCompleted) {
+  if (isPending) {
     return (
-      <div className="bg-rose-200 p-5 rounded-2xl border-2 border-rose-300 mb-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 mb-6"
+      >
+        <div className="bg-rose-50 p-4 rounded-t-2xl border-b border-rose-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <motion.div
+                className="w-5 h-5 bg-rose-200 rounded"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+              <motion.div
+                className="h-6 w-32 bg-rose-200 rounded"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+            </div>
+            <motion.div
+              className="h-6 w-12 bg-rose-200 rounded-full"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </div>
+        </div>
+        <div className="p-4 space-y-3">
+          <div className="w-full h-2 bg-gray-200 rounded-full" />
+          {habitsList.map((i) => (
+            <motion.div
+              key={i.field}
+              className="h-12 bg-gray-100 rounded-lg"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            />
+          ))}
+        </div>
+      </motion.div>
+    )
+  }
+
+  if (completed) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-rose-200 p-5 rounded-2xl border-2 border-rose-300 mb-6"
+      >
         <div className="flex items-center gap-3 mb-2">
-          <Trophy className="w-8 h-8 text-rose-600" aria-hidden="true" />
+          <motion.div
+            initial={{ rotate: 0 }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Trophy className="w-8 h-8 text-rose-600" aria-hidden="true" />
+          </motion.div>
           <h2 className="text-xl font-bold text-rose-800">All Rituals Complete!</h2>
         </div>
-        <p className="text-rose-600 text-sm">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="text-rose-600 text-sm"
+        >
           Great job! See you tomorrow!
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
     )
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 mb-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 mb-6"
+    >
       <div className="bg-rose-50 p-4 rounded-t-2xl border-b border-rose-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Flame
-              className="w-5 h-5 text-rose-500 fill-rose-400"
-              aria-hidden="true"
-            />
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Flame
+                className="w-5 h-5 text-rose-500 fill-rose-400"
+                aria-hidden="true"
+              />
+            </motion.div>
             <h2 className="text-lg font-bold text-gray-800">
               Daily Rituals
             </h2>
           </div>
-          <span className="text-sm font-bold text-rose-600 bg-rose-100 px-3 py-1 rounded-full">
-            {completedCount}/{totalHabits}
-          </span>
+          <motion.span
+            key={count}
+            initial={{ scale: 1.2, color: '#db2777' }}
+            animate={{ scale: 1, color: '#be185d' }}
+            className="text-sm font-bold bg-rose-100 px-3 py-1 rounded-full"
+          >
+            {count}/{total}
+          </motion.span>
         </div>
       </div>
 
-      {error && (
-        <div className="px-4 pt-3">
-          <div className="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" role="alert">
-            {error}
-          </div>
-        </div>
-      )}
-
       {!isOnline && (
-        <div className="px-4 pt-2">
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="px-4 pt-2"
+        >
           <div className="mb-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2" role="alert">
             <WifiOff size={16} aria-hidden="true" />
             <span>Offline - changes will sync when connected</span>
           </div>
-        </div>
+        </motion.div>
       )}
 
       <div className="p-4">
-        <div
+        <motion.div
           className="w-full bg-gray-100 h-2 rounded-full mb-4 overflow-hidden"
           role="progressbar"
-          aria-valuenow={completedCount}
+          aria-valuenow={count}
           aria-valuemin={0}
-          aria-valuemax={totalHabits}
+          aria-valuemax={total}
           aria-label="Habit completion progress"
         >
-          <div
+          <motion.div
             data-testid="progress-fill"
-            className="bg-rose-400 h-full transition-all duration-300"
-            style={{ width: `${(completedCount / totalHabits) * 100}%` }}
+            className="bg-rose-400 h-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${(count / total) * 100}%` }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
           />
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 gap-2" role="list" aria-label="Habit checklist">
-          <HabitRow
-            field="amSquats"
-            label="15x AM Squats"
-            checked={habits?.amSquats || false}
-            isLoading={pendingFields.has('amSquats')}
-          />
-          <HabitRow
-            field="steps7k"
-            label="7k Steps"
-            checked={habits?.steps7k || false}
-            isLoading={pendingFields.has('steps7k')}
-          />
-          <HabitRow
-            field="bike1hr"
-            label="1 Hour Bike"
-            checked={habits?.bike1hr || false}
-            isLoading={pendingFields.has('bike1hr')}
-          />
-          <HabitRow
-            field="pmSquats"
-            label="15x PM Squats"
-            checked={habits?.pmSquats || false}
-            isLoading={pendingFields.has('pmSquats')}
-          />
+          {habitsList.map((item, index) => (
+            <HabitRow
+              key={item.field}
+              field={item.field}
+              label={item.label}
+              checked={habits?.[item.field] || false}
+              isLoading={toggleHabit.isPending && habits?.[item.field] !== (habits?.[item.field] ?? false)}
+              onToggle={handleToggle}
+              index={index}
+            />
+          ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

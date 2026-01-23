@@ -1,35 +1,64 @@
 import { Clock, Dumbbell, Info, Sparkles } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
+import { motion } from 'framer-motion'
+import { useTodayWorkout } from '../hooks/useHabits'
 
-type ExerciseNode = {
-  name: string
-  muscleGroup?: string | null
-  notes?: string | null
+function WorkoutCardSkeleton() {
+  return (
+    <motion.div
+      data-testid="workout-skeleton"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-sky-100 rounded-2xl p-6 border-2 border-sky-200"
+    >
+      <div className="flex items-center gap-4 mb-4">
+        <div className="w-12 h-12 bg-sky-200 rounded-xl flex items-center justify-center">
+          <Clock className="w-6 h-6 text-sky-600" />
+        </div>
+        <div>
+          <motion.div
+            className="h-7 w-40 bg-sky-200 rounded"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+          <motion.div
+            className="h-5 w-32 bg-sky-200 rounded mt-1"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+          />
+        </div>
+      </div>
+      <motion.div
+        className="bg-white rounded-xl p-4 mb-4"
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
+      >
+        <div className="h-4 w-full bg-gray-100 rounded" />
+      </motion.div>
+      <motion.div
+        className="h-12 bg-sky-400 rounded-xl"
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+      />
+    </motion.div>
+  )
 }
 
-type WorkoutExercise = {
-  _id: any
-  sets: number
-  reps: number
-  restSeconds?: number | null
-  sortOrder?: number | null
-  exercises?: ExerciseNode | null
-}
-
-type WorkoutData = {
-  _id: any
-  name: string
-  workoutType: string
-  description?: string | null
-  workout_exercises: Array<WorkoutExercise>
-}
-
-export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
+export function WorkoutCard({ dayName }: { dateStr?: string; dayName: string }) {
   const navigate = useNavigate()
+  const { data: workout, isPending } = useTodayWorkout(dayName)
+
+  if (isPending) {
+    return <WorkoutCardSkeleton />
+  }
 
   if (!workout) {
     return (
-      <div className="bg-sky-100 rounded-2xl p-6 border-2 border-sky-200">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-sky-100 rounded-2xl p-6 border-2 border-sky-200"
+      >
         <div className="flex items-center gap-4 mb-4">
           <div className="w-12 h-12 bg-sky-200 rounded-xl flex items-center justify-center">
             <Clock className="w-6 h-6 text-sky-600" />
@@ -49,12 +78,16 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
           <Sparkles size={20} />
           Start Custom Workout
         </button>
-      </div>
+      </motion.div>
     )
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden"
+    >
       <div className="bg-amber-100 p-5">
         <div className="flex items-center gap-2 mb-2 text-amber-700 text-sm font-medium uppercase tracking-wider">
           <Dumbbell className="w-4 h-4" />
@@ -68,8 +101,11 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
 
       <div className="divide-y divide-gray-50">
         {workout.workout_exercises?.map((item, index) => (
-          <div
+          <motion.div
             key={item._id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
             className="p-4 flex flex-col gap-2"
           >
             <div className="flex justify-between items-start">
@@ -105,7 +141,7 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
                 <span>{item.exercises.notes}</span>
               </div>
             )}
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -122,6 +158,6 @@ export function WorkoutCard({ workout }: { workout: WorkoutData | null }) {
           Start Workout
         </button>
       </div>
-    </div>
+    </motion.div>
   )
 }

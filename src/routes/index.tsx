@@ -1,10 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Dumbbell, TrendingUp } from 'lucide-react'
-import { convex } from '../lib/convex'
-import { api } from '../../convex/_generated/api'
+import { useTodayHabits } from '../hooks/useHabits'
 import { HabitTracker } from '../components/HabitTracker'
 import { WorkoutCard } from '../components/WorkoutCard'
-import { WorkoutEmptyState } from '../components/EmptyState'
 
 export const Route = createFileRoute('/')({
   loader: async () => {
@@ -12,41 +10,25 @@ export const Route = createFileRoute('/')({
     const dateStr = today.toISOString().split('T')[0]
     const dayName = today.toLocaleDateString('en-US', { weekday: 'long' })
 
-    if (!convex) {
-      return { habits: null, workout: null, dateStr, dayName }
-    }
-
-    try {
-      const [habits, workout] = await Promise.all([
-        convex.query(api.dailyHabits.getTodayHabits, { date: dateStr }),
-        convex.query(api.workouts.getTodayWorkout, { dayOfWeek: dayName }),
-      ])
-
-      return { habits, workout, dateStr, dayName }
-    } catch (error) {
-      console.error('Failed to load data:', error)
-      return { habits: null, workout: null, dateStr, dayName }
-    }
+    return { dateStr, dayName }
   },
   component: Dashboard,
 })
 
 function Dashboard() {
-  const { habits, workout, dateStr, dayName } = Route.useLoaderData()
+  const { dateStr, dayName } = Route.useLoaderData()
   const navigate = useNavigate()
+  const { data: habits } = useTodayHabits(dateStr)
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-8 font-sans pb-24 flex justify-center">
       <div className="max-w-2xl w-full space-y-6">
-        {/* Date */}
         <p className="text-gray-400 font-medium text-lg text-center">
           {dayName}, {dateStr}
         </p>
 
-        {/* Habit Tracker - Always show daily minimums */}
         <HabitTracker habits={habits} date={dateStr} />
 
-        {/* History Button - Wes Anderson Style */}
         <button
           onClick={() => navigate({ to: '/history' })}
           className="w-full flex items-center justify-between p-4 bg-violet-100 rounded-2xl border-2 border-violet-200 hover:bg-violet-200 active:scale-[0.98] transition-all"
@@ -67,14 +49,8 @@ function Dashboard() {
           <div className="text-violet-300 font-bold text-xl">→</div>
         </button>
 
-        {/* Dynamic Workout Card */}
-        {workout ? (
-          <WorkoutCard workout={workout} />
-        ) : (
-          <WorkoutEmptyState onStart={() => navigate({ to: '/workout' })} />
-        )}
+        <WorkoutCard dateStr={dateStr} dayName={dayName} />
 
-        {/* Exercise Library Button - Wes Anderson Style */}
         <button
           onClick={() => navigate({ to: '/exercises' })}
           className="w-full flex items-center justify-between p-4 bg-emerald-100 rounded-2xl border-2 border-emerald-200 hover:bg-emerald-200 active:scale-[0.98] transition-all"
