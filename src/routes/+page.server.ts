@@ -36,6 +36,18 @@ export const load: PageServerLoad = async ({ locals }) => {
       console.error("Failed to fetch habits:", e);
     }
 
+    // Fallback to default habits if still null
+    if (!habits) {
+      habits = {
+        date: dateStr,
+        userId: "demo-user",
+        amSquats: false,
+        steps7k: false,
+        bike1hr: false,
+        pmSquats: false,
+      };
+    }
+
     try {
       workout = await convex.query(api.workouts.getWorkoutByDay, { dayOfWeek: dayName });
     } catch (e) {
