@@ -19,7 +19,7 @@
   </p>
 
   <!-- Habits -->
-  <HabitTracker {dateStr} />
+  <HabitTracker date={dateStr} />
 
   <!-- History Button -->
   <a
