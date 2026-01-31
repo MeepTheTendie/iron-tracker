@@ -13,6 +13,22 @@ export const getTodayHabits = query({
   },
 });
 
+export const createEmptyHabits = mutation({
+  args: { date: v.string(), userId: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    const userId = args.userId || "demo-user";
+
+    return await ctx.db.insert("dailyHabits", {
+      userId,
+      date: args.date,
+      amSquats: false,
+      steps7k: false,
+      bike1hr: false,
+      pmSquats: false,
+    });
+  },
+});
+
 export const toggleHabit = mutation({
   args: {
     date: v.string(),

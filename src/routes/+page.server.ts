@@ -20,15 +20,17 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (convex) {
     try {
       habits = await convex.query(api.dailyHabits.getTodayHabits, { date: dateStr, userId: "demo-user" });
-      // Auto-create habits if they don't exist
+      // If no habits exist yet, create empty record
       if (!habits) {
-        await convex.mutation(api.dailyHabits.toggleHabit, {
-          date: dateStr,
-          field: "amSquats",
-          value: false,
-          userId: "demo-user",
-        });
-        habits = await convex.query(api.dailyHabits.getTodayHabits, { date: dateStr, userId: "demo-user" });
+        try {
+          await convex.mutation(api.dailyHabits.createEmptyHabits, {
+            date: dateStr,
+            userId: "demo-user",
+          });
+          habits = await convex.query(api.dailyHabits.getTodayHabits, { date: dateStr, userId: "demo-user" });
+        } catch (e) {
+          console.error("Failed to create habits:", e);
+        }
       }
     } catch (e) {
       console.error("Failed to fetch habits:", e);
