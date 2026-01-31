@@ -2,7 +2,7 @@ import type { PageServerLoad, Actions } from "./$types";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
 
-const convexUrl = process.env.VITE_CONVEX_URL || "";
+const convexUrl = process.env.CONVEX_URL || process.env.VITE_CONVEX_URL || "";
 
 export const load: PageServerLoad = async ({ locals }) => {
   const today = new Date();
