@@ -14,15 +14,13 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border-2 border-gray-100 p-6">
-      <form method="POST" action="/login">
-        <button
-          type="submit"
-          class="w-full flex items-center justify-center gap-3 p-4 bg-slate-800 text-white rounded-xl font-semibold hover:bg-slate-700 active:scale-[0.98] transition-all"
-        >
-          <Github class="w-5 h-5" />
-          Continue with GitHub
-        </button>
-      </form>
+      <a
+        href="/auth/github"
+        class="w-full flex items-center justify-center gap-3 p-4 bg-slate-800 text-white rounded-xl font-semibold hover:bg-slate-700 active:scale-[0.98] transition-all block text-center"
+      >
+        <Github class="w-5 h-5" />
+        Continue with GitHub
+      </a>
 
       <p class="text-center text-sm text-gray-400 mt-4">
         By signing in, you agree to track your gains
