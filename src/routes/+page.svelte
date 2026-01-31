@@ -2,9 +2,11 @@
   import { HabitTracker } from "$components";
   import { WorkoutCard } from "$components";
   import { TrendingUp, Dumbbell, ArrowRight } from "lucide-svelte";
+  import { enhance } from "$app/forms";
+
+  let { data } = $props();
 
   const today = new Date();
-  const dateStr = today.toISOString().split("T")[0];
   const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
 </script>
 
@@ -12,16 +14,31 @@
   <title>Iron Tracker - Dashboard</title>
 </svelte:head>
 
+<form method="POST" action="?/toggleHabit" use:enhance id="toggleHabitForm">
+  <input type="hidden" name="date" value={data.dateStr} />
+  <input type="hidden" name="field" id="toggleField" />
+  <input type="hidden" name="value" id="toggleValue" />
+</form>
+
 <div class="space-y-6">
-  <!-- Date Header -->
   <p class="text-gray-400 font-medium text-lg text-center">
-    {dayName}, {dateStr}
+    {dayName}, {data.dateStr}
   </p>
 
-  <!-- Habits -->
-  <HabitTracker date={dateStr} />
+  <HabitTracker
+    date={data.dateStr}
+    habits={data.habits}
+    onToggle={(field) => {
+      const form = document.getElementById("toggleHabitForm") as HTMLFormElement;
+      const fieldInput = document.getElementById("toggleField") as HTMLInputElement;
+      const valueInput = document.getElementById("toggleValue") as HTMLInputElement;
+      const currentValue = data.habits?.[field] ?? false;
+      fieldInput.value = field;
+      valueInput.value = String(!currentValue);
+      form.requestSubmit();
+    }}
+  />
 
-  <!-- History Button -->
   <a
     href="/history"
     class="w-full flex items-center justify-between p-4 bg-violet-100 rounded-2xl border-2 border-violet-200 hover:bg-violet-200 active:scale-[0.98] transition-all"
@@ -38,10 +55,8 @@
     <div class="text-violet-300 font-bold text-xl">→</div>
   </a>
 
-  <!-- Workout -->
-  <WorkoutCard {dayName} />
+  <WorkoutCard dayName={data.dayName} workout={data.workout} />
 
-  <!-- Exercise Library Button -->
   <a
     href="/exercises"
     class="w-full flex items-center justify-between p-4 bg-emerald-100 rounded-2xl border-2 border-emerald-200 hover:bg-emerald-200 active:scale-[0.98] transition-all"

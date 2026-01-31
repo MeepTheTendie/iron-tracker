@@ -1,87 +1,52 @@
 <script lang="ts">
-  import { createConvexClient } from "$lib/convex";
-  import { api } from "../../../convex/_generated/api";
   import { Check, ArrowLeft, Clock, Plus } from "lucide-svelte";
   import { fly, fade, scale } from "svelte/transition";
   import { goto } from "$app/navigation";
+  import { enhance } from "$app/forms";
+
+  let { data } = $props();
 
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];
   const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
 
-  const client = createConvexClient();
-  
-  // State for workout data
-  let workout = $state<any>(null);
-  let workoutLoading = $state(true);
-  let logLoading = $state(false);
-
-  // Fetch workout data (only on browser)
-  $effect(() => {
-    if (!client) {
-      workoutLoading = false;
-      return;
-    }
-    workoutLoading = true;
-    
-    const fetchWorkout = async () => {
-      try {
-        const result = await client.query(api.workouts.getWorkoutByDay, { dayOfWeek: dayName });
-        workout = result;
-      } catch (err) {
-        console.error("Failed to fetch workout:", err);
-      } finally {
-        workoutLoading = false;
-      }
-    };
-    
-    fetchWorkout();
-  });
-
   let completedExercises = $state<Set<string>>(new Set());
   let activeExercise: string | null = $state(null);
   let weight = $state("");
   let reps = $state("");
-
-  async function logSet(exerciseName: string) {
-    if (!client || !weight || !reps) return;
-
-    logLoading = true;
-    
-    try {
-      await client.mutation(api.workoutLogs.logWorkout, {
-        date: dateStr,
-        exerciseName,
-        weight: parseFloat(weight),
-        reps: parseInt(reps),
-      });
-
-      completedExercises.add(exerciseName);
-      completedExercises = completedExercises;
-
-      weight = "";
-      reps = "";
-      activeExercise = null;
-
-      if ("vibrate" in navigator) {
-        navigator.vibrate([50, 100, 50]);
-      }
-    } finally {
-      logLoading = false;
-    }
-  }
-
-  function isCompleted(exerciseName: string) {
-    return completedExercises.has(exerciseName);
-  }
+  let formSubmitting = $state(false);
 </script>
 
 <svelte:head>
   <title>Workout - Iron Tracker</title>
 </svelte:head>
 
+<form method="POST" action="?/logSet" use:enhance={() => {
+  formSubmitting = true;
+  return async ({ result, update }) => {
+    if (result.type === 'success') {
+      if (weight && reps && activeExercise) {
+        completedExercises.add(activeExercise);
+        completedExercises = completedExercises;
+        weight = "";
+        reps = "";
+        activeExercise = null;
+        if ("vibrate" in navigator) {
+          navigator.vibrate([50, 100, 50]);
+        }
+      }
+    }
+    formSubmitting = false;
+    update();
+  };
+}} id="logSetForm">
+  <input type="hidden" name="date" value={dateStr} />
+  <input type="hidden" name="exerciseName" id="logExerciseName" />
+  <input type="hidden" name="weight" id="logWeight" />
+  <input type="hidden" name="reps" id="logReps" />
+</form>
+
 <div class="min-h-screen pb-20">
-  <!-- Header -->
   <div class="flex items-center gap-4 mb-6">
     <button
       onclick={() => goto("/")}
@@ -90,13 +55,12 @@
       <ArrowLeft class="w-6 h-6 text-gray-600" />
     </button>
     <div>
-      <h1 class="text-2xl font-bold text-gray-800">{workout?.name || "Rest Day"}</h1>
+      <h1 class="text-2xl font-bold text-gray-800">{data.workout?.name || "Rest Day"}</h1>
       <p class="text-sm text-gray-500">{dayName}</p>
     </div>
   </div>
 
-  {#if workoutLoading}
-    <!-- Loading State -->
+  {#if !data.workout}
     <div class="space-y-4">
       {#each [1, 2, 3, 4] as i}
         <div class="bg-white rounded-2xl shadow-sm border-2 border-gray-100 p-4 animate-pulse">
@@ -105,15 +69,14 @@
         </div>
       {/each}
     </div>
-  {:else if workout}
+  {:else if data.workout}
     <div class="space-y-4">
-      {#each workout.exercises as exercise (exercise._id)}
+      {#each data.workout.exercises as exercise (exercise._id)}
         <div
           in:fly={{ y: 20, delay: exercise.order * 100 }}
           class="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden
             {isCompleted(exercise.exercise?.name || '') ? 'border-emerald-200 bg-emerald-50/30' : ''}"
         >
-          <!-- Exercise Header -->
           <div class="p-4 flex items-center justify-between">
             <div>
               <h3 class="font-bold text-lg text-gray-800">{exercise.exercise?.name}</h3>
@@ -138,7 +101,6 @@
             {/if}
           </div>
 
-          <!-- Log Form -->
           {#if activeExercise === exercise._id}
             <div in:fade class="px-4 pb-4">
               <div class="flex gap-3">
@@ -164,11 +126,20 @@
                 </div>
               </div>
               <button
-                onclick={() => logSet(exercise.exercise?.name || "")}
-                disabled={!weight || !reps || logLoading}
+                onclick={() => {
+                  const form = document.getElementById("logSetForm") as HTMLFormElement;
+                  const nameInput = document.getElementById("logExerciseName") as HTMLInputElement;
+                  const weightInput = document.getElementById("logWeight") as HTMLInputElement;
+                  const repsInput = document.getElementById("logReps") as HTMLInputElement;
+                  nameInput.value = exercise.exercise?.name || "";
+                  weightInput.value = weight;
+                  repsInput.value = reps;
+                  form.requestSubmit();
+                }}
+                disabled={!weight || !reps || formSubmitting}
                 class="mt-3 w-full p-3 bg-sky-500 text-white rounded-xl font-semibold hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {logLoading ? 'Logging...' : 'Log Set'}
+                {formSubmitting ? 'Logging...' : 'Log Set'}
               </button>
             </div>
           {/if}
@@ -176,19 +147,17 @@
       {/each}
     </div>
 
-    <!-- Done Button -->
-    {#if completedExercises.size === workout.exercises.length}
+    {#if completedExercises.size === data.workout.exercises.length}
       <div in:fly={{ y: 20 }} class="mt-6">
         <button
           onclick={() => goto("/")}
           class="w-full p-4 bg-emerald-500 text-white rounded-2xl font-bold text-lg hover:bg-emerald-600 active:scale-[0.98] transition-all"
         >
-          Workout Complete! 🎉
+          Workout Complete!
         </button>
       </div>
     {/if}
   {:else}
-    <!-- Rest Day -->
     <div in:fade class="text-center py-12">
       <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <Clock class="w-10 h-10 text-emerald-600" />
@@ -204,3 +173,9 @@
     </div>
   {/if}
 </div>
+
+<script lang="ts" module>
+  function isCompleted(exerciseName: string) {
+    return false;
+  }
+</script>

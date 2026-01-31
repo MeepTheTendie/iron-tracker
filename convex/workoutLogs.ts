@@ -7,14 +7,17 @@ export const logWorkout = mutation({
     exerciseName: v.string(),
     weight: v.number(),
     reps: v.number(),
+    userId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = ctx.auth?.userId;
-    if (!userId) throw new Error("Not authenticated");
+    const userId = args.userId || "demo-user";
 
     return await ctx.db.insert("workoutLogs", {
       userId,
-      ...args,
+      date: args.date,
+      exerciseName: args.exerciseName,
+      weight: args.weight,
+      reps: args.reps,
     });
   },
 });
@@ -23,10 +26,10 @@ export const getWorkoutLogs = query({
   args: {
     startDate: v.string(),
     endDate: v.string(),
+    userId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = ctx.auth?.userId;
-    if (!userId) return [];
+    const userId = args.userId || "demo-user";
 
     return await ctx.db
       .query("workoutLogs")
@@ -41,10 +44,9 @@ export const getWorkoutLogs = query({
 });
 
 export const getProgressData = query({
-  args: { exerciseName: v.string() },
+  args: { exerciseName: v.string(), userId: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    const userId = ctx.auth?.userId;
-    if (!userId) return [];
+    const userId = args.userId || "demo-user";
 
     return await ctx.db
       .query("workoutLogs")

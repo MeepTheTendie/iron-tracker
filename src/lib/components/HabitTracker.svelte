@@ -1,40 +1,14 @@
 <script lang="ts">
-  import { createConvexClient } from "$lib/convex";
-  import { api } from "../../../convex/_generated/api";
-  import { Check, Flame, Loader2, Trophy, WifiOff } from "lucide-svelte";
+  import { Check, Flame, Loader2, Trophy } from "lucide-svelte";
   import { fade, fly, scale } from "svelte/transition";
-  import { flip } from "svelte/animate";
 
-  const { date } = $props();
+  let { date, habits, onToggle } = $props<{
+    date: string;
+    habits: any;
+    onToggle: (field: "amSquats" | "steps7k" | "bike1hr" | "pmSquats") => void;
+  }>();
 
-  const client = createConvexClient();
-  
-  // State for habit data
-  let habits = $state<any>(null);
-  let habitsLoading = $state(true);
-  let toggleLoading = $state<string | null>(null);
-
-  // Fetch habits data (only on browser)
-  $effect(() => {
-    if (!client) {
-      habitsLoading = false;
-      return;
-    }
-    habitsLoading = true;
-    
-    const fetchHabits = async () => {
-      try {
-        const result = await client.query(api.dailyHabits.getTodayHabits, { date });
-        habits = result;
-      } catch (err) {
-        console.error("Failed to fetch habits:", err);
-      } finally {
-        habitsLoading = false;
-      }
-    };
-    
-    fetchHabits();
-  });
+  let toggleLoading = $state<"amSquats" | "steps7k" | "bike1hr" | "pmSquats" | null>(null);
 
   const habitList = [
     { field: "amSquats", label: "15x AM Squats" },
@@ -51,36 +25,19 @@
     habitList.filter(h => habits?.[h.field]).length
   );
 
-  async function handleToggle(field: string) {
-    if (!client) return;
-    
-    const currentValue = habits?.[field] ?? false;
-    
-    // Haptic feedback
+  function handleToggle(field: "amSquats" | "steps7k" | "bike1hr" | "pmSquats") {
     if ("vibrate" in navigator) {
       navigator.vibrate(15);
     }
-
     toggleLoading = field;
-    
-    try {
-      await client.mutation(api.dailyHabits.toggleHabit, {
-        date,
-        field,
-        value: !currentValue,
-      });
-
-      if ("vibrate" in navigator) {
-        navigator.vibrate(30);
-      }
-    } finally {
+    onToggle(field);
+    setTimeout(() => {
       toggleLoading = null;
-    }
+    }, 500);
   }
 </script>
 
-{#if habitsLoading}
-  <!-- Loading State -->
+{#if !habits}
   <div class="bg-white rounded-2xl shadow-sm border-2 border-gray-100 mb-6 p-4">
     <div class="animate-pulse space-y-3">
       <div class="h-6 bg-rose-200 rounded w-1/3"></div>
@@ -91,8 +48,7 @@
     </div>
   </div>
 {:else if completed}
-  <!-- Celebration State -->
-  <div 
+  <div
     in:scale={{ duration: 300 }}
     class="bg-rose-200 p-6 rounded-2xl border-2 border-rose-300 mb-6 text-center"
   >
@@ -105,12 +61,10 @@
     <p class="text-rose-600">Great job! See you tomorrow!</p>
   </div>
 {:else}
-  <!-- Habit List -->
-  <div 
+  <div
     in:fly={{ y: 20 }}
     class="bg-white rounded-2xl shadow-sm border-2 border-gray-100 mb-6"
   >
-    <!-- Header -->
     <div class="bg-rose-50 p-4 rounded-t-2xl border-b border-rose-100">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -125,24 +79,22 @@
       </div>
     </div>
 
-    <!-- Progress Bar -->
     <div class="px-4 pt-4">
       <div class="w-full bg-gray-100 h-2 rounded-full mb-4 overflow-hidden">
-        <div 
+        <div
           class="bg-rose-400 h-full transition-all duration-500 ease-out"
           style="width: {(count / 4) * 100}%"
         ></div>
       </div>
     </div>
 
-    <!-- Habits -->
     <div class="p-4 space-y-2">
-      {#each habitList as habit, index (habit.field)}
+      {#each habitList as habit (habit.field)}
         <button
           onclick={() => handleToggle(habit.field)}
           class="w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all duration-200
-            {habits?.[habit.field] 
-              ? 'bg-rose-100 border-rose-300' 
+            {habits?.[habit.field]
+              ? 'bg-rose-100 border-rose-300'
               : 'bg-white border-gray-200 hover:border-rose-200'}
             {toggleLoading === habit.field ? 'opacity-60 cursor-wait' : ''}"
         >
@@ -159,7 +111,7 @@
               {habit.label}
             </span>
           </div>
-          
+
           {#if habits?.[habit.field]}
             <span in:fade class="text-xs text-rose-600 font-medium bg-rose-50 px-2 py-1 rounded">
               Done

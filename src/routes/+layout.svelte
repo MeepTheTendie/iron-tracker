@@ -1,20 +1,10 @@
 <script lang="ts">
-  import { ConvexClient } from "convex/browser";
-  import { setContext } from "svelte";
-  import { browser } from "$app/environment";
-  import { goto } from "$app/navigation";
   import { Home, TrendingUp, Dumbbell, LogOut, User } from "lucide-svelte";
   import "../app.css";
 
   let { data, children } = $props();
-  const { isAuthenticated, user } = data;
-
-  // Initialize Convex client
-  const convex = browser 
-    ? new ConvexClient(import.meta.env.VITE_CONVEX_URL)
-    : null;
-
-  setContext("convex", convex);
+  let isAuthenticated = $derived(!!data?.user);
+  let user = $derived(data?.user || null);
 
   const navItems = [
     { href: "/", icon: Home, label: "Home" },
@@ -44,9 +34,7 @@
           </form>
         </div>
       {:else}
-        <a href="/login" class="text-sm font-medium hover:text-rose-300 transition-colors">
-          Sign In
-        </a>
+        <span class="text-sm font-medium text-rose-300">Demo Mode</span>
       {/if}
     </div>
   </header>

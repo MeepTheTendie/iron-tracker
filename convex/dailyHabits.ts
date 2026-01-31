@@ -2,10 +2,9 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getTodayHabits = query({
-  args: { date: v.string() },
+  args: { date: v.string(), userId: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    const userId = ctx.auth?.userId;
-    if (!userId) return null;
+    const userId = args.userId || "demo-user";
 
     return await ctx.db
       .query("dailyHabits")
@@ -24,10 +23,10 @@ export const toggleHabit = mutation({
       v.literal("pmSquats")
     ),
     value: v.boolean(),
+    userId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = ctx.auth?.userId;
-    if (!userId) throw new Error("Not authenticated");
+    const userId = args.userId || "demo-user";
 
     const existing = await ctx.db
       .query("dailyHabits")
@@ -51,10 +50,9 @@ export const toggleHabit = mutation({
 });
 
 export const getHabitHistory = query({
-  args: { startDate: v.string(), endDate: v.string() },
+  args: { startDate: v.string(), endDate: v.string(), userId: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    const userId = ctx.auth?.userId;
-    if (!userId) return [];
+    const userId = args.userId || "demo-user";
 
     return await ctx.db
       .query("dailyHabits")
