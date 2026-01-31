@@ -19,7 +19,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 
   if (convex) {
     try {
-      habits = await convex.query(api.dailyHabits.getTodayHabits, { date: dateStr });
+      habits = await convex.query(api.dailyHabits.getTodayHabits, { date: dateStr, userId: "demo-user" });
+      // Auto-create habits if they don't exist
+      if (!habits) {
+        await convex.mutation(api.dailyHabits.toggleHabit, {
+          date: dateStr,
+          field: "amSquats",
+          value: false,
+          userId: "demo-user",
+        });
+        habits = await convex.query(api.dailyHabits.getTodayHabits, { date: dateStr, userId: "demo-user" });
+      }
     } catch (e) {
       console.error("Failed to fetch habits:", e);
     }
@@ -57,6 +67,7 @@ export const actions: Actions = {
         date,
         field,
         value,
+        userId: "demo-user",
       });
       return { success: true };
     } catch (e) {
